@@ -11,8 +11,13 @@ from app.api.v1 import router as api_v1_router
 
 settings = get_settings()
 
-# Logfire 초기화
-logfire.configure(token=settings.LOGFIRE_TOKEN)
+# Logfire 초기화 (토큰이 있을 때만)
+if settings.LOGFIRE_TOKEN and settings.LOGFIRE_TOKEN != "your_logfire_token_here":
+    logfire.configure(token=settings.LOGFIRE_TOKEN)
+else:
+    # Logfire 비활성화 (개발 환경)
+    import logging
+    logging.basicConfig(level=logging.INFO)
 
 # Custom API Description (Stripe 스타일)
 CUSTOM_DESCRIPTION = """
@@ -100,8 +105,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Logfire 통합
-logfire.instrument_fastapi(app)
+# Logfire 통합 (토큰이 설정되어 있을 때만)
+if settings.LOGFIRE_TOKEN and settings.LOGFIRE_TOKEN != "your_logfire_token_here":
+    logfire.instrument_fastapi(app)
 
 # API 라우터 등록
 app.include_router(api_v1_router, prefix="/api/v1")

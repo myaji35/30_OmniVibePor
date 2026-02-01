@@ -1,0 +1,6 @@
+{
+  "/page": "app/page.js",
+  "/api/backend-status/route": "app/api/backend-status/route.js",
+  "/sheets/page": "app/sheets/page.js",
+  "/audio/page": "app/audio/page.js"
+}

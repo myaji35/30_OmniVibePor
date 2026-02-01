@@ -1,19 +1,26 @@
 """OpenAI Whisper STT (Speech-to-Text) 서비스"""
 from typing import Optional
+import logging
 import tempfile
 from pathlib import Path
+from contextlib import nullcontext
 from openai import OpenAI
 from tenacity import retry, stop_after_attempt, wait_exponential
-import logfire
 
 from app.core.config import get_settings
 
 settings = get_settings()
 
+# Logfire availability check
+try:
+    import logfire
+    LOGFIRE_AVAILABLE = settings.LOGFIRE_TOKEN and settings.LOGFIRE_TOKEN != "your_logfire_token_here"
+except Exception:
+    LOGFIRE_AVAILABLE = False
+
 
 class STTService:
     """
-import logging
     OpenAI Whisper v3 Speech-to-Text
 
     특징:
@@ -55,7 +62,8 @@ import logging
         Returns:
             변환된 텍스트
         """
-        with self.logger.span("whisper.transcribe") as span:
+        span_context = logfire.span("whisper.transcribe") if LOGFIRE_AVAILABLE else nullcontext()
+        with span_context as span:
             # 오디오 소스 확인
             if audio_file_path is None and audio_bytes is None:
                 raise ValueError("Either audio_file_path or audio_bytes must be provided")
@@ -68,8 +76,9 @@ import logging
 
             # 파일 크기 로깅
             file_size = Path(audio_file_path).stat().st_size
-            span.set_attribute("file_size_bytes", file_size)
-            span.set_attribute("language", language)
+            if LOGFIRE_AVAILABLE:
+                span.set_attribute("file_size_bytes", file_size)
+                span.set_attribute("language", language)
 
             # Whisper API 호출
             with open(audio_file_path, "rb") as audio_file:
@@ -116,7 +125,8 @@ import logging
         Returns:
             {"text": "전체 텍스트", "segments": [...]}
         """
-        with self.logger.span("whisper.transcribe_with_timestamps"):
+        span_context = logfire.span("whisper.transcribe_with_timestamps") if LOGFIRE_AVAILABLE else nullcontext()
+        with span_context:
             with open(audio_file_path, "rb") as audio_file:
                 transcript = self.client.audio.transcriptions.create(
                     model="whisper-1",
@@ -153,7 +163,8 @@ import logging
         Returns:
             영어로 번역된 텍스트
         """
-        with self.logger.span("whisper.translate"):
+        span_context = logfire.span("whisper.translate") if LOGFIRE_AVAILABLE else nullcontext()
+        with span_context:
             with open(audio_file_path, "rb") as audio_file:
                 translation = self.client.audio.translations.create(
                     model="whisper-1",

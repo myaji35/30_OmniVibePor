@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     # OpenAI
     OPENAI_API_KEY: str
 
+    # Anthropic Claude
+    ANTHROPIC_API_KEY: str
+
     # ElevenLabs
     ELEVENLABS_API_KEY: str
 
@@ -48,9 +51,16 @@ class Settings(BaseSettings):
 
     # HeyGen (옵션)
     HEYGEN_API_KEY: str | None = None
+    HEYGEN_API_ENDPOINT: str = "https://api.heygen.com/v1"
 
     # Nano Banana (옵션)
     BANANA_API_KEY: str | None = None
+    CHARACTER_STORAGE_PATH: str = "./outputs/characters"
+
+    # Lipsync Settings
+    WAV2LIP_MODEL_PATH: str | None = None
+    LIPSYNC_GPU_ENABLED: bool = False
+    LIPSYNC_OUTPUT_DIR: str = "./outputs/lipsync"
 
     # 소셜 미디어
     YOUTUBE_OAUTH_CLIENT_ID: str | None = None

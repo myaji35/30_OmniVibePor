@@ -21,8 +21,21 @@ COPY pyproject.toml poetry.lock* ./
 RUN poetry config virtualenvs.create false \
     && poetry install --no-interaction --no-ansi --no-root
 
-# 애플리케이션 코드 복사
-COPY . .
+# 애플리케이션 코드 복사 (명시적으로)
+COPY app /app/app
+COPY *.py ./
+COPY *.sh ./
+COPY *.json ./
+COPY *.txt ./
+COPY *.ini ./
+COPY *.md ./
+COPY Makefile ./
+
+# Credentials 복사 (명시적으로)
+COPY credentials /app/credentials
+
+# Tests 복사
+COPY tests /app/tests
 
 # 출력 디렉토리 생성
 RUN mkdir -p /app/outputs

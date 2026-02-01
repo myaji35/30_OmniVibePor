@@ -9,9 +9,11 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      # Colima 볼륨 마운트 이슈로 주석 처리
+      # ExFAT 볼륨 마운트 이슈 (아래 해결책 참고)
       # - ./app:/app/app
       - ./outputs:/app/outputs
+      # credentials는 이미지에 포함됨 (볼륨 마운트 시 덮어쓰기 방지)
+      # - ./credentials:/app/credentials
     env_file:
       - .env
     depends_on:
@@ -25,7 +27,8 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./app:/app/app
+      # ExFAT 볼륨 마운트 이슈 (아래 해결책 참고)
+      # - ./app:/app/app
       - ./outputs:/app/outputs
     env_file:
       - .env
@@ -40,7 +43,9 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./app:/app/app
+      # ExFAT 볼륨 마운트 이슈 (아래 해결책 참고)
+      # - ./app:/app/app
+      - ./outputs:/app/outputs
     env_file:
       - .env
     depends_on:
@@ -79,6 +84,8 @@ services:
     environment:
       - NEO4J_AUTH=neo4j/omnivibe_password_2026
       - NEO4J_PLUGINS=["apoc"]
+      - NEO4J_dbms_security_procedures_unrestricted=apoc.*
+      - NEO4J_dbms_security_procedures_allowlist=apoc.*
     volumes:
       - neo4j_data:/data
       - neo4j_logs:/logs

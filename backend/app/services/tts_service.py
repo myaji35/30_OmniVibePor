@@ -1,43 +1,45 @@
-"""ElevenLabs TTS (Text-to-Speech) 서비스"""
+"""OpenAI TTS (Text-to-Speech) 서비스"""
 from typing import Optional
 import asyncio
 from pathlib import Path
 import hashlib
-from elevenlabs import generate, Voice, VoiceSettings, set_api_key
-from elevenlabs.api import History
-from tenacity import retry, stop_after_attempt, wait_exponential
-import logfire
+import logging
+from contextlib import nullcontext
+from openai import AsyncOpenAI
 
 from app.core.config import get_settings
 
 settings = get_settings()
-set_api_key(settings.ELEVENLABS_API_KEY)
+
+# Logfire availability check
+try:
+    import logfire
+    LOGFIRE_AVAILABLE = settings.LOGFIRE_TOKEN and settings.LOGFIRE_TOKEN != "your_logfire_token_here"
+except Exception:
+    LOGFIRE_AVAILABLE = False
+
+client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
 
 
 class TTSService:
     """
-import logging
-    ElevenLabs Professional Voice Cloning TTS
+    OpenAI TTS 서비스
 
     특징:
-    - 29개 언어 지원 (한국어 포함)
-    - 프로페셔널 음성 품질
-    - 음성 클로닝 기능
-    - 재시도 로직 (네트워크 오류 대응)
-    - Logfire 비용 추적
+    - 6가지 음성 지원 (alloy, echo, fable, onyx, nova, shimmer)
+    - 한국어 지원 우수
+    - 저렴한 비용 ($0.015/1000자)
+    - 고품질 음성 (tts-1-hd 모델 사용 가능)
     """
 
-    # 기본 음성 ID (ElevenLabs의 사전 제작 음성)
-    VOICE_IDS = {
-        "rachel": "21m00Tcm4TlvDq8ikWAM",      # 여성, 미국 영어
-        "domi": "AZnzlk1XvdvUeBnXmlld",        # 여성, 미국 영어
-        "bella": "EXAVITQu4vr4xnSDxMaL",       # 여성, 미국 영어
-        "antoni": "ErXwobaYiN019PkySvjV",      # 남성, 미국 영어
-        "elli": "MF3mGyEYCl7XYWbV9V6O",        # 여성, 미국 영어
-        "josh": "TxGEqnHWrfWFTfGW9XjX",        # 남성, 미국 영어
-        "arnold": "VR6AewLTigWG4xSOukaG",      # 남성, 미국 영어
-        "adam": "pNInz6obpgDQGcFmaJgB",        # 남성, 미국 영어
-        "sam": "yoZ06aMxZJJ28mfd3POQ",         # 남성, 미국 영어
+    # OpenAI TTS 음성 옵션
+    VOICES = {
+        "alloy": "alloy",      # 중성적
+        "echo": "echo",        # 남성
+        "fable": "fable",      # 영국식
+        "onyx": "onyx",        # 남성, 깊은 목소리
+        "nova": "nova",        # 여성
+        "shimmer": "shimmer",  # 여성, 부드러움
     }
 
     def __init__(self, output_dir: str = "./outputs/audio"):
@@ -45,66 +47,64 @@ import logging
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.logger = logging.getLogger(__name__)
 
-    @retry(
-        stop=stop_after_attempt(3),
-        wait=wait_exponential(multiplier=1, min=2, max=10)
-    )
     async def generate_audio(
         self,
         text: str,
         voice_id: Optional[str] = None,
-        model: str = "eleven_multilingual_v2",
-        stability: float = 0.5,
-        similarity_boost: float = 0.75,
-        style: float = 0.0,
-        use_speaker_boost: bool = True
+        model: str = "tts-1",  # tts-1 (빠름, 저렴) or tts-1-hd (고품질)
+        **kwargs
     ) -> bytes:
         """
         TTS 오디오 생성
 
         Args:
             text: 변환할 텍스트
-            voice_id: 음성 ID (기본값: rachel)
-            model: ElevenLabs 모델 (multilingual_v2 권장)
-            stability: 안정성 (0.0-1.0)
-            similarity_boost: 유사도 부스트 (0.0-1.0)
-            style: 스타일 강도 (0.0-1.0)
-            use_speaker_boost: 스피커 부스트 활성화
+            voice_id: 음성 ID (alloy, echo, fable, onyx, nova, shimmer)
+            model: OpenAI TTS 모델 (tts-1 또는 tts-1-hd)
+            **kwargs: 호환성을 위한 추가 파라미터 (무시됨)
 
         Returns:
             오디오 바이트 (MP3)
         """
-        with self.logger.span("elevenlabs.generate_audio") as span:
+        span_context = logfire.span("openai.tts.generate") if LOGFIRE_AVAILABLE else nullcontext()
+
+        async with span_context:
             # 기본 음성 설정
-            if voice_id is None:
-                voice_id = self.VOICE_IDS["rachel"]
+            if voice_id is None or voice_id not in self.VOICES:
+                voice_id = "alloy"
 
             # 텍스트 길이 로깅
             char_count = len(text)
-            span.set_attribute("char_count", char_count)
-            span.set_attribute("voice_id", voice_id)
-
-            # 비동기 실행 (ElevenLabs SDK는 동기식)
-            audio_bytes = await asyncio.to_thread(
-                generate,
-                text=text,
-                voice=voice_id,
-                model=model,
-                voice_settings=VoiceSettings(
-                    stability=stability,
-                    similarity_boost=similarity_boost,
-                    style=style,
-                    use_speaker_boost=use_speaker_boost
-                )
-            )
-
-            # 비용 추적 (대략 1000자당 $0.30)
-            estimated_cost = (char_count / 1000) * 0.30
             self.logger.info(
-                f"Generated {char_count} chars audio, estimated cost: ${estimated_cost:.4f}"
+                f"Generating TTS with OpenAI: {char_count} chars, voice={voice_id}, model={model}"
             )
 
-            return audio_bytes
+            try:
+                # OpenAI TTS API 호출
+                response = await client.audio.speech.create(
+                    model=model,
+                    voice=voice_id,
+                    input=text,
+                    response_format="mp3"
+                )
+
+                # 스트림을 bytes로 변환
+                audio_bytes = response.content
+
+                # 비용 추적 ($0.015/1000 chars for tts-1, $0.030/1000 for tts-1-hd)
+                cost_per_1k = 0.015 if model == "tts-1" else 0.030
+                estimated_cost = (char_count / 1000) * cost_per_1k
+
+                self.logger.info(
+                    f"Generated {len(audio_bytes)} bytes audio, "
+                    f"estimated cost: ${estimated_cost:.4f}"
+                )
+
+                return audio_bytes
+
+            except Exception as e:
+                self.logger.error(f"OpenAI TTS generation failed: {e}")
+                raise
 
     async def save_audio(
         self,
@@ -140,33 +140,6 @@ import logging
         self.logger.info(f"Saved audio to {file_path}")
         return str(file_path)
 
-    async def generate_and_save(
-        self,
-        text: str,
-        voice_id: Optional[str] = None,
-        filename: Optional[str] = None,
-        **kwargs
-    ) -> str:
-        """
-        오디오 생성 후 바로 저장
-
-        Args:
-            text: 변환할 텍스트
-            voice_id: 음성 ID
-            filename: 저장할 파일명
-            **kwargs: generate_audio에 전달할 추가 파라미터
-
-        Returns:
-            저장된 파일 경로
-        """
-        audio_bytes = await self.generate_audio(text, voice_id, **kwargs)
-        file_path = await self.save_audio(audio_bytes, filename, text)
-        return file_path
-
-    def list_available_voices(self) -> dict:
-        """사용 가능한 음성 목록"""
-        return self.VOICE_IDS
-
     async def clone_voice(
         self,
         name: str,
@@ -174,38 +147,26 @@ import logging
         audio_files: list[str]
     ) -> str:
         """
-        음성 클로닝 (Pro 플랜 이상 필요)
+        음성 클로닝 (OpenAI TTS는 미지원)
 
-        Args:
-            name: 음성 이름
-            description: 음성 설명
-            audio_files: 샘플 오디오 파일 경로 리스트
-
-        Returns:
-            생성된 음성 ID
+        OpenAI TTS는 사전 정의된 6개 음성만 사용 가능합니다.
+        음성 클로닝이 필요한 경우 ElevenLabs 등 다른 서비스를 사용하세요.
         """
-        # TODO: ElevenLabs 음성 클로닝 API 구현
-        # 현재는 기본 음성만 사용
-        raise NotImplementedError("Voice cloning requires Pro plan or higher")
+        raise NotImplementedError(
+            "OpenAI TTS does not support voice cloning. "
+            "Use one of the 6 built-in voices: alloy, echo, fable, onyx, nova, shimmer"
+        )
 
-    def get_usage_info(self) -> dict:
-        """
-        ElevenLabs API 사용량 조회
-
-        Returns:
-            사용량 정보 (문자 수, 비용 등)
-        """
-        # TODO: ElevenLabs API 사용량 조회 구현
-        # History API 사용
-        try:
-            history = History.from_api()
-            return {
-                "total_characters": getattr(history, 'character_count', 0),
-                "status": "active"
-            }
-        except Exception as e:
-            self.logger.error(f"Failed to fetch usage info: {e}")
-            return {"status": "error", "message": str(e)}
+    def get_available_voices(self) -> dict:
+        """사용 가능한 음성 목록 반환"""
+        return {
+            "alloy": "중성적인 목소리",
+            "echo": "남성 목소리",
+            "fable": "영국식 악센트",
+            "onyx": "남성, 깊은 목소리",
+            "nova": "여성 목소리",
+            "shimmer": "여성, 부드러운 목소리"
+        }
 
 
 # 싱글톤 인스턴스

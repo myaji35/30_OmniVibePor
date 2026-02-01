@@ -1,16 +1,23 @@
 """Neo4j GraphRAG 클라이언트"""
 from typing import List, Dict, Any
 from neo4j import GraphDatabase
-import logfire
+import logging
+from contextlib import nullcontext
 
 from app.core.config import get_settings
 
 settings = get_settings()
 
+# Logfire 사용 가능 여부 확인
+try:
+    import logfire
+    LOGFIRE_AVAILABLE = settings.LOGFIRE_TOKEN and settings.LOGFIRE_TOKEN != "your_logfire_token_here"
+except Exception:
+    LOGFIRE_AVAILABLE = False
+
 
 class Neo4jClient:
     """Neo4j 데이터베이스 클라이언트 (GraphRAG)"""
-import logging
 
     def __init__(self):
         self.driver = GraphDatabase.driver(
@@ -23,36 +30,96 @@ import logging
         """연결 종료"""
         self.driver.close()
 
-    def query(self, cypher: str, parameters: Dict[str, Any] = None) -> List[Dict]:
+    def query(self, cypher: str, parameters: Dict[str, Any] = None, **kwargs) -> List[Dict]:
         """
         Cypher 쿼리 실행
 
         Args:
             cypher: Cypher 쿼리 문자열
-            parameters: 쿼리 파라미터
+            parameters: 쿼리 파라미터 (딕셔너리)
+            **kwargs: 추가 파라미터 (keyword arguments로 전달)
 
         Returns:
             쿼리 결과 (딕셔너리 리스트)
         """
-        with self.logger.span("neo4j.query"):
-            with self.driver.session() as session:
-                result = session.run(cypher, parameters or {})
-                return [dict(record) for record in result]
+        # parameters와 kwargs 병합
+        all_params = parameters or {}
+        all_params.update(kwargs)
+
+        with self.driver.session() as session:
+            result = session.run(cypher, all_params)
+            return [dict(record) for record in result]
 
     def create_indexes(self):
         """필수 인덱스 생성"""
-        with self.logger.span("neo4j.create_indexes"):
+        span_context = logfire.span("neo4j.create_indexes") if LOGFIRE_AVAILABLE else nullcontext()
+
+        with span_context:
             with self.driver.session() as session:
-                # User ID 인덱스
+                # User ID 인덱스 (레거시)
                 session.run("CREATE INDEX user_id IF NOT EXISTS FOR (u:User) ON (u.id)")
 
-                # Content ID 인덱스
+                # Content ID 인덱스 (레거시)
                 session.run("CREATE INDEX content_id IF NOT EXISTS FOR (c:Content) ON (c.id)")
 
-                # HighPerformance 라벨 인덱스
+                # HighPerformance 라벨 인덱스 (레거시)
                 session.run("CREATE INDEX high_perf IF NOT EXISTS FOR (c:HighPerformance) ON (c.id)")
 
                 self.logger.info("Neo4j indexes created")
+
+    def create_full_schema(self):
+        """전체 스키마 생성 (Constraints & Indexes)"""
+        span_context = logfire.span("neo4j.create_full_schema") if LOGFIRE_AVAILABLE else nullcontext()
+
+        with span_context:
+            with self.driver.session() as session:
+                schema_queries = [
+                    # User
+                    "CREATE CONSTRAINT user_id_unique IF NOT EXISTS FOR (u:User) REQUIRE u.user_id IS UNIQUE",
+                    "CREATE INDEX user_email IF NOT EXISTS FOR (u:User) ON (u.email)",
+
+                    # Persona
+                    "CREATE CONSTRAINT persona_id_unique IF NOT EXISTS FOR (p:Persona) REQUIRE p.persona_id IS UNIQUE",
+
+                    # Project
+                    "CREATE CONSTRAINT project_id_unique IF NOT EXISTS FOR (p:Project) REQUIRE p.project_id IS UNIQUE",
+                    "CREATE INDEX project_created IF NOT EXISTS FOR (p:Project) ON (p.created_at)",
+                    "CREATE INDEX project_status IF NOT EXISTS FOR (p:Project) ON (p.status)",
+
+                    # Script
+                    "CREATE CONSTRAINT script_id_unique IF NOT EXISTS FOR (s:Script) REQUIRE s.script_id IS UNIQUE",
+
+                    # Audio
+                    "CREATE CONSTRAINT audio_id_unique IF NOT EXISTS FOR (a:Audio) REQUIRE a.audio_id IS UNIQUE",
+
+                    # Video
+                    "CREATE CONSTRAINT video_id_unique IF NOT EXISTS FOR (v:Video) REQUIRE v.video_id IS UNIQUE",
+
+                    # Thumbnail
+                    "CREATE CONSTRAINT thumbnail_id_unique IF NOT EXISTS FOR (t:Thumbnail) REQUIRE t.thumbnail_id IS UNIQUE",
+
+                    # Metrics
+                    "CREATE INDEX metrics_performance IF NOT EXISTS FOR (m:Metrics) ON (m.performance_score)",
+                    "CREATE INDEX metrics_measured IF NOT EXISTS FOR (m:Metrics) ON (m.measured_at)",
+
+                    # CustomVoice
+                    "CREATE CONSTRAINT custom_voice_id_unique IF NOT EXISTS FOR (cv:CustomVoice) REQUIRE cv.voice_id IS UNIQUE",
+
+                    # Character (캐릭터 일관성)
+                    "CREATE CONSTRAINT character_id_unique IF NOT EXISTS FOR (c:Character) REQUIRE c.character_id IS UNIQUE",
+                    "CREATE INDEX character_created IF NOT EXISTS FOR (c:Character) ON (c.created_at)",
+
+                    # Content (레거시)
+                    "CREATE INDEX content_id IF NOT EXISTS FOR (c:Content) ON (c.content_id)",
+                ]
+
+                for query in schema_queries:
+                    try:
+                        session.run(query)
+                    except Exception as e:
+                        self.logger.warning(f"Schema query failed: {query[:50]}... - {e}")
+
+                self.logger.info("Full Neo4j schema created")
 
     # ==================== 성과 데이터 쿼리 ====================
 
@@ -261,3 +328,193 @@ import logging
         else:
             self.logger.warning(f"Custom voice {voice_id} not found")
             return False
+
+    # ==================== Project & Workflow 관리 ====================
+
+    def create_project_workflow(
+        self,
+        user_id: str,
+        project_data: Dict[str, Any],
+        persona_id: str = None
+    ) -> Dict:
+        """
+        프로젝트 워크플로우 생성 (User → Project → Persona 연결)
+
+        Args:
+            user_id: 사용자 ID
+            project_data: 프로젝트 데이터 (title, topic, platform, status 등)
+            persona_id: 페르소나 ID (옵션)
+
+        Returns:
+            생성된 프로젝트 정보
+        """
+        query = """
+        MATCH (u:User {user_id: $user_id})
+        CREATE (proj:Project {
+            project_id: $project_id,
+            title: $title,
+            topic: $topic,
+            platform: $platform,
+            status: $status,
+            created_at: datetime($created_at),
+            updated_at: datetime($updated_at),
+            publish_scheduled_at: datetime($publish_scheduled_at)
+        })
+        CREATE (u)-[:OWNS]->(proj)
+        """
+
+        params = {"user_id": user_id, **project_data}
+
+        if persona_id:
+            query += """
+            WITH proj
+            MATCH (p:Persona {persona_id: $persona_id})
+            CREATE (proj)-[:USES_PERSONA]->(p)
+            """
+            params["persona_id"] = persona_id
+
+        query += """
+        RETURN proj.project_id as project_id,
+               proj.title as title,
+               proj.status as status,
+               proj.created_at as created_at
+        """
+
+        result = self.query(query, params)
+        return result[0] if result else {}
+
+    def get_project_full_context(self, project_id: str) -> Dict:
+        """
+        프로젝트의 전체 컨텍스트 조회 (스크립트, 오디오, 비디오, 메트릭 포함)
+
+        Args:
+            project_id: 프로젝트 ID
+
+        Returns:
+            프로젝트 전체 정보
+        """
+        query = """
+        MATCH (proj:Project {project_id: $project_id})
+        OPTIONAL MATCH (proj)-[:USES_PERSONA]->(persona:Persona)
+        OPTIONAL MATCH (proj)-[:HAS_SCRIPT]->(script:Script)
+        OPTIONAL MATCH (script)-[:GENERATED_AUDIO]->(audio:Audio)
+        OPTIONAL MATCH (audio)-[:USED_IN_VIDEO]->(video:Video)
+        OPTIONAL MATCH (video)-[:ACHIEVED]->(metrics:Metrics)
+
+        RETURN proj.project_id as project_id,
+               proj.title as title,
+               proj.topic as topic,
+               proj.platform as platform,
+               proj.status as status,
+               proj.created_at as created_at,
+               proj.updated_at as updated_at,
+               proj.publish_scheduled_at as publish_scheduled_at,
+               persona.persona_id as persona_id,
+               persona.gender as persona_gender,
+               persona.tone as persona_tone,
+               collect(DISTINCT {
+                   script_id: script.script_id,
+                   content: script.content,
+                   version: script.version
+               }) as scripts,
+               collect(DISTINCT {
+                   audio_id: audio.audio_id,
+                   file_path: audio.file_path,
+                   stt_accuracy: audio.stt_accuracy
+               }) as audios,
+               collect(DISTINCT {
+                   video_id: video.video_id,
+                   file_path: video.file_path,
+                   duration: video.duration
+               }) as videos,
+               collect(DISTINCT {
+                   metrics_id: metrics.metrics_id,
+                   views: metrics.views,
+                   performance_score: metrics.performance_score
+               }) as metrics
+        """
+
+        result = self.query(query, {"project_id": project_id})
+        return result[0] if result else {}
+
+    def get_user_analytics_dashboard(self, user_id: str, days: int = 30) -> Dict:
+        """
+        사용자 분석 대시보드 데이터 조회
+
+        Args:
+            user_id: 사용자 ID
+            days: 조회 기간 (일)
+
+        Returns:
+            대시보드 데이터
+        """
+        query = """
+        MATCH (u:User {user_id: $user_id})-[:OWNS]->(proj:Project)
+        OPTIONAL MATCH (proj)-[:HAS_VIDEO]->(v:Video)-[:ACHIEVED]->(m:Metrics)
+        WHERE datetime() - m.measured_at <= duration({days: $days})
+
+        WITH u, proj, v, m
+        RETURN count(DISTINCT proj) as total_projects,
+               count(DISTINCT v) as total_videos,
+               sum(m.views) as total_views,
+               avg(m.engagement_rate) as avg_engagement,
+               avg(m.performance_score) as avg_performance_score,
+               max(m.performance_score) as best_performance_score,
+               collect(DISTINCT proj.platform) as platforms_used
+        """
+
+        result = self.query(query, {"user_id": user_id, "days": days})
+        return result[0] if result else {}
+
+    def get_top_performing_content(
+        self,
+        user_id: str,
+        limit: int = 10,
+        min_score: float = 70.0
+    ) -> List[Dict]:
+        """
+        사용자의 고성과 콘텐츠 조회 (Writer 에이전트용)
+
+        Args:
+            user_id: 사용자 ID
+            limit: 조회 개수
+            min_score: 최소 성과 점수
+
+        Returns:
+            고성과 콘텐츠 리스트
+        """
+        query = """
+        MATCH (u:User {user_id: $user_id})-[:OWNS]->(proj:Project)
+              -[:HAS_SCRIPT]->(s:Script)
+              -[:GENERATED_AUDIO]->()-[:USED_IN_VIDEO]->(v:Video)
+              -[:ACHIEVED]->(m:Metrics)
+        WHERE m.performance_score >= $min_score
+        RETURN s.script_id as script_id,
+               s.content as script_content,
+               proj.topic as topic,
+               proj.platform as platform,
+               m.performance_score as score,
+               m.engagement_rate as engagement,
+               m.views as views,
+               m.measured_at as measured_at
+        ORDER BY m.performance_score DESC
+        LIMIT $limit
+        """
+
+        return self.query(query, {
+            "user_id": user_id,
+            "limit": limit,
+            "min_score": min_score
+        })
+
+
+# 싱글톤 인스턴스
+_neo4j_client_instance = None
+
+
+def get_neo4j_client() -> Neo4jClient:
+    """Neo4j 클라이언트 싱글톤 인스턴스"""
+    global _neo4j_client_instance
+    if _neo4j_client_instance is None:
+        _neo4j_client_instance = Neo4jClient()
+    return _neo4j_client_instance
