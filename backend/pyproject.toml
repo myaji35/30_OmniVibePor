@@ -39,6 +39,7 @@ python-multipart = "^0.0.6"
 pdf2image = "^1.17.0"
 ffmpeg-python = "^0.2.0"
 pydub = "^0.25.1"
+websockets = "^12.0"
 
 # Wav2Lip 관련 의존성 (선택적)
 # Wav2Lip은 별도 설치 필요 (https://github.com/Rudrabha/Wav2Lip)

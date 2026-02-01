@@ -281,13 +281,13 @@ export default function AudioPage() {
 
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-400">시도 횟수:</span>
-                    <span className="font-semibold">{taskStatus.result.attempts}회</span>
+                    <span className="font-semibold">{taskStatus.result?.attempts || 0}회</span>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-400">최종 유사도:</span>
                     <span className="font-semibold text-green-400">
-                      {(taskStatus.result.final_similarity * 100).toFixed(2)}%
+                      {((taskStatus.result?.final_similarity || 0) * 100).toFixed(2)}%
                     </span>
                   </div>
 

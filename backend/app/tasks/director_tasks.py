@@ -15,6 +15,8 @@ from datetime import datetime
 from app.tasks.celery_app import celery_app
 from app.services.director_agent import get_video_director_agent
 from app.services.cost_tracker import get_cost_tracker
+from app.tasks.progress_tracker import ProgressTracker, BatchProgressTracker
+from app.utils.progress_mapper import ProgressMapper
 
 logger = logging.getLogger(__name__)
 
@@ -68,9 +70,44 @@ def generate_video_from_script_task(
         f"task_id: {self.request.id}"
     )
 
+    # 진행률 추적기 초기화
+    tracker = ProgressTracker(
+        task=self,
+        project_id=project_id,
+        task_name="video_generation"
+    )
+
     start_time = datetime.now()
 
     try:
+        # 1. 시작 (0%)
+        tracker.update(
+            ProgressMapper.get_director_progress("start"),
+            "processing",
+            "영상 생성 작업 시작"
+        )
+
+        # 2. 캐릭터 로드 (5%)
+        tracker.update(
+            ProgressMapper.get_director_progress("load_character"),
+            "processing",
+            "캐릭터 레퍼런스 로드 중..."
+        )
+
+        # 3. 스크립트 분석 (10%)
+        tracker.update(
+            ProgressMapper.get_director_progress("parse_script"),
+            "processing",
+            "스크립트 분석 중..."
+        )
+
+        # 4. 영상 생성 (10% → 60%)
+        tracker.update(
+            ProgressMapper.get_director_progress("generate_videos", 0.0),
+            "processing",
+            "영상 클립 생성 시작..."
+        )
+
         # Video Director Agent 실행
         director = get_video_director_agent()
         result = asyncio.run(
@@ -83,6 +120,34 @@ def generate_video_from_script_task(
                 age_range=age_range,
                 character_style=character_style
             )
+        )
+
+        # 5. 영상 생성 완료 (60%)
+        tracker.update(
+            ProgressMapper.get_director_progress("generate_videos", 1.0),
+            "processing",
+            "영상 클립 생성 완료"
+        )
+
+        # 6. 립싱크 적용 (75%)
+        tracker.update(
+            ProgressMapper.get_director_progress("lipsync"),
+            "processing",
+            "립싱크 적용 중..."
+        )
+
+        # 7. 자막 생성 (85%)
+        tracker.update(
+            ProgressMapper.get_director_progress("subtitles"),
+            "processing",
+            "자막 생성 중..."
+        )
+
+        # 8. 최종 렌더링 (95%)
+        tracker.update(
+            ProgressMapper.get_director_progress("render"),
+            "processing",
+            "최종 렌더링 중..."
         )
 
         # Celery 작업 정보 추가
@@ -101,16 +166,37 @@ def generate_video_from_script_task(
                 f"cost: ${result.get('total_cost_usd', 0):.2f}, "
                 f"execution time: {result['execution_time_seconds']:.1f}s"
             )
+
+            # 9. 완료 (100%)
+            tracker.complete({
+                "final_video_path": result.get("final_video_path"),
+                "total_duration": result.get("total_duration", 0),
+                "total_cost_usd": result.get("total_cost_usd", 0),
+                "execution_time_seconds": result["execution_time_seconds"]
+            })
         else:
             logger.error(
                 f"Video generation task failed - "
                 f"project: {project_id}, error: {result.get('error')}"
             )
 
+            # 에러 브로드캐스트
+            tracker.error(
+                result.get('error', 'Unknown error'),
+                {"project_id": project_id, "result": result}
+            )
+
         return result
 
     except Exception as e:
         logger.error(f"Video generation task failed: {e}")
+
+        # 에러 브로드캐스트
+        tracker.error(
+            str(e),
+            {"project_id": project_id, "traceback": str(e)}
+
+        )
 
         # 재시도 로직
         if self.request.retries < self.max_retries:
@@ -178,6 +264,14 @@ def batch_generate_videos_task(
         f"total: {len(video_requests)}, user: {user_id or 'anonymous'}"
     )
 
+    # 배치 진행률 추적기 초기화
+    batch_tracker = BatchProgressTracker(
+        task=self,
+        project_id=f"batch_{self.request.id}",
+        task_name="batch_video_generation",
+        total_items=len(video_requests)
+    )
+
     start_time = datetime.now()
 
     try:
@@ -189,6 +283,12 @@ def batch_generate_videos_task(
             logger.info(
                 f"Processing video {i+1}/{len(video_requests)}: "
                 f"project={request['project_id']}"
+            )
+
+            # 개별 아이템 시작 (0%)
+            batch_tracker.update_item(
+                i, 0.0, "processing",
+                f"영상 {i+1}/{len(video_requests)} 생성 시작"
             )
 
             try:
@@ -205,6 +305,12 @@ def batch_generate_videos_task(
                 )
                 results.append(result)
 
+                # 개별 아이템 완료 (100%)
+                batch_tracker.update_item(
+                    i, 1.0, "processing",
+                    f"영상 {i+1}/{len(video_requests)} 생성 완료"
+                )
+
             except Exception as e:
                 logger.error(f"Batch item {i+1} failed: {e}")
                 results.append({
@@ -212,6 +318,12 @@ def batch_generate_videos_task(
                     "error": str(e),
                     "project_id": request["project_id"]
                 })
+
+                # 개별 아이템 실패 처리 (진행률은 1.0으로 카운트)
+                batch_tracker.update_item(
+                    i, 1.0, "processing",
+                    f"영상 {i+1}/{len(video_requests)} 실패"
+                )
 
         # 통계 계산
         summary = {
@@ -230,6 +342,15 @@ def batch_generate_videos_task(
             f"time: {summary['execution_time_seconds']:.1f}s"
         )
 
+        # 배치 작업 완료 브로드캐스트
+        batch_tracker.complete({
+            "total": summary['total'],
+            "success": summary['success'],
+            "failed": summary['failed'],
+            "total_cost_usd": summary['total_cost_usd'],
+            "execution_time_seconds": summary['execution_time_seconds']
+        })
+
         return {
             "status": "completed",
             "results": results,
@@ -240,6 +361,13 @@ def batch_generate_videos_task(
 
     except Exception as e:
         logger.error(f"Batch video generation task failed: {e}")
+
+        # 배치 작업 에러 브로드캐스트
+        batch_tracker.error(
+            str(e),
+            {"user_id": user_id, "total_requests": len(video_requests)}
+        )
+
         return {
             "status": "error",
             "error": str(e),

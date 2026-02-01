@@ -15,6 +15,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useProduction } from '@/lib/contexts/ProductionContext';
+import { ProgressBar } from '@/components/ProgressBar';
 
 // Voice 옵션
 const VOICE_OPTIONS = [
@@ -30,11 +31,6 @@ export default function DirectorPanel() {
   const [selectedVoice, setSelectedVoice] = useState('aria');
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
   const [audioTaskId, setAudioTaskId] = useState<string | null>(null);
-  const [audioProgress, setAudioProgress] = useState<{
-    status: string;
-    attempt: number;
-    accuracy?: number;
-  } | null>(null);
 
   // 스크립트가 없으면 에러
   useEffect(() => {
@@ -81,8 +77,8 @@ export default function DirectorPanel() {
       const data = await response.json();
       setAudioTaskId(data.task_id);
 
-      // 2. 작업 상태 폴링 시작
-      pollAudioStatus(data.task_id);
+      // 2. WebSocket으로 실시간 진행 상황 추적 (ProgressBar에서 자동 처리)
+      // 폴링 제거: WebSocket이 자동으로 상태를 업데이트합니다
     } catch (err: any) {
       setError(err.message);
       setIsGeneratingAudio(false);
@@ -91,60 +87,32 @@ export default function DirectorPanel() {
     }
   };
 
-  // 작업 상태 폴링
-  const pollAudioStatus = async (taskId: string) => {
-    const pollInterval = setInterval(async () => {
-      try {
-        const response = await fetch(`http://localhost:8000/api/v1/audio/status/${taskId}`);
+  // WebSocket을 통한 오디오 생성 완료 처리
+  const handleAudioCompleted = (result: any) => {
+    console.log('[DirectorPanel] Audio generation completed:', result);
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch task status');
-        }
+    // Context에 오디오 저장
+    setAudio({
+      audio_id: result.audio_id,
+      file_path: result.file_path,
+      voice_id: selectedVoice,
+      duration: result.duration,
+      stt_accuracy: result.accuracy,
+      retry_count: result.attempt - 1,
+      created_at: new Date().toISOString(),
+    });
 
-        const data = await response.json();
+    setIsGeneratingAudio(false);
+    setLoading(false);
+    setProgress(60); // Audio 완료: 60%
+  };
 
-        // 상태 업데이트
-        setAudioProgress({
-          status: data.state,
-          attempt: data.result?.attempt || 0,
-          accuracy: data.result?.accuracy,
-        });
-
-        // 완료 처리
-        if (data.state === 'SUCCESS') {
-          clearInterval(pollInterval);
-
-          // Context에 오디오 저장
-          setAudio({
-            audio_id: data.result.audio_id,
-            file_path: data.result.file_path,
-            voice_id: selectedVoice,
-            duration: data.result.duration,
-            stt_accuracy: data.result.accuracy,
-            retry_count: data.result.attempt - 1,
-            created_at: new Date().toISOString(),
-          });
-
-          setIsGeneratingAudio(false);
-          setLoading(false);
-          setProgress(60); // Audio 완료: 60%
-        }
-
-        // 실패 처리
-        if (data.state === 'FAILURE') {
-          clearInterval(pollInterval);
-          setError(data.result?.error || 'Audio generation failed');
-          setIsGeneratingAudio(false);
-          setLoading(false);
-        }
-      } catch (err: any) {
-        console.error('Failed to poll task status:', err);
-        clearInterval(pollInterval);
-        setError('Failed to check audio generation status');
-        setIsGeneratingAudio(false);
-        setLoading(false);
-      }
-    }, 2000); // 2초마다 폴링
+  // WebSocket을 통한 오디오 생성 에러 처리
+  const handleAudioError = (error: string) => {
+    console.error('[DirectorPanel] Audio generation failed:', error);
+    setError(error || 'Audio generation failed');
+    setIsGeneratingAudio(false);
+    setLoading(false);
   };
 
   return (
@@ -222,25 +190,27 @@ export default function DirectorPanel() {
           </div>
         )}
 
-        {/* Audio Progress */}
-        {isGeneratingAudio && audioProgress && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-            <div className="flex items-start gap-4">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-600 mt-1" />
-              <div className="flex-1">
-                <h4 className="font-medium text-yellow-900 mb-2">오디오 생성 중...</h4>
-                <p className="text-sm text-yellow-800 mb-3">
-                  상태: {audioProgress.status} | 시도: {audioProgress.attempt}/5
-                  {audioProgress.accuracy && ` | 정확도: ${(audioProgress.accuracy * 100).toFixed(1)}%`}
-                </p>
-                <div className="w-full bg-yellow-200 rounded-full h-2">
-                  <div
-                    className="bg-yellow-600 h-2 rounded-full transition-all duration-500 animate-pulse"
-                    style={{ width: `${(audioProgress.attempt / 5) * 100}%` }}
-                  />
-                </div>
-              </div>
+        {/* Audio Progress - WebSocket 기반 실시간 진행률 */}
+        {isGeneratingAudio && audioTaskId && (
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
+            <div className="mb-4">
+              <h4 className="font-medium text-blue-900 mb-1 flex items-center gap-2">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600" />
+                Zero-Fault 오디오 생성 중...
+              </h4>
+              <p className="text-sm text-blue-700">
+                WebSocket을 통해 실시간으로 진행 상황을 추적합니다
+              </p>
             </div>
+
+            {/* ProgressBar 컴포넌트 */}
+            <ProgressBar
+              projectId={audioTaskId}
+              onCompleted={handleAudioCompleted}
+              onError={handleAudioError}
+              className="mt-4"
+              showConnectionStatus={true}
+            />
           </div>
         )}
 

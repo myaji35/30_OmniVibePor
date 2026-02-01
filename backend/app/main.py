@@ -93,13 +93,21 @@ app = FastAPI(
             "name": "Performance Tracking",
             "description": "📊 멀티 플랫폼 성과 분석 및 자가학습 시스템",
         },
+        {
+            "name": "WebSocket",
+            "description": "🔌 실시간 진행 상태 업데이트 (WebSocket)",
+        },
     ]
 )
 
-# CORS 설정
+# CORS 설정 (WebSocket 지원 포함)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 프로덕션에서는 특정 도메인만 허용
+    allow_origins=[
+        "*",  # 프로덕션에서는 특정 도메인만 허용
+        "http://localhost:3000",  # Next.js Frontend
+        "ws://localhost:3000",  # Next.js WebSocket
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

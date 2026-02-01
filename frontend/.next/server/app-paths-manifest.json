@@ -1,6 +1,17 @@
 {
-  "/page": "app/page.js",
+  "/_not-found": "app/_not-found.js",
+  "/api/audio-normalize/route": "app/api/audio-normalize/route.js",
   "/api/backend-status/route": "app/api/backend-status/route.js",
+  "/api/sheets-connect/route": "app/api/sheets-connect/route.js",
+  "/api/sheets-resources/route": "app/api/sheets-resources/route.js",
+  "/api/sheets-schedule/route": "app/api/sheets-schedule/route.js",
+  "/api/sheets-strategy/route": "app/api/sheets-strategy/route.js",
+  "/api/sheets-status/route": "app/api/sheets-status/route.js",
+  "/api/writer-generate/route": "app/api/writer-generate/route.js",
+  "/audio/page": "app/audio/page.js",
+  "/page": "app/page.js",
+  "/production/page": "app/production/page.js",
   "/sheets/page": "app/sheets/page.js",
-  "/audio/page": "app/audio/page.js"
+  "/test-websocket/page": "app/test-websocket/page.js",
+  "/writer/page": "app/writer/page.js"
 }

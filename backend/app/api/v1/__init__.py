@@ -14,6 +14,7 @@ from .lipsync import router as lipsync_router
 from .costs import router as costs_router
 from .video import router as video_router
 from .media import router as media_router
+from .websocket import router as websocket_router
 
 router = APIRouter()
 
@@ -31,3 +32,4 @@ router.include_router(lipsync_router, tags=["Lipsync"])
 router.include_router(costs_router, tags=["Cost Tracking"])
 router.include_router(video_router, prefix="/video", tags=["Video Rendering"])
 router.include_router(media_router, prefix="/media", tags=["Media Optimization"])
+router.include_router(websocket_router, prefix="/ws", tags=["WebSocket"])
