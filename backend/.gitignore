@@ -1,0 +1,71 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# 가상환경
+venv/
+ENV/
+env/
+.venv
+
+# Poetry
+poetry.lock
+
+# 환경 변수
+.env
+.env.local
+.env.*.local
+
+# 크레덴셜
+credentials/
+*.json
+
+# 출력 파일
+outputs/
+*.mp3
+*.mp4
+*.wav
+*.avi
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# 로그
+*.log
+logs/
+
+# 테스트
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# 데이터베이스
+*.db
+*.sqlite3

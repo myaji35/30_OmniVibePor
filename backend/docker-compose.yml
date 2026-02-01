@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  # FastAPI 백엔드
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app/app
+      - ./outputs:/app/outputs
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - neo4j
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Celery Worker (비디오 렌더링)
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./app:/app/app
+      - ./outputs:/app/outputs
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - neo4j
+    command: celery -A app.tasks.celery_app worker --loglevel=info --concurrency=4
+
+  # Celery Beat (스케줄링)
+  celery_beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./app:/app/app
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    command: celery -A app.tasks.celery_app beat --loglevel=info
+
+  # Flower (Celery 모니터링)
+  flower:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5555:5555"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - celery_worker
+    command: celery -A app.tasks.celery_app flower --port=5555
+
+  # Redis (작업 큐 + 캐시)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+
+  # Neo4j (GraphRAG 메모리)
+  neo4j:
+    image: neo4j:5.16
+    ports:
+      - "7474:7474"  # HTTP
+      - "7687:7687"  # Bolt
+    environment:
+      - NEO4J_AUTH=neo4j/omnivibe_password_2026
+      - NEO4J_PLUGINS=["apoc"]
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+
+volumes:
+  redis_data:
+  neo4j_data:
+  neo4j_logs:
