@@ -1,15 +1,15 @@
 """썸네일 학습 API 엔드포인트"""
+import logging
 from fastapi import APIRouter, HTTPException, BackgroundTasks
 from pydantic import BaseModel
 from typing import Optional, List
-import logfire
 
 from app.services.youtube_thumbnail_learner import YouTubeThumbnailLearner
 from app.core.config import get_settings
 
 router = APIRouter()
 settings = get_settings()
-logger = logfire.get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 # TODO: Pinecone 초기화 (별도 모듈로 분리 예정)
 # pinecone_index = ...

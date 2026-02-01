@@ -9,14 +9,15 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./app:/app/app
+      # Colima 볼륨 마운트 이슈로 주석 처리
+      # - ./app:/app/app
       - ./outputs:/app/outputs
     env_file:
       - .env
     depends_on:
       - redis
       - neo4j
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
 
   # Celery Worker (비디오 렌더링)
   celery_worker:

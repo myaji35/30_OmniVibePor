@@ -16,6 +16,7 @@ set_api_key(settings.ELEVENLABS_API_KEY)
 
 class TTSService:
     """
+import logging
     ElevenLabs Professional Voice Cloning TTS
 
     특징:
@@ -42,7 +43,7 @@ class TTSService:
     def __init__(self, output_dir: str = "./outputs/audio"):
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        self.logger = logfire.get_logger(__name__)
+        self.logger = logging.getLogger(__name__)
 
     @retry(
         stop=stop_after_attempt(3),

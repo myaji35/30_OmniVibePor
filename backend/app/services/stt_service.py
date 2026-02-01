@@ -13,6 +13,7 @@ settings = get_settings()
 
 class STTService:
     """
+import logging
     OpenAI Whisper v3 Speech-to-Text
 
     특징:
@@ -27,7 +28,7 @@ class STTService:
 
     def __init__(self):
         self.client = OpenAI(api_key=settings.OPENAI_API_KEY)
-        self.logger = logfire.get_logger(__name__)
+        self.logger = logging.getLogger(__name__)
 
     @retry(
         stop=stop_after_attempt(3),

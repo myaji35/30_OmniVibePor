@@ -10,6 +10,7 @@ from .stt_service import get_stt_service
 
 class AudioCorrectionLoop:
     """
+import logging
     Zero-Fault Audio 시스템
 
     워크플로우:
@@ -36,7 +37,7 @@ class AudioCorrectionLoop:
         self.stt = get_stt_service()
         self.accuracy_threshold = accuracy_threshold
         self.max_attempts = max_attempts
-        self.logger = logfire.get_logger(__name__)
+        self.logger = logging.getLogger(__name__)
 
     def calculate_similarity(self, original: str, transcribed: str) -> float:
         """

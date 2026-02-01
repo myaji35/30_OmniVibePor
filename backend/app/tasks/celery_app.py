@@ -1,7 +1,7 @@
 """Celery 애플리케이션 설정"""
+import logging
 from celery import Celery
 from celery.signals import task_prerun, task_postrun, task_failure
-import logfire
 
 from app.core.config import get_settings
 
@@ -31,7 +31,7 @@ celery_app.conf.update(
 # Task 자동 발견
 celery_app.autodiscover_tasks(['app.tasks'])
 
-logger = logfire.get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 # ==================== Celery 시그널 ====================

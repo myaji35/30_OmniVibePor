@@ -1,13 +1,13 @@
 """Celery 오디오 작업 (Zero-Fault Audio Loop)"""
+import logging
 from typing import Optional, Dict
 import asyncio
-import logfire
 
 from app.tasks.celery_app import celery_app
 from app.services.audio_correction_loop import get_audio_correction_loop
 
 
-logger = logfire.get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 @celery_app.task(

@@ -1,12 +1,12 @@
 """컨텐츠 성과 추적 및 자가학습 API"""
+import logging
 from fastapi import APIRouter, HTTPException, BackgroundTasks
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import Optional
-import logfire
 
 router = APIRouter()
-logger = logfire.get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class TrackPerformanceRequest(BaseModel):

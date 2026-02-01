@@ -1,5 +1,6 @@
 """유튜브 썸네일 + 카피 AI 학습 모듈 (영상 성과 기반)"""
 import asyncio
+import logging
 from typing import List, Dict, Optional
 import requests
 from io import BytesIO
@@ -23,7 +24,7 @@ class YouTubeThumbnailLearner:
         self.youtube = build('youtube', 'v3', developerKey=settings.YOUTUBE_API_KEY)
         self.pinecone = pinecone_index
         self.openai = OpenAI(api_key=settings.OPENAI_API_KEY)
-        self.logger = logfire.get_logger(__name__)
+        self.logger = logging.getLogger(__name__)
 
         # CLIP 모델 (이미지-텍스트 임베딩)
         self.clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")

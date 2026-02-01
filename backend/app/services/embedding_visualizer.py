@@ -8,6 +8,7 @@ import logfire
 
 class EmbeddingVisualizer:
     """
+import logging
     Pinecone 임베딩을 TensorFlow Embedding Projector로 시각화
 
     사용 목적:
@@ -20,7 +21,7 @@ class EmbeddingVisualizer:
     def __init__(self, output_dir: str = "./embeddings_viz"):
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(exist_ok=True)
-        self.logger = logfire.get_logger(__name__)
+        self.logger = logging.getLogger(__name__)
 
     def export_for_projector(
         self,

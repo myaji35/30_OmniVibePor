@@ -13,6 +13,7 @@ settings = get_settings()
 
 class ContentPerformanceTracker:
     """
+import logging
     YouTube, Facebook, Instagram 등 멀티 플랫폼의
     자신이 게시한 컨텐츠 성과를 추적하고 학습하는 시스템
     """
@@ -21,7 +22,7 @@ class ContentPerformanceTracker:
         self.neo4j = neo4j_client
         self.pinecone = pinecone_index
         self.thumbnail_learner = thumbnail_learner
-        self.logger = logfire.get_logger(__name__)
+        self.logger = logging.getLogger(__name__)
 
         # YouTube Data API
         self.youtube = build('youtube', 'v3', developerKey=settings.YOUTUBE_API_KEY)

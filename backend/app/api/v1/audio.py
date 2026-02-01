@@ -1,14 +1,14 @@
 """Zero-Fault Audio API 엔드포인트"""
+import logging
 from fastapi import APIRouter, HTTPException, BackgroundTasks
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 from typing import Optional
-import logfire
 
 from app.tasks.audio_tasks import generate_verified_audio_task, batch_generate_verified_audio_task
 
 router = APIRouter()
-logger = logfire.get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class AudioGenerateRequest(BaseModel):
