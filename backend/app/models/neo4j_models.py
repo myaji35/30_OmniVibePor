@@ -449,6 +449,89 @@ class BGMInfoResponse(BaseModel):
     updated_at: datetime
 
 
+# ==================== PDF Processor Models ====================
+
+class SlideDataModel(BaseModel):
+    """슬라이드 데이터 모델"""
+    slide_id: str = Field(default_factory=lambda: f"slide_{uuid.uuid4().hex[:12]}")
+    slide_number: int = Field(..., ge=1, description="슬라이드 번호 (1부터 시작)")
+    image_path: str = Field(..., description="변환된 이미지 파일 경로")
+    extracted_text: str = Field(default="", description="OCR로 추출된 텍스트")
+    confidence: float = Field(default=0.0, ge=0.0, le=100.0, description="OCR 신뢰도 (0-100)")
+    word_count: int = Field(default=0, ge=0, description="추출된 텍스트의 단어 수")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+    class Config:
+        json_encoders = {
+            datetime: lambda v: v.isoformat()
+        }
+
+
+class PresentationModel(BaseModel):
+    """프레젠테이션 모델"""
+    presentation_id: str = Field(default_factory=lambda: f"pres_{uuid.uuid4().hex[:12]}")
+    pdf_filename: str = Field(..., description="원본 PDF 파일명")
+    total_slides: int = Field(..., ge=1, description="총 슬라이드 수")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+    class Config:
+        json_encoders = {
+            datetime: lambda v: v.isoformat()
+        }
+
+
+class PresentationUploadResponse(BaseModel):
+    """프레젠테이션 업로드 응답"""
+    presentation_id: str
+    project_id: str
+    pdf_filename: str
+    total_slides: int
+    slides: List[Dict[str, Any]]
+    created_at: datetime
+
+    class Config:
+        json_encoders = {
+            datetime: lambda v: v.isoformat()
+        }
+
+
+class SlideTimingModel(BaseModel):
+    """슬라이드 타이밍 모델"""
+    slide_number: int = Field(..., ge=1, description="슬라이드 번호 (1부터 시작)")
+    start_time: float = Field(..., ge=0.0, description="시작 시간 (초)")
+    end_time: float = Field(..., ge=0.0, description="종료 시간 (초)")
+    duration: float = Field(..., ge=0.0, description="지속 시간 (초)")
+    confidence: float = Field(default=1.0, ge=0.0, le=1.0, description="매칭 신뢰도 (0.0-1.0)")
+    matched_text: Optional[str] = Field(default=None, description="매칭된 Whisper 텍스트")
+
+    class Config:
+        json_encoders = {
+            datetime: lambda v: v.isoformat()
+        }
+
+
+class SlideScriptModel(BaseModel):
+    """슬라이드 스크립트 모델 (입력용)"""
+    slide_number: int = Field(..., ge=1, description="슬라이드 번호")
+    script: str = Field(..., min_length=1, description="슬라이드 나레이션 스크립트")
+
+
+class WhisperSegmentModel(BaseModel):
+    """Whisper 세그먼트 모델"""
+    id: int = Field(..., description="세그먼트 ID")
+    start: float = Field(..., description="시작 시간 (초)")
+    end: float = Field(..., description="종료 시간 (초)")
+    text: str = Field(..., description="전사된 텍스트")
+
+
+class WhisperResultModel(BaseModel):
+    """Whisper 전체 결과 모델"""
+    text: str = Field(..., description="전체 전사 텍스트")
+    language: str = Field(default="ko", description="언어 코드")
+    duration: float = Field(..., description="오디오 총 길이 (초)")
+    segments: List[WhisperSegmentModel] = Field(default_factory=list, description="세그먼트 목록")
+
+
 # ==================== Custom Preset Models ====================
 
 class VideoSettingsModel(BaseModel):

@@ -127,6 +127,15 @@ class Neo4jClient:
                     "CREATE CONSTRAINT platform_preset_app_id_unique IF NOT EXISTS FOR (ppa:PlatformPresetApplication) REQUIRE ppa.application_id IS UNIQUE",
                     "CREATE INDEX platform_preset_app_applied IF NOT EXISTS FOR (ppa:PlatformPresetApplication) ON (ppa.applied_at)",
                     "CREATE INDEX platform_preset_app_platform IF NOT EXISTS FOR (ppa:PlatformPresetApplication) ON (ppa.platform)",
+
+                    # Presentation (프레젠테이션)
+                    "CREATE CONSTRAINT presentation_id_unique IF NOT EXISTS FOR (pres:Presentation) REQUIRE pres.presentation_id IS UNIQUE",
+                    "CREATE INDEX presentation_created IF NOT EXISTS FOR (pres:Presentation) ON (pres.created_at)",
+
+                    # Slide (슬라이드)
+                    "CREATE CONSTRAINT slide_id_unique IF NOT EXISTS FOR (s:Slide) REQUIRE s.slide_id IS UNIQUE",
+                    "CREATE INDEX slide_number IF NOT EXISTS FOR (s:Slide) ON (s.slide_number)",
+                    "CREATE INDEX slide_confidence IF NOT EXISTS FOR (s:Slide) ON (s.confidence)",
                 ]
 
                 for query in schema_queries:

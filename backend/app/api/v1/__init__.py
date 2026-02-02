@@ -18,6 +18,7 @@ from .websocket import router as websocket_router
 from .editor import router as editor_router
 from .bgm import router as bgm_router
 from .presets import router as presets_router
+from .presentation import router as presentation_router
 
 router = APIRouter()
 
@@ -39,3 +40,4 @@ router.include_router(editor_router, tags=["Video Editor"])
 router.include_router(bgm_router, tags=["BGM Editor"])
 router.include_router(presets_router, tags=["Custom Presets"])
 router.include_router(websocket_router, prefix="/ws", tags=["WebSocket"])
+router.include_router(presentation_router, prefix="/presentations", tags=["Presentations"])
