@@ -94,6 +94,10 @@ app = FastAPI(
             "description": "📊 멀티 플랫폼 성과 분석 및 자가학습 시스템",
         },
         {
+            "name": "Video Editor",
+            "description": "🎬 비디오 메타데이터 조회 및 편집 (FFmpeg 기반)",
+        },
+        {
             "name": "WebSocket",
             "description": "🔌 실시간 진행 상태 업데이트 (WebSocket)",
         },

@@ -111,6 +111,22 @@ class Neo4jClient:
 
                     # Content (레거시)
                     "CREATE INDEX content_id IF NOT EXISTS FOR (c:Content) ON (c.content_id)",
+
+                    # Section (콘티 섹션)
+                    "CREATE CONSTRAINT section_id_unique IF NOT EXISTS FOR (s:Section) REQUIRE s.section_id IS UNIQUE",
+                    "CREATE INDEX section_order IF NOT EXISTS FOR (s:Section) ON (s.order)",
+                    "CREATE INDEX section_type IF NOT EXISTS FOR (s:Section) ON (s.type)",
+
+                    # CustomPreset (커스텀 프리셋)
+                    "CREATE CONSTRAINT preset_id_unique IF NOT EXISTS FOR (cp:CustomPreset) REQUIRE cp.preset_id IS UNIQUE",
+                    "CREATE INDEX preset_created IF NOT EXISTS FOR (cp:CustomPreset) ON (cp.created_at)",
+                    "CREATE INDEX preset_favorite IF NOT EXISTS FOR (cp:CustomPreset) ON (cp.is_favorite)",
+                    "CREATE INDEX preset_usage IF NOT EXISTS FOR (cp:CustomPreset) ON (cp.usage_count)",
+
+                    # PlatformPresetApplication (플랫폼 프리셋 적용 기록)
+                    "CREATE CONSTRAINT platform_preset_app_id_unique IF NOT EXISTS FOR (ppa:PlatformPresetApplication) REQUIRE ppa.application_id IS UNIQUE",
+                    "CREATE INDEX platform_preset_app_applied IF NOT EXISTS FOR (ppa:PlatformPresetApplication) ON (ppa.applied_at)",
+                    "CREATE INDEX platform_preset_app_platform IF NOT EXISTS FOR (ppa:PlatformPresetApplication) ON (ppa.platform)",
                 ]
 
                 for query in schema_queries:

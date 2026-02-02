@@ -17,9 +17,12 @@ from app.models.neo4j_models import (
     Platform,
     Neo4jCRUDManager,
     ScriptModel,
-    AudioModel
+    AudioModel,
+    ProjectSectionsResponse,
+    SectionType
 )
 from app.services.neo4j_client import get_neo4j_client
+from app.services.section_service import get_section_service
 from app.tasks.audio_tasks import generate_verified_audio_task
 
 router = APIRouter()
@@ -628,6 +631,186 @@ async def get_script_audio(project_id: str, script_id: str):
     except HTTPException:
         raise
     except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Internal server error: {str(e)}"
+        )
+
+
+# ==================== Phase 2.x: 콘티 섹션 API ====================
+
+@router.get("/projects/{project_id}/sections", response_model=ProjectSectionsResponse)
+async def get_project_sections(project_id: str):
+    """
+    **프로젝트 콘티 섹션 정보 조회**
+
+    프로젝트의 콘티 섹션(훅/본문/CTA) 정보를 조회합니다.
+
+    **섹션 타입**:
+    - **hook**: 시청자 주목을 끄는 훅 (첫 3-5초)
+    - **body**: 핵심 내용 전달
+    - **cta**: 행동 유도 (구독, 좋아요 등)
+
+    **응답 정보**:
+    - 섹션별 스크립트
+    - 시간 정보 (시작/종료/길이)
+    - 미디어 파일 경로 (비디오 클립, 오디오 세그먼트)
+    - 썸네일 URL
+    - 메타데이터 (단어 수, 예상/실제 길이)
+
+    - **project_id**: 프로젝트 ID
+
+    **반환값**: 프로젝트 섹션 정보
+    """
+    try:
+        # 1. 프로젝트 존재 확인
+        crud = get_crud_manager()
+        project = crud.get_project(project_id)
+        if not project:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Project not found: {project_id}"
+            )
+
+        # 2. 섹션 서비스로 섹션 정보 조회
+        neo4j_client = get_neo4j_client()
+        section_service = get_section_service(neo4j_client)
+
+        try:
+            sections_response = section_service.get_project_sections(project_id)
+            return sections_response
+
+        except ValueError as e:
+            # 프로젝트는 존재하지만 섹션이 없는 경우
+            logger.warning(f"No sections found for project {project_id}: {e}")
+            return ProjectSectionsResponse(
+                project_id=project_id,
+                sections=[],
+                total_duration=0.0
+            )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to get project sections: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Internal server error: {str(e)}"
+        )
+
+
+class SectionCreateRequest(BaseModel):
+    """섹션 생성 요청"""
+    type: SectionType = Field(..., description="섹션 타입 (hook, body, cta)")
+    order: int = Field(..., ge=0, description="섹션 순서 (0부터 시작)")
+    script: str = Field(..., min_length=1, description="스크립트 내용")
+    start_time: float = Field(0.0, ge=0.0, description="시작 시간 (초)")
+    end_time: float = Field(0.0, ge=0.0, description="종료 시간 (초)")
+    word_count: int = Field(0, ge=0, description="단어 수")
+    estimated_duration: float = Field(0.0, ge=0.0, description="예상 시간 (초)")
+
+
+@router.post("/projects/{project_id}/sections", status_code=201)
+async def create_project_section(project_id: str, request: SectionCreateRequest):
+    """
+    **프로젝트 콘티 섹션 생성**
+
+    프로젝트에 새로운 콘티 섹션을 추가합니다.
+
+    - **project_id**: 프로젝트 ID
+    - **type**: 섹션 타입 (hook, body, cta)
+    - **order**: 섹션 순서
+    - **script**: 스크립트 내용
+    - **start_time**: 시작 시간 (초)
+    - **end_time**: 종료 시간 (초)
+    - **word_count**: 단어 수
+    - **estimated_duration**: 예상 시간 (초)
+
+    **반환값**: 생성된 섹션 정보
+    """
+    try:
+        # 1. 프로젝트 존재 확인
+        crud = get_crud_manager()
+        project = crud.get_project(project_id)
+        if not project:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Project not found: {project_id}"
+            )
+
+        # 2. 섹션 생성
+        neo4j_client = get_neo4j_client()
+        section_service = get_section_service(neo4j_client)
+
+        result = section_service.create_section(
+            project_id=project_id,
+            section_type=request.type,
+            order=request.order,
+            script=request.script,
+            start_time=request.start_time,
+            end_time=request.end_time,
+            word_count=request.word_count,
+            estimated_duration=request.estimated_duration
+        )
+
+        return result
+
+    except HTTPException:
+        raise
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"Failed to create section: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Internal server error: {str(e)}"
+        )
+
+
+class SectionMediaUpdateRequest(BaseModel):
+    """섹션 미디어 업데이트 요청"""
+    video_clip_path: Optional[str] = Field(None, description="비디오 클립 경로")
+    audio_segment_path: Optional[str] = Field(None, description="오디오 세그먼트 경로")
+    thumbnail_url: Optional[str] = Field(None, description="썸네일 URL")
+
+
+@router.patch("/sections/{section_id}/media", status_code=200)
+async def update_section_media(section_id: str, request: SectionMediaUpdateRequest):
+    """
+    **섹션 미디어 정보 업데이트**
+
+    섹션의 비디오 클립, 오디오 세그먼트, 썸네일 정보를 업데이트합니다.
+
+    - **section_id**: 섹션 ID
+    - **video_clip_path**: 비디오 클립 파일 경로 (선택)
+    - **audio_segment_path**: 오디오 세그먼트 파일 경로 (선택)
+    - **thumbnail_url**: 썸네일 URL (선택)
+
+    **반환값**: 업데이트 성공 여부
+    """
+    try:
+        neo4j_client = get_neo4j_client()
+        section_service = get_section_service(neo4j_client)
+
+        success = section_service.update_section_media(
+            section_id=section_id,
+            video_clip_path=request.video_clip_path,
+            audio_segment_path=request.audio_segment_path,
+            thumbnail_url=request.thumbnail_url
+        )
+
+        if not success:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Section not found: {section_id}"
+            )
+
+        return {"status": "success", "message": "Section media updated"}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to update section media: {e}")
         raise HTTPException(
             status_code=500,
             detail=f"Internal server error: {str(e)}"

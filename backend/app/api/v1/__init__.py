@@ -15,6 +15,9 @@ from .costs import router as costs_router
 from .video import router as video_router
 from .media import router as media_router
 from .websocket import router as websocket_router
+from .editor import router as editor_router
+from .bgm import router as bgm_router
+from .presets import router as presets_router
 
 router = APIRouter()
 
@@ -32,4 +35,7 @@ router.include_router(lipsync_router, tags=["Lipsync"])
 router.include_router(costs_router, tags=["Cost Tracking"])
 router.include_router(video_router, prefix="/video", tags=["Video Rendering"])
 router.include_router(media_router, prefix="/media", tags=["Media Optimization"])
+router.include_router(editor_router, tags=["Video Editor"])
+router.include_router(bgm_router, tags=["BGM Editor"])
+router.include_router(presets_router, tags=["Custom Presets"])
 router.include_router(websocket_router, prefix="/ws", tags=["WebSocket"])

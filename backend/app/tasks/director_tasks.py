@@ -594,3 +594,218 @@ def get_project_cost_report_task(
             "error": str(e),
             "project_id": project_id
         }
+
+
+@celery_app.task(
+    bind=True,
+    name="generate_alternative_clip",
+    max_retries=3,
+    default_retry_delay=60
+)
+def generate_alternative_clip_task(
+    self,
+    section_id: str,
+    clip_id: str,
+    prompt: str,
+    variation_type: str,
+    duration: int = 5,
+    user_id: Optional[str] = None,
+    project_id: Optional[str] = None
+) -> Dict:
+    """
+    대체 클립 생성 Celery 작업 (비동기)
+
+    Args:
+        section_id: 섹션 ID
+        clip_id: 클립 ID
+        prompt: 영상 생성 프롬프트
+        variation_type: 변형 타입 (camera_angle, lighting, color_tone)
+        duration: 영상 길이 (초)
+        user_id: 사용자 ID
+        project_id: 프로젝트 ID
+
+    Returns:
+        {
+            "status": "success" | "error",
+            "clip_id": str,
+            "video_path": str,
+            "thumbnail_url": str,
+            "veo_job_id": str
+        }
+    """
+    logger.info(
+        f"Starting alternative clip generation - "
+        f"section: {section_id}, "
+        f"clip: {clip_id}, "
+        f"variation: {variation_type}"
+    )
+
+    try:
+        from app.services.veo_service import get_veo_service
+        from app.services.cloudinary_service import get_cloudinary_service
+        from app.models.neo4j_models import Neo4jCRUDManager
+        from app.services.neo4j_client import get_neo4j_client
+        import asyncio
+
+        veo_service = get_veo_service()
+        cloudinary_service = get_cloudinary_service()
+        neo4j_client = get_neo4j_client()
+        crud = Neo4jCRUDManager(neo4j_client)
+
+        # 1. Veo API로 영상 생성 시작
+        logger.info(f"Calling Veo API with prompt: {prompt[:100]}...")
+        
+        async def generate_video():
+            return await veo_service.generate_video(
+                prompt=prompt,
+                duration=duration,
+                style="commercial",
+                aspect_ratio="16:9"
+            )
+        
+        veo_result = asyncio.run(generate_video())
+        
+        veo_job_id = veo_result.get("job_id")
+        
+        if not veo_job_id:
+            raise Exception("Veo API did not return job_id")
+        
+        logger.info(f"Veo job started: {veo_job_id}")
+
+        # 2. 상태 체크 및 다운로드 대기 (폴링)
+        max_wait_time = 300  # 5분
+        check_interval = 10  # 10초마다 체크
+        elapsed_time = 0
+        
+        video_url = None
+        
+        async def check_status():
+            return await veo_service.check_status(veo_job_id)
+        
+        while elapsed_time < max_wait_time:
+            import time
+            time.sleep(check_interval)
+            elapsed_time += check_interval
+            
+            status_result = asyncio.run(check_status())
+            status = status_result.get("status")
+            
+            logger.info(
+                f"Veo job status: {status} "
+                f"(progress: {status_result.get('progress', 0)}%)"
+            )
+            
+            if status == "completed":
+                video_url = status_result.get("video_url")
+                logger.info(f"Video generation completed: {video_url}")
+                break
+            elif status == "failed":
+                error_msg = status_result.get("error", "Unknown error")
+                raise Exception(f"Veo job failed: {error_msg}")
+        
+        if not video_url:
+            raise Exception(f"Video generation timeout after {max_wait_time}s")
+
+        # 3. 영상 다운로드
+        from pathlib import Path
+        output_dir = Path("./outputs/alternative_clips")
+        output_dir.mkdir(parents=True, exist_ok=True)
+        
+        video_filename = f"{clip_id}.mp4"
+        
+        async def download_video():
+            return await veo_service.download_video(video_url, video_filename)
+        
+        video_path = asyncio.run(download_video())
+        
+        logger.info(f"Video downloaded: {video_path}")
+
+        # 4. Cloudinary 업로드
+        async def upload_video():
+            return await cloudinary_service.upload_video(
+                video_path=str(video_path),
+                folder="alternative_clips",
+                user_id=user_id,
+                project_id=project_id
+            )
+        
+        cloudinary_result = asyncio.run(upload_video())
+        
+        cloudinary_public_id = cloudinary_result.get("public_id")
+        cloudinary_url = cloudinary_result.get("secure_url")
+        
+        logger.info(f"Video uploaded to Cloudinary: {cloudinary_public_id}")
+
+        # 5. 썸네일 생성
+        async def generate_thumbnail():
+            return await cloudinary_service.generate_thumbnail(
+                video_public_id=cloudinary_public_id,
+                time_offset=1.0,
+                width=1280,
+                height=720,
+                user_id=user_id,
+                project_id=project_id
+            )
+        
+        thumbnail_url = asyncio.run(generate_thumbnail())
+        
+        logger.info(f"Thumbnail generated: {thumbnail_url}")
+
+        # 6. Neo4j 상태 업데이트
+        crud.update_alternative_clip_status(
+            clip_id=clip_id,
+            status="completed",
+            video_path=cloudinary_url,
+            thumbnail_url=thumbnail_url
+        )
+        
+        logger.info(
+            f"Alternative clip generation completed - "
+            f"clip: {clip_id}, "
+            f"video: {cloudinary_url}"
+        )
+
+        return {
+            "status": "success",
+            "clip_id": clip_id,
+            "video_path": cloudinary_url,
+            "thumbnail_url": thumbnail_url,
+            "veo_job_id": veo_job_id,
+            "cloudinary_public_id": cloudinary_public_id,
+            "section_id": section_id,
+            "variation_type": variation_type
+        }
+
+    except Exception as e:
+        logger.error(f"Alternative clip generation failed: {e}", exc_info=True)
+
+        # 재시도 로직
+        if self.request.retries < self.max_retries:
+            logger.info(
+                f"Retrying alternative clip generation... "
+                f"(attempt {self.request.retries + 1}/{self.max_retries})"
+            )
+            raise self.retry(exc=e)
+
+        # Neo4j 상태를 failed로 업데이트
+        try:
+            from app.models.neo4j_models import Neo4jCRUDManager
+            from app.services.neo4j_client import get_neo4j_client
+            
+            neo4j_client = get_neo4j_client()
+            crud = Neo4jCRUDManager(neo4j_client)
+            crud.update_alternative_clip_status(
+                clip_id=clip_id,
+                status="failed"
+            )
+        except Exception as update_error:
+            logger.error(f"Failed to update clip status: {update_error}")
+
+        # 최종 실패
+        return {
+            "status": "error",
+            "error": str(e),
+            "clip_id": clip_id,
+            "section_id": section_id,
+            "task_id": self.request.id
+        }
