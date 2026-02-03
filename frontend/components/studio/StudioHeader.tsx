@@ -43,9 +43,9 @@ export default function StudioHeader({
 
                 <nav className="flex items-center bg-black/40 backdrop-blur-3xl rounded-[1.5rem] p-1.5 border border-white/5 shadow-2xl">
                     {[
-                        { id: "preview", label: "PREVIEW", icon: Play },
-                        { id: "script", label: "SCRIPTING", icon: Type },
-                        { id: "storyboard", label: "STORYBOARD", icon: Layout },
+                        { id: "preview", label: "미리보기", icon: Play },
+                        { id: "script", label: "스크립트", icon: Type },
+                        { id: "storyboard", label: "스토리보드", icon: Layout },
                     ].map((tab) => (
                         <button
                             key={tab.id}
@@ -72,7 +72,7 @@ export default function StudioHeader({
                     className="group relative flex items-center gap-3 px-6 py-3.5 bg-white/[0.02] hover:bg-brand-secondary-500/10 border border-white/5 hover:border-brand-secondary-500/30 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500"
                 >
                     <BarChart3 className="w-4 h-4 text-brand-secondary-400 group-hover:rotate-12 transition-transform" />
-                    <span className="text-gray-400 group-hover:text-brand-secondary-300">A/B Intelligence</span>
+                    <span className="text-gray-400 group-hover:text-brand-secondary-300">A/B 인텔리전스</span>
                     <div className="absolute -top-1 -right-1 flex h-3 w-3">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-secondary-400 opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-3 w-3 bg-brand-secondary-500"></span>
@@ -85,7 +85,7 @@ export default function StudioHeader({
                     <div className="absolute inset-0 bg-brand-primary-600 transition-transform duration-700 translate-y-[100%] group-hover:translate-y-0" />
                     <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.4)_0%,transparent_70%)]" />
                     <Share2 className="w-4.5 h-4.5 relative z-10 text-brand-primary-400 group-hover:text-white transition-colors duration-500" />
-                    <span className="relative z-10 text-white leading-none">Export</span>
+                    <span className="relative z-10 text-white leading-none">내보내기</span>
                 </button>
             </div>
         </header>

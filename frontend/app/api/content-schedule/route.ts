@@ -42,8 +42,19 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
     const campaignId = searchParams.get('campaign_id')
+    const contentId = searchParams.get('content_id')
 
     let contents;
+
+    if (contentId) {
+      // 특정 콘텐츠 ID가 지정된 경우
+      const allContents = await getAllContentSchedules()
+      const found = allContents.find(c => c.id.toString() === contentId)
+      return NextResponse.json({
+        success: true,
+        content: found || null
+      })
+    }
 
     if (campaignId) {
       contents = await getContentSchedulesByCampaign(parseInt(campaignId))

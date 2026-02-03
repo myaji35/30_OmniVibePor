@@ -121,22 +121,27 @@ export default function StudioPage() {
 
   const loadContentAndStartWorkflow = async (id: number) => {
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/content-schedule/${id}`);
+      // 로컬 프록시 API 사용으로 안정성 확보
+      const res = await fetch(`/api/content-schedule?content_id=${id}`);
       if (!res.ok) return;
 
-      const item = await res.json();
+      const data = await res.json();
+      if (!data.success || !data.content) {
+        console.warn("⚠️ 딥링크 대상 콘텐츠를 찾을 수 없습니다.");
+        return;
+      }
+
+      const item = data.content;
 
       // UI 설정
       setShowSheetsModal(false);
       setWorkflowStep("script_generating");
 
-      // 워크플로우 실행
-      // NOTE: 여기서는 기존 로직을 재사용하기 위해 item 객체를 구성합니다.
-      // 실제로는 API 응답 구조에 맞게 매핑해야 합니다.
+      // 워크플로우 실행을 위한 데이터 매핑
       const mappedItem = {
         id: item.id,
-        "캠페인명": "Default Campaign", // API에서 가져오거나 기본값
-        "소제목": item.title,
+        "캠페인명": item.campaign_name || "기본 캠페인",
+        "소제목": item.subtitle || item.title || "제목 없음",
         "주제": item.topic || "",
         "플랫폼": item.platform || "YouTube",
         "발행일": item.publish_date

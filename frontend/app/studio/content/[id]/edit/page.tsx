@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import { Video, FileText, ArrowLeft, Upload, Clock, Check } from "lucide-react";
+import { Video, FileText, ArrowLeft, Upload, Clock, Check, Sparkles, Layout, MonitorPlay, AlertCircle } from "lucide-react";
 
 interface Content {
   id: number;
@@ -27,29 +27,33 @@ export default function ContentEditPage() {
   }, [contentId]);
 
   const loadContent = async () => {
-    if (!contentId) {
-      console.log("Waiting for contentId...");
-      return;
-    }
+    if (!contentId) return;
 
     try {
-      console.log(`Fetching content contentId=${contentId}`);
-      const res = await fetch(`http://127.0.0.1:8000/api/v1/content-schedule/${contentId}`);
+      // 127.0.0.1 대신 localhost 사용 시도 및 타임아웃 추가
+      const fetchPromise = fetch(`/api/content-schedule?content_id=${contentId}`);
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000));
+
+      const res = await Promise.race([fetchPromise, timeoutPromise]) as Response;
 
       if (res.ok) {
         const data = await res.json();
-        console.log("Content fetched:", data);
-
+        // 백엔드 API 구조에 따라 유연하게 매핑
         if (data.success && data.content) {
           setContent({
             ...data.content,
-            title: data.content.subtitle || data.content.topic || "제목 없음"
+            title: data.content.subtitle || data.content.topic || data.content.title || "제목 없음"
           });
-        } else {
-          console.error("Content data is missing or success is false:", data);
+        } else if (data.success && data.contents && Array.isArray(data.contents)) {
+          // 배열로 올 경우 해당 ID 찾기
+          const found = data.contents.find((c: any) => c.id.toString() === contentId);
+          if (found) {
+            setContent({
+              ...found,
+              title: found.subtitle || found.topic || found.title || "제목 없음"
+            });
+          }
         }
-      } else {
-        console.error("Fetch failed:", res.status, res.statusText);
       }
     } catch (error) {
       console.error("❌ 콘텐츠 로드 실패:", error);
@@ -59,12 +63,10 @@ export default function ContentEditPage() {
   };
 
   const handleVideoGeneration = () => {
-    // Studio 페이지로 이동 (영상 생성 모드)
     router.push(`/studio?contentId=${contentId}&mode=video&duration=${videoDuration}`);
   };
 
   const handlePresentationMode = () => {
-    // PDF 업로드 트리거
     fileInputRef.current?.click();
   };
 
@@ -80,7 +82,7 @@ export default function ContentEditPage() {
     setIsUploading(true);
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("project_id", "1"); // TODO: 실제 프로젝트 ID 사용
+    formData.append("project_id", "1");
     formData.append("dpi", "200");
     formData.append("lang", "kor+eng");
 
@@ -90,14 +92,8 @@ export default function ContentEditPage() {
         body: formData,
       });
 
-      if (!res.ok) {
-        throw new Error("Upload failed");
-      }
-
+      if (!res.ok) throw new Error("Upload failed");
       const data = await res.json();
-      console.log("PDF Upload success:", data);
-
-      // Presentation 페이지로 이동
       router.push(`/presentation/${data.presentation_id}`);
     } catch (error) {
       console.error("PDF upload error:", error);
@@ -109,222 +105,254 @@ export default function ContentEditPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="text-gray-400">로딩 중...</div>
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-6">
+          <div className="w-16 h-16 border-4 border-brand-primary-500/20 border-t-brand-primary-500 rounded-full animate-spin shadow-[0_0_20px_rgba(168,85,247,0.3)]"></div>
+          <span className="text-[10px] font-black text-white/30 tracking-[0.4em] uppercase">Initialising AI Core</span>
+        </div>
       </div>
     );
   }
 
   if (!content) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="text-red-400">콘텐츠를 찾을 수 없습니다.</div>
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center p-10">
+        <div className="max-w-md w-full glass-panel rounded-[3rem] p-12 text-center border-red-500/20">
+          <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-8">
+            <AlertCircle className="w-10 h-10 text-red-500" />
+          </div>
+          <h2 className="text-2xl font-black font-outfit text-white uppercase italic mb-4">데이터 로드 실패</h2>
+          <p className="text-gray-500 text-sm leading-relaxed mb-10">
+            콘텐츠(ID: {contentId}) 정보를 불러올 수 없습니다. <br />
+            네트워크 연결이나 데이터를 다시 확인해 주세요.
+          </p>
+          <button
+            onClick={() => router.push('/studio')}
+            className="w-full py-4 bg-white/5 hover:bg-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all"
+          >
+            ← 스튜디오로 돌아가기
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
+    <div className="min-h-screen bg-[#050505] text-white overflow-x-hidden font-inter selection:bg-purple-500/30">
+      {/* Background Aesthetic Blur */}
+      <div className="fixed -top-24 -left-24 w-[600px] h-[600px] bg-brand-primary-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="fixed bottom-0 -right-24 w-[500px] h-[500px] bg-brand-secondary-500/5 rounded-full blur-[100px] pointer-events-none" />
+
       {/* 헤더 */}
-      <header className="bg-[#1a1a1a] border-b border-gray-800 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
+      <header className="sticky top-0 h-24 glass-panel border-b border-white/5 px-10 flex items-center justify-between z-50">
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
+        <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
+          <div className="flex items-center gap-8">
             <button
               onClick={() => router.push("/studio")}
-              className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+              className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 hover:scale-110 transition-all group"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
             </button>
-            <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 via-blue-400 to-pink-400 bg-clip-text text-transparent">
+            <div className="flex flex-col">
+              <div className="flex items-center gap-2 text-[10px] font-black text-gray-600 uppercase tracking-[0.25em] mb-1">
+                <span>Orchestrator</span>
+                <div className="w-1.5 h-1.5 rounded-full bg-brand-primary-500" />
+                <span className="text-brand-primary-400/80">워크플로우 모드 선택</span>
+              </div>
+              <h1 className="text-2xl font-black font-outfit text-white tracking-tighter">
                 {content.title}
               </h1>
-              <p className="text-sm text-gray-400 mt-1">
-                플랫폼: {content.platform} | 상태: {content.status}
-              </p>
             </div>
           </div>
         </div>
       </header>
 
       {/* 메인 콘텐츠 */}
-      <main className="max-w-7xl mx-auto px-6 py-12">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">
-            어떤 방식으로 콘텐츠를 생성하시겠습니까?
+      <main className="max-w-6xl mx-auto px-10 py-24 relative z-10">
+        <div className="text-center mb-24">
+          <div className="inline-flex items-center gap-3 px-5 py-2 bg-brand-primary-500/10 border border-brand-primary-500/20 rounded-full mb-8">
+            <Sparkles className="w-4 h-4 text-brand-primary-400" />
+            <span className="text-[10px] font-black text-brand-primary-400 uppercase tracking-[0.2em]">Engine Selection Required</span>
+          </div>
+          <h2 className="text-5xl font-black font-outfit premium-gradient-text tracking-tighter mb-6 italic uppercase">
+            Define Your Workflow
           </h2>
-          <p className="text-gray-400">
-            스크립트 기반 영상 생성 또는 PDF 프레젠테이션 변환을 선택하세요
+          <p className="text-[10px] font-black text-white/40 tracking-[0.4em] uppercase">
+            콘텐츠 합성을 위한 뉴럴 패키지 엔진을 선택하십시오.
           </p>
         </div>
 
         {/* 선택 카드 */}
-        <div className="grid md:grid-cols-2 gap-8">
-          {/* 1. 영상 생성 */}
+        <div className="grid md:grid-cols-2 gap-10">
+          {/* 1. 영상 생성 (Script to Video) */}
           <div
             onClick={handleVideoGeneration}
-            className="group relative bg-gradient-to-br from-purple-900/30 to-blue-900/30 border-2 border-purple-500/30 rounded-3xl p-8 cursor-pointer hover:border-purple-500 hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-300"
+            className="group relative h-[600px] premium-card rounded-[3rem] p-12 cursor-pointer border border-white/5 hover:border-brand-primary-500/50 hover:shadow-[0_50px_100px_-20px_rgba(168,85,247,0.2)] transition-all duration-700 overflow-hidden"
           >
-            <div className="absolute top-6 right-6 opacity-10 group-hover:opacity-20 transition-opacity">
-              <Video className="w-32 h-32" />
-            </div>
+            {/* Glossy Reflect */}
+            <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-br from-brand-primary-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
-            <div className="relative z-10">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center mb-6">
-                <Video className="w-8 h-8" />
-              </div>
+            <div className="relative h-full flex flex-col justify-between">
+              <div>
+                <div className="w-20 h-20 bg-gradient-to-br from-brand-primary-500 to-brand-primary-700 rounded-[2rem] flex items-center justify-center mb-10 shadow-2xl shadow-purple-500/40 group-hover:scale-110 group-hover:rotate-6 transition-all duration-700">
+                  <MonitorPlay className="w-10 h-10 text-white fill-white/20" />
+                </div>
 
-              <h3 className="text-2xl font-bold mb-3">영상 생성</h3>
-              <p className="text-gray-300 mb-6 leading-relaxed">
-                스크립트를 작성하고 AI가 자동으로 영상을 생성합니다.
-                <br />
-                음성, 자막, 영상 클립이 모두 포함됩니다.
-              </p>
+                <h3 className="text-3xl font-black font-outfit text-white tracking-tighter mb-4 italic uppercase">
+                  Script Engine
+                </h3>
+                <p className="text-sm font-medium text-gray-400 leading-relaxed mb-10 border-l-2 border-brand-primary-500/30 pl-6">
+                  LLM 기반의 스크립트 작성부터 AI 성우 보이스,
+                  스토리보드 매핑 및 영상 렌더링까지 이어지는
+                  엔드투엔드 동영상 제작 워크플로우를 가동합니다.
+                </p>
 
-              <div className="space-y-4">
-                <div className="bg-gray-900/50 p-4 rounded-xl border border-gray-700">
-                  <h4 className="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-purple-400" />
-                    영상 분량 선택
-                  </h4>
-                  <div className="grid grid-cols-3 gap-2">
-                    {[
-                      { label: "Shorts", value: 60, desc: "1분 이내" },
-                      { label: "Medium", value: 180, desc: "3분 내외" },
-                      { label: "Long", value: 600, desc: "10분 내외" },
-                    ].map((opt) => (
-                      <button
-                        key={opt.value}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setVideoDuration(opt.value);
-                        }}
-                        className={`p-2 rounded-lg text-center transition-all ${videoDuration === opt.value
-                          ? "bg-purple-600 text-white shadow-lg ring-1 ring-white/50"
-                          : "bg-gray-800 text-gray-400 hover:bg-gray-700"
-                          }`}
-                      >
-                        <div className="font-bold text-sm">{opt.label}</div>
-                        <div className="text-[10px] opacity-80">{opt.desc}</div>
-                      </button>
-                    ))}
+                <div className="space-y-4">
+                  <div className="bg-black/40 backdrop-blur-3xl p-6 rounded-[2rem] border border-white/5 space-y-4">
+                    <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-brand-primary-400" />
+                      목표 영상 분량 선택
+                    </h4>
+                    <div className="grid grid-cols-3 gap-3">
+                      {[
+                        { label: "Shorts", value: 60, desc: "60초" },
+                        { label: "Normal", value: 180, desc: "180초" },
+                        { label: "Cinema", value: 600, desc: "600초" },
+                      ].map((opt) => (
+                        <button
+                          key={opt.value}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setVideoDuration(opt.value);
+                          }}
+                          className={`py-3 rounded-2xl text-center transition-all border ${videoDuration === opt.value
+                            ? "bg-brand-primary-500 border-brand-primary-400 text-white shadow-lg shadow-purple-500/40 scale-[1.05]"
+                            : "bg-white/5 border-white/5 text-gray-500 hover:text-white hover:border-white/10"
+                            }`}
+                        >
+                          <div className="font-black text-[9px] uppercase tracking-widest">{opt.label}</div>
+                          <div className="text-[10px] font-black opacity-60 font-mono">{opt.desc}</div>
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
-
-                <div className="flex items-center gap-2 text-sm text-gray-400">
-                  <Check className="w-4 h-4 text-purple-400" />
-                  <span>블록 단위 스크립트 편집</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-400">
-                  <Check className="w-4 h-4 text-purple-400" />
-                  <span>Zero-Fault Audio (정확도 95%+)</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-400">
-                  <Check className="w-4 h-4 text-purple-400" />
-                  <span>실시간 렌더링 진행률</span>
-                </div>
               </div>
 
-              <button className="mt-8 w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-xl font-semibold transition-all duration-300 hover:scale-105">
-                스크립트 작성 시작 →
-              </button>
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 text-[10px] font-black text-gray-600 uppercase tracking-widest">
+                  <Check className="w-4 h-4 text-brand-primary-400" />
+                  <span>VREW Style Context Blocks</span>
+                </div>
+                <button className="w-full py-5 bg-white text-black rounded-[1.5rem] font-black text-[11px] uppercase tracking-[0.3em] hover:bg-brand-primary-400 hover:text-white transition-all duration-500 shadow-2xl active:scale-95 group-hover:scale-[1.02]">
+                  스크립트 생성 엔진 초기화 →
+                </button>
+              </div>
             </div>
           </div>
 
-          {/* 2. 프레젠테이션 */}
+          {/* 2. 프레젠테이션 (PDF to Video) */}
           <div
             onClick={handlePresentationMode}
-            className="group relative bg-gradient-to-br from-pink-900/30 to-orange-900/30 border-2 border-pink-500/30 rounded-3xl p-8 cursor-pointer hover:border-pink-500 hover:shadow-2xl hover:shadow-pink-500/20 transition-all duration-300"
+            className="group relative h-[600px] premium-card rounded-[3rem] p-12 cursor-pointer border border-white/5 hover:border-brand-secondary-500/50 hover:shadow-[0_50px_100px_-20px_rgba(236,72,153,0.2)] transition-all duration-700 overflow-hidden"
           >
-            <div className="absolute top-6 right-6 opacity-10 group-hover:opacity-20 transition-opacity">
-              <FileText className="w-32 h-32" />
-            </div>
+            {/* Glossy Reflect */}
+            <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-br from-brand-secondary-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
-            <div className="relative z-10">
-              <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-orange-500 rounded-2xl flex items-center justify-center mb-6">
-                <FileText className="w-8 h-8" />
+            <div className="relative h-full flex flex-col justify-between">
+              <div>
+                <div className="w-20 h-20 bg-gradient-to-br from-brand-secondary-500 to-brand-secondary-700 rounded-[2rem] flex items-center justify-center mb-10 shadow-2xl shadow-pink-500/40 group-hover:scale-110 group-hover:rotate-6 transition-all duration-700">
+                  <Layout className="w-10 h-10 text-white fill-white/20" />
+                </div>
+
+                <h3 className="text-3xl font-black font-outfit text-white tracking-tighter mb-4 italic uppercase">
+                  Deck Engine
+                </h3>
+                <p className="text-sm font-medium text-gray-400 leading-relaxed mb-10 border-l-2 border-brand-secondary-500/30 pl-6">
+                  준비된 PDF 자료를 업로드하여 페이지별 스크립트와
+                  시각 요소를 AI로 자동 추출합니다. 교육 및 비즈니스
+                  발표 영상을 위한 페이지 기반 스마트 워크플로우입니다.
+                </p>
+
+                <div className="p-8 border-2 border-dashed border-white/5 rounded-[2.5rem] flex flex-col items-center justify-center text-center gap-4 bg-black/20 group-hover:border-brand-secondary-500/30 transition-all duration-700">
+                  <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center group-hover:scale-125 group-hover:rotate-12 transition-all">
+                    <Upload className="w-6 h-6 text-gray-500 group-hover:text-brand-secondary-400" />
+                  </div>
+                  <span className="text-[10px] font-black text-gray-700 group-hover:text-white uppercase tracking-[0.2em] transition-colors">이곳에 PDF 파일을 업로드하세요</span>
+                </div>
+
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  className="hidden"
+                  accept=".pdf"
+                  onChange={handleFileChange}
+                  onClick={(e) => e.stopPropagation()}
+                />
               </div>
 
-              <h3 className="text-2xl font-bold mb-3">프레젠테이션</h3>
-              <p className="text-gray-300 mb-6 leading-relaxed">
-                PDF 파일을 업로드하면 각 페이지를 기반으로
-                <br />
-                스크립트와 영상을 자동 생성합니다.
-              </p>
-
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-sm text-gray-400">
-                  <Check className="w-4 h-4 text-pink-400" />
-                  <span>PDF 업로드 (최대 50페이지)</span>
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    className="hidden"
-                    accept=".pdf"
-                    onChange={handleFileChange}
-                    onClick={(e) => e.stopPropagation()}
-                  />
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 text-[10px] font-black text-gray-600 uppercase tracking-widest">
+                  <Check className="w-4 h-4 text-brand-secondary-400" />
+                  <span>Multi-Page Neural Extraction</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-400">
-                  <Check className="w-4 h-4 text-pink-400" />
-                  <span>페이지별 스크립트 자동 생성</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-400">
-                  <Check className="w-4 h-4 text-pink-400" />
-                  <span>콘티 자동 분할 (페이지 단위)</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-400">
-                  <Check className="w-4 h-4 text-pink-400" />
-                  <span>슬라이드별 타이밍 조정</span>
-                </div>
+                <button
+                  disabled={isUploading}
+                  className="w-full py-5 bg-white text-black rounded-[1.5rem] font-black text-[11px] uppercase tracking-[0.3em] hover:bg-brand-secondary-400 hover:text-white transition-all duration-500 shadow-2xl active:scale-95 group-hover:scale-[1.02] flex items-center justify-center gap-3"
+                >
+                  {isUploading ? (
+                    <>
+                      <div className="animate-spin w-4 h-4 border-2 border-brand-secondary-200 border-t-transparent rounded-full"></div>
+                      데이터 분석 중...
+                    </>
+                  ) : (
+                    "PDF 업로드 워크플로우 가동 →"
+                  )}
+                </button>
               </div>
-
-              <button
-                className="mt-8 w-full py-4 bg-gradient-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 rounded-xl font-semibold transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2"
-                disabled={isUploading}
-              >
-                {isUploading ? (
-                  <>
-                    <div className="animate-spin w-5 h-5 border-2 border-white/50 border-t-white rounded-full"></div>
-                    업로드 중...
-                  </>
-                ) : (
-                  <>
-                    PDF 업로드 시작 →
-                  </>
-                )}
-              </button>
             </div>
           </div>
         </div>
 
-        {/* 도움말 */}
-        <div className="mt-12 bg-[#1a1a1a] border border-gray-800 rounded-xl p-6">
-          <h4 className="text-lg font-semibold mb-3 flex items-center gap-2">
-            <span className="text-2xl">💡</span>
-            선택 가이드
+        {/* 선택 가이드 (Aesthetic Details) */}
+        <div className="mt-32 p-12 glass-panel rounded-[3rem] border-white/5 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-brand-primary-500/5 rounded-full blur-3xl" />
+          <h4 className="text-lg font-black font-outfit text-white tracking-tight mb-10 flex items-center gap-4 italic uppercase">
+            <span className="text-2xl text-brand-primary-400">⚡</span>
+            Architectural Guidance
           </h4>
-          <div className="grid md:grid-cols-2 gap-6 text-sm text-gray-400">
-            <div>
-              <p className="font-semibold text-purple-400 mb-2">
-                영상 생성을 추천하는 경우
+          <div className="grid md:grid-cols-2 gap-12 text-xs font-medium text-gray-500">
+            <div className="space-y-4">
+              <p className="font-black text-brand-primary-400 uppercase tracking-widest border-b border-brand-primary-500/20 pb-2">
+                Use Script Engine if:
               </p>
-              <ul className="space-y-1 list-disc list-inside">
-                <li>자유로운 스크립트 작성이 필요한 경우</li>
-                <li>다양한 영상 클립을 사용하고 싶은 경우</li>
-                <li>블록 단위로 세밀하게 편집하고 싶은 경우</li>
-                <li>YouTube 쇼츠, TikTok 등 짧은 영상</li>
+              <ul className="space-y-4">
+                <li className="flex gap-4">
+                  <div className="w-1.5 h-1.5 rounded-full bg-brand-primary-500 mt-1" />
+                  <span>자유로운 AI 스크립트 기반 생성이 필요한 도메인</span>
+                </li>
+                <li className="flex gap-4">
+                  <div className="w-1.5 h-1.5 rounded-full bg-brand-primary-500 mt-1" />
+                  <span>유튜브 쇼츠, 틱톡 등 고밀도 자막 연출이 핵심인 경우</span>
+                </li>
               </ul>
             </div>
-            <div>
-              <p className="font-semibold text-pink-400 mb-2">
-                프레젠테이션을 추천하는 경우
+            <div className="space-y-4">
+              <p className="font-black text-brand-secondary-400 uppercase tracking-widest border-b border-brand-secondary-500/20 pb-2">
+                Use Deck Engine if:
               </p>
-              <ul className="space-y-1 list-disc list-inside">
-                <li>이미 준비된 PDF 자료가 있는 경우</li>
-                <li>교육용 강의 영상을 만들고 싶은 경우</li>
-                <li>슬라이드 기반의 설명 영상</li>
-                <li>비즈니스 프레젠테이션 영상화</li>
+              <ul className="space-y-4">
+                <li className="flex gap-4">
+                  <div className="w-1.5 h-1.5 rounded-full bg-brand-secondary-500 mt-1" />
+                  <span>기존 강의 자료나 보고서가 PDF로 이미 존재하는 프로젝트</span>
+                </li>
+                <li className="flex gap-4">
+                  <div className="w-1.5 h-1.5 rounded-full bg-brand-secondary-500 mt-1" />
+                  <span>안정적인 페이지 기반의 정보 전달이 우선순위인 경우</span>
+                </li>
               </ul>
             </div>
           </div>

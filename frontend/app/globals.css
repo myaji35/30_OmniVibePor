@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap');
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --foreground-rgb: 255, 255, 255;
   --background-start-rgb: 10, 10, 12;
@@ -19,7 +23,7 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #0a0a0c 100%);
+  background: #050505;
   font-family: 'Inter', -apple-system, sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
@@ -74,12 +78,6 @@ body {
 }
 
 @layer base {
-  @tailwind base;
-}
-
-@layer components {
-  @tailwind components;
-  
   .heading-1 {
     font-family: 'Outfit', sans-serif;
     @apply text-4xl md:text-5xl font-bold tracking-tight;
@@ -94,6 +92,21 @@ body {
   }
 }
 
-@layer utilities {
-  @tailwind utilities;
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.animate-shake {
+  animation: shake 0.2s ease-in-out 0s 2;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.8s ease-out forwards;
 }
