@@ -22,6 +22,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from app.core.config import get_settings
 from app.services.google_sheets_service import get_sheets_service
 from app.services.neo4j_client import get_neo4j_client
+from app.services.duration_calculator import get_duration_calculator, Language
 
 settings = get_settings()
 logger = logging.getLogger(__name__)
@@ -41,6 +42,7 @@ class WriterState(TypedDict):
     campaign_name: str
     topic: str  # 소제목
     platform: str  # YouTube, Instagram, TikTok
+    target_duration: Optional[int]  # 목표 영상 길이 (초)
 
     # 전략 데이터
     strategy: Optional[Dict[str, Any]]
@@ -193,11 +195,22 @@ class WriterAgent:
                         views = script.get('views') or 0
                         past_context += f"   조회수: {views:,}\n"
 
+                # 목표 분량 계산
+                target_duration = state.get("target_duration") or 180
+                duration_calc = get_duration_calculator(Language.KO)
+                word_count_info = duration_calc.estimate_for_target_duration(target_duration)
+
+                target_words = word_count_info['target_words']
+                min_words = word_count_info['min_words']
+                max_words = word_count_info['max_words']
+
                 # 사용자 프롬프트
                 user_prompt = f"""다음 주제로 {state['platform']} 영상 스크립트를 작성해주세요:
 
 **주제**: {state['topic']}
 **캠페인**: {state['campaign_name']}
+**목표 영상 길이**: {target_duration}초
+**필요 글자수**: {target_words}자 (범위: {min_words}~{max_words}자)
 {past_context}
 
 다음 형식으로 작성해주세요:
@@ -207,12 +220,14 @@ class WriterAgent:
 
 ### 본문
 [핵심 메시지를 3-5개 포인트로 전달]
+[목표 글자수를 충족하도록 충분히 작성하되, 너무 길어지지 않도록 주의]
 
 ### CTA (행동 유도)
 [시청자에게 구체적인 행동을 요청]
 
 ---
-**예상 영상 길이**: [초]
+**예상 영상 길이**: {target_duration}초
+**실제 글자수**: [작성한 총 글자수]
 """
 
                 # LLM 호출
@@ -368,7 +383,8 @@ class WriterAgent:
         spreadsheet_id: str,
         campaign_name: str,
         topic: str,
-        platform: str = "YouTube"
+        platform: str = "YouTube",
+        target_duration: int = 180
     ) -> Dict[str, Any]:
         """
         스크립트 생성 메인 함수
@@ -378,6 +394,7 @@ class WriterAgent:
             campaign_name: 캠페인명
             topic: 소제목
             platform: 플랫폼 (YouTube, Instagram, TikTok)
+            target_duration: 목표 영상 길이 (초)
 
         Returns:
             생성된 스크립트 및 메타데이터
@@ -386,7 +403,8 @@ class WriterAgent:
             "writer.generate_script_main",
             spreadsheet_id=spreadsheet_id,
             campaign=campaign_name,
-            topic=topic
+            topic=topic,
+            target_duration=target_duration
         ) if LOGFIRE_AVAILABLE else nullcontext()
 
         with span_context:
@@ -396,6 +414,7 @@ class WriterAgent:
                 "campaign_name": campaign_name,
                 "topic": topic,
                 "platform": platform,
+                "target_duration": target_duration,
                 "strategy": None,
                 "target_audience": None,
                 "tone": None,

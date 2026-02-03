@@ -68,9 +68,13 @@ class Settings(BaseSettings):
     INSTAGRAM_ACCESS_TOKEN: str | None = None
     FACEBOOK_ACCESS_TOKEN: str | None = None
 
+    # Unsplash (이미지 검색)
+    UNSPLASH_ACCESS_KEY: str | None = None
+
     class Config:
         env_file = ".env"
         case_sensitive = True
+        extra = "ignore"  # .env에 있지만 모델에 없는 필드 무시
 
 
 @lru_cache()

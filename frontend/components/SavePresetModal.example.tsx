@@ -54,12 +54,12 @@ export default function SavePresetModalExample() {
         <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
           <h2 className="text-lg font-semibold mb-2">사용법</h2>
           <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700">
-            <li>"프리셋 저장 모달 열기" 버튼 클릭</li>
+            <li>&quot;프리셋 저장 모달 열기&quot; 버튼 클릭</li>
             <li>프리셋 이름 입력 (필수, 최대 50자)</li>
             <li>설명 입력 (선택, 최대 200자)</li>
             <li>즐겨찾기 토글 선택 (선택)</li>
-            <li>"설정 미리보기" 클릭하여 저장될 설정 확인</li>
-            <li>"저장" 버튼 클릭하여 프리셋 저장</li>
+            <li>&quot;설정 미리보기&quot; 클릭하여 저장될 설정 확인</li>
+            <li>&quot;저장&quot; 버튼 클릭하여 프리셋 저장</li>
           </ol>
         </div>
 

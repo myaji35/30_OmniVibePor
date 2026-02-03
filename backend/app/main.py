@@ -4,20 +4,43 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-import logfire
+import logging
+
+# Logfire는 optional (설치되어 있으면 사용)
+try:
+    import logfire
+    LOGFIRE_AVAILABLE = True
+except ImportError:
+    LOGFIRE_AVAILABLE = False
+    logger = logging.getLogger(__name__)
+    logger.warning("Logfire not installed. Observability features disabled.")
 
 from app.core.config import get_settings
+from app.core.secrets import initialize_secrets
 from app.api.v1 import router as api_v1_router
+from app.middleware.rate_limiter import RateLimitMiddleware
+from app.middleware.security import SecurityHeadersMiddleware
+
+# 로거 설정
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# 환경 변수 및 시크릿 초기화
+try:
+    initialize_secrets()
+except SystemExit:
+    logger.error("Failed to initialize secrets. Exiting...")
+    raise
 
 settings = get_settings()
 
-# Logfire 초기화 (토큰이 있을 때만)
-if settings.LOGFIRE_TOKEN and settings.LOGFIRE_TOKEN != "your_logfire_token_here":
+# Logfire 초기화 (설치되어 있고 토큰이 있을 때만)
+if LOGFIRE_AVAILABLE and settings.LOGFIRE_TOKEN and settings.LOGFIRE_TOKEN != "your_logfire_token_here":
     logfire.configure(token=settings.LOGFIRE_TOKEN)
+    logger.info("Logfire initialized successfully")
 else:
-    # Logfire 비활성화 (개발 환경)
-    import logging
-    logging.basicConfig(level=logging.INFO)
+    # Logfire 비활성화 (개발 환경 또는 미설치)
+    logger.warning("Logfire disabled: Not installed or token not configured")
 
 # Custom API Description (Stripe 스타일)
 CUSTOM_DESCRIPTION = """
@@ -101,6 +124,14 @@ app = FastAPI(
             "name": "WebSocket",
             "description": "🔌 실시간 진행 상태 업데이트 (WebSocket)",
         },
+        {
+            "name": "Campaigns",
+            "description": "📋 캠페인 관리 (클라이언트별 콘텐츠 제작 캠페인)",
+        },
+        {
+            "name": "Client Management",
+            "description": "👥 클라이언트 관리 (브랜드 정보, 산업 분야, 담당자 정보)",
+        },
     ]
 )
 
@@ -121,8 +152,19 @@ app.add_middleware(
 if settings.LOGFIRE_TOKEN and settings.LOGFIRE_TOKEN != "your_logfire_token_here":
     logfire.instrument_fastapi(app)
 
+# 보안 미들웨어 추가
+app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(RateLimitMiddleware)
+
+logger.info("Security middleware initialized")
+
 # API 라우터 등록
 app.include_router(api_v1_router, prefix="/api/v1")
+
+# 정적 파일 마운트 (outputs 디렉토리)
+import os
+os.makedirs("outputs", exist_ok=True)
+app.mount("/outputs", StaticFiles(directory="outputs"), name="outputs")
 
 
 # 커스텀 Swagger UI (Stripe 스타일)

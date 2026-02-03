@@ -1,22 +1,62 @@
-"""Celery 프리젠테이션 영상 생성 작업"""
+"""Celery 프리젠테이션 영상 생성 작업 (최적화)"""
 import logging
 import asyncio
+import hashlib
+import json
 from typing import Optional, Dict, Any, List
 from pathlib import Path
+from contextlib import nullcontext
 
 from app.tasks.celery_app import celery_app
 from app.services.presentation_video_generator import get_video_generator
 from app.services.neo4j_client import get_neo4j_client
 from app.models.presentation import PresentationStatus
 
+# Conditional imports
+try:
+    import redis
+    REDIS_AVAILABLE = True
+except ImportError:
+    REDIS_AVAILABLE = False
+
 logger = logging.getLogger(__name__)
+
+# Redis client for result caching
+_redis_cache = None
+
+
+def get_redis_cache():
+    """Get Redis cache client"""
+    global _redis_cache
+    if _redis_cache is None and REDIS_AVAILABLE:
+        from app.core.config import get_settings
+        settings = get_settings()
+        try:
+            _redis_cache = redis.Redis(
+                host=settings.REDIS_HOST,
+                port=settings.REDIS_PORT,
+                db=1,  # Use separate DB for task results
+                decode_responses=True,
+                socket_timeout=5
+            )
+            _redis_cache.ping()
+        except Exception as e:
+            logger.warning(f"Redis cache unavailable: {e}")
+            _redis_cache = None
+    return _redis_cache
 
 
 @celery_app.task(
     name="generate_presentation_video",
     bind=True,
     max_retries=3,
-    default_retry_delay=60
+    default_retry_delay=60,
+    time_limit=3600,  # 1 hour timeout
+    soft_time_limit=3300,  # 55 minutes soft timeout
+    priority=5,  # Normal priority (0-9, higher is more priority)
+    track_started=True,  # Track task start time
+    acks_late=True,  # Acknowledge task after completion (prevents loss)
+    reject_on_worker_lost=True  # Reject if worker crashes
 )
 def generate_presentation_video_task(
     self,
@@ -28,7 +68,8 @@ def generate_presentation_video_task(
     transition_duration: float = 0.5,
     bgm_path: Optional[str] = None,
     bgm_volume: float = 0.3,
-    user_id: Optional[str] = None
+    user_id: Optional[str] = None,
+    priority: int = 5  # Task priority override
 ) -> Dict:
     """
     프리젠테이션 영상 생성 Celery 작업
@@ -63,6 +104,13 @@ def generate_presentation_video_task(
         f"user: {user_id or 'anonymous'}, "
         f"task_id: {self.request.id}"
     )
+
+    # Check cache for identical request (deduplication)
+    cache_key = _generate_task_cache_key(presentation_id, slides, transition_effect)
+    cached_result = _get_cached_task_result(cache_key)
+    if cached_result:
+        logger.info(f"Task result cache hit: {presentation_id}")
+        return cached_result
 
     try:
         # Neo4j 상태 업데이트 (VIDEO_RENDERING)
@@ -109,13 +157,18 @@ def generate_presentation_video_task(
             f"duration: {total_duration:.1f}s"
         )
 
-        return {
+        result = {
             "status": "success",
             "presentation_id": presentation_id,
             "video_path": video_path,
             "duration": total_duration,
             "task_id": self.request.id
         }
+
+        # Cache successful result (1 hour TTL)
+        _cache_task_result(cache_key, result, ttl=3600)
+
+        return result
 
     except Exception as e:
         logger.error(
@@ -194,7 +247,57 @@ def _update_presentation_status(
         # 상태 업데이트 실패는 치명적이지 않으므로 로그만 남김
 
 
-@celery_app.task(name="cleanup_temp_files")
+def _generate_task_cache_key(
+    presentation_id: str,
+    slides: List[Dict[str, Any]],
+    transition_effect: str
+) -> str:
+    """Generate cache key for task deduplication"""
+    # Create deterministic hash from task parameters
+    key_data = {
+        "presentation_id": presentation_id,
+        "slides": slides,
+        "transition": transition_effect
+    }
+    key_string = json.dumps(key_data, sort_keys=True)
+    key_hash = hashlib.md5(key_string.encode()).hexdigest()
+    return f"task_result:{key_hash}"
+
+
+def _get_cached_task_result(cache_key: str) -> Optional[Dict]:
+    """Retrieve cached task result"""
+    redis_client = get_redis_cache()
+    if not redis_client:
+        return None
+
+    try:
+        cached = redis_client.get(cache_key)
+        if cached:
+            return json.loads(cached)
+    except Exception as e:
+        logger.error(f"Cache retrieval error: {e}")
+
+    return None
+
+
+def _cache_task_result(cache_key: str, result: Dict, ttl: int) -> None:
+    """Cache task result"""
+    redis_client = get_redis_cache()
+    if not redis_client:
+        return
+
+    try:
+        redis_client.setex(cache_key, ttl, json.dumps(result))
+        logger.debug(f"Cached task result: {cache_key}")
+    except Exception as e:
+        logger.error(f"Cache storage error: {e}")
+
+
+@celery_app.task(
+    name="cleanup_temp_files",
+    priority=1,  # Low priority cleanup task
+    time_limit=300  # 5 minutes timeout
+)
 def cleanup_temp_files_task(file_paths: List[str]) -> Dict:
     """
     임시 파일 정리 작업

@@ -5,7 +5,12 @@ import asyncio
 import subprocess
 import hashlib
 import time
-import logfire
+# Logfire는 optional
+try:
+    import logfire
+    LOGFIRE_AVAILABLE = True
+except ImportError:
+    LOGFIRE_AVAILABLE = False
 
 from app.core.config import get_settings
 from app.services.stt_service import get_stt_service

@@ -5,7 +5,12 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 from typing import Optional
 
-from app.tasks.audio_tasks import generate_verified_audio_task, batch_generate_verified_audio_task
+from app.tasks.audio_tasks import (
+    generate_verified_audio_task,
+    batch_generate_verified_audio_task,
+    remove_silence_task,
+    remove_fillers_task
+)
 from app.services.text_normalizer import get_text_normalizer
 
 router = APIRouter()
@@ -110,19 +115,36 @@ async def get_task_status(task_id: str):
         }
 
         # 완료된 경우 결과 포함
-        if task_result.status == "SUCCESS" and task_result.result:
-            result = sanitize_data(task_result.result)
-            if result:
-                response["result"] = {
-                    "status": result.get("status"),
-                    "audio_path": result.get("audio_path"),
-                    "attempts": result.get("attempts"),
-                    "final_similarity": result.get("final_similarity"),
-                    "transcribed_text": result.get("transcribed_text"),
-                    "original_text": result.get("original_text"),
-                    "normalized_text": result.get("normalized_text"),
-                    "normalization_mappings": result.get("normalization_mappings", {})
-                }
+        if task_result.status == "SUCCESS":
+            # info 안에 result가 있는지 확인
+            task_info = task_result.info
+            if task_info and isinstance(task_info, dict):
+                result_data = task_info.get("result", {})
+                if result_data:
+                    response["result"] = {
+                        "status": result_data.get("status"),
+                        "audio_path": result_data.get("audio_path"),
+                        "attempts": result_data.get("attempts"),
+                        "final_similarity": result_data.get("final_similarity"),
+                        "transcribed_text": result_data.get("transcribed_text"),
+                        "original_text": result_data.get("original_text"),
+                        "normalized_text": result_data.get("normalized_text"),
+                        "normalization_mappings": result_data.get("normalization_mappings", {})
+                    }
+                else:
+                    # task_result.result 직접 확인 (fallback)
+                    result = sanitize_data(task_result.result)
+                    if result:
+                        response["result"] = {
+                            "status": result.get("status"),
+                            "audio_path": result.get("audio_path"),
+                            "attempts": result.get("attempts"),
+                            "final_similarity": result.get("final_similarity"),
+                            "transcribed_text": result.get("transcribed_text"),
+                            "original_text": result.get("original_text"),
+                            "normalized_text": result.get("normalized_text"),
+                            "normalization_mappings": result.get("normalization_mappings", {})
+                        }
 
         # 실패한 경우 에러 정보
         elif task_result.status == "FAILURE":
@@ -227,7 +249,7 @@ async def list_voices():
     from app.services.tts_service import get_tts_service
 
     tts = get_tts_service()
-    voices = tts.list_available_voices()
+    voices = tts.get_available_voices()
 
     return {
         "voices": voices,
@@ -262,6 +284,39 @@ class NormalizeTextResponse(BaseModel):
     original: str
     normalized: str
     mappings: dict
+
+
+class RemoveSilenceRequest(BaseModel):
+    """무음 제거 요청"""
+    audio_url: str = Field(..., description="오디오 파일 URL (Cloudinary 또는 로컬)")
+    threshold_db: int = Field(-40, ge=-80, le=-20, description="무음 기준 (dB, 기본값: -40dB)")
+    min_silence_duration: float = Field(0.5, ge=0.1, le=5.0, description="최소 무음 길이 (초, 기본값: 0.5초)")
+
+
+class RemoveSilenceResponse(BaseModel):
+    """무음 제거 응답"""
+    success: bool
+    task_id: str
+    message: str
+    original_audio_url: str
+
+
+class RemoveFillersRequest(BaseModel):
+    """필러 워드 제거 요청"""
+    audio_url: str = Field(..., description="오디오 파일 URL (Cloudinary 또는 로컬)")
+    filler_words: list[str] = Field(
+        default=["음", "어", "그", "저", "아"],
+        description="제거할 필러 워드 목록"
+    )
+    language: str = Field("ko", description="언어 코드 (ko, en 등)")
+
+
+class RemoveFillersResponse(BaseModel):
+    """필러 워드 제거 응답"""
+    success: bool
+    task_id: str
+    message: str
+    original_audio_url: str
 
 
 @router.post("/normalize-text", response_model=NormalizeTextResponse)
@@ -317,3 +372,108 @@ async def normalize_text(request: NormalizeTextRequest):
     except Exception as e:
         logger.error(f"Normalization failed: {e}")
         raise HTTPException(status_code=500, detail=f"Normalization failed: {str(e)}")
+
+
+@router.post("/remove-silence", response_model=RemoveSilenceResponse)
+async def remove_silence(request: RemoveSilenceRequest):
+    """
+    무음 구간 자동 제거
+
+    **워크플로우**:
+    1. 오디오 파일 다운로드
+    2. FFmpeg silencedetect로 무음 구간 감지
+    3. FFmpeg silenceremove로 무음 제거
+    4. 처리된 파일 Cloudinary 업로드
+    5. 결과 반환
+
+    **사용 사례**:
+    - 녹음 후 불필요한 무음 구간 제거
+    - 편집 시간 단축
+    - Vrew 스타일 자동 편집
+
+    **예시**:
+    ```json
+    {
+        "audio_url": "https://cloudinary.com/sample.mp3",
+        "threshold_db": -40,
+        "min_silence_duration": 0.5
+    }
+    ```
+
+    **응답**:
+    - task_id로 /audio/status/{task_id} 조회
+    - 완료 시 processed_audio_url 반환
+    """
+    try:
+        logger.info(f"Starting silence removal for: {request.audio_url}")
+
+        # Celery 작업 실행
+        task = remove_silence_task.delay(
+            audio_url=request.audio_url,
+            threshold_db=request.threshold_db,
+            min_silence_duration=request.min_silence_duration
+        )
+
+        return RemoveSilenceResponse(
+            success=True,
+            task_id=task.id,
+            message=f"무음 제거 작업 시작. /audio/status/{task.id}로 진행 상황 확인하세요.",
+            original_audio_url=request.audio_url
+        )
+
+    except Exception as e:
+        logger.error(f"Silence removal request failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/remove-fillers", response_model=RemoveFillersResponse)
+async def remove_fillers(request: RemoveFillersRequest):
+    """
+    필러 워드 자동 제거
+
+    **워크플로우**:
+    1. 오디오 파일 다운로드
+    2. OpenAI Whisper STT로 word-level transcription
+    3. 필러 워드 감지 (음, 어, 그, 저 등)
+    4. FFmpeg로 해당 구간 제거
+    5. 처리된 파일 Cloudinary 업로드
+    6. 결과 반환
+
+    **사용 사례**:
+    - 팟캐스트 편집
+    - 프레젠테이션 음성 개선
+    - Vrew 스타일 자동 편집
+
+    **예시**:
+    ```json
+    {
+        "audio_url": "https://cloudinary.com/sample.mp3",
+        "filler_words": ["음", "어", "그", "저", "아"],
+        "language": "ko"
+    }
+    ```
+
+    **응답**:
+    - task_id로 /audio/status/{task_id} 조회
+    - 완료 시 processed_audio_url, transcript, removed_words 반환
+    """
+    try:
+        logger.info(f"Starting filler removal for: {request.audio_url}")
+
+        # Celery 작업 실행
+        task = remove_fillers_task.delay(
+            audio_url=request.audio_url,
+            filler_words=request.filler_words,
+            language=request.language
+        )
+
+        return RemoveFillersResponse(
+            success=True,
+            task_id=task.id,
+            message=f"필러 워드 제거 작업 시작. /audio/status/{task.id}로 진행 상황 확인하세요.",
+            original_audio_url=request.audio_url
+        )
+
+    except Exception as e:
+        logger.error(f"Filler removal request failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))

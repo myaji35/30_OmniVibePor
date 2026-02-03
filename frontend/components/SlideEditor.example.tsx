@@ -225,14 +225,7 @@ export default function SlideEditorExample() {
           transitionEffect={currentTransition}
           bgmSettings={currentBGM}
           adjacentSlides={getAdjacentSlides(currentSlideIndex)}
-          whisperTiming={
-            currentSlide.whisper_start_time && currentSlide.whisper_end_time
-              ? {
-                  start_time: currentSlide.whisper_start_time,
-                  end_time: currentSlide.whisper_end_time,
-                }
-              : undefined
-          }
+          whisperTiming={undefined}
           onTimingChange={(start, end) =>
             handleTimingChange(currentSlide.slide_id, start, end)
           }

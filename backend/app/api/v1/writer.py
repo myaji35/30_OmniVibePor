@@ -4,7 +4,8 @@ from pydantic import BaseModel
 from typing import Optional, Dict
 import logging
 
-from app.services.writer_agent import get_writer_agent
+# ⚠️ Lazy import: transformers UTF-8 문제 방지
+# from app.services.writer_agent import get_writer_agent
 from app.services.duration_calculator import (
     get_duration_calculator,
     calculate_duration,
@@ -62,6 +63,9 @@ async def generate_script(request: ScriptGenerationRequest):
     Returns:
         생성된 스크립트 및 메타데이터
     """
+    # Lazy import to avoid transformers UTF-8 error on startup
+    from app.services.writer_agent import get_writer_agent
+
     writer_agent = get_writer_agent()
 
     try:
@@ -94,6 +98,8 @@ async def check_health():
     Writer 에이전트 상태 확인
     """
     try:
+        # Lazy import to avoid transformers UTF-8 error on startup
+        from app.services.writer_agent import get_writer_agent
         writer_agent = get_writer_agent()
         return {
             "status": "healthy",

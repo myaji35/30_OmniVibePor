@@ -19,6 +19,9 @@ interface BlockListPanelProps {
   onUpdateBlock: (block: ScriptBlock) => void;
   onDeleteBlock: (blockId: string) => void;
   onDuplicateBlock: (blockId: string) => void;
+  onSplitBlock: (blockId: string) => void;
+  onAutoSplitBlock: (blockId: string) => void;
+  onMergeBlock: (blockId: string) => void;
   onMoveBlockUp: (blockId: string) => void;
   onMoveBlockDown: (blockId: string) => void;
   onReorderBlocks: (reorderedBlocks: ScriptBlock[]) => void;
@@ -32,6 +35,9 @@ export default function BlockListPanel({
   onUpdateBlock,
   onDeleteBlock,
   onDuplicateBlock,
+  onSplitBlock,
+  onAutoSplitBlock,
+  onMergeBlock,
   onMoveBlockUp,
   onMoveBlockDown,
   onReorderBlocks,
@@ -69,7 +75,8 @@ export default function BlockListPanel({
   };
 
   return (
-    <aside className="w-96 bg-[#2a2a2a] border-l border-gray-800 flex flex-col overflow-hidden">
+    <aside className="w-96 bg-[#2a2a2a] border-l border-gray-800 flex flex-col h-screen">
+      {/* 헤더: 고정 */}
       <div className="p-4 flex-shrink-0 border-b border-gray-800">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-sm font-semibold text-gray-300">
@@ -88,6 +95,7 @@ export default function BlockListPanel({
         </p>
       </div>
 
+      {/* 스크롤 영역: 고정 높이 내에서 스크롤 */}
       {blocks.length > 0 ? (
         <DragDropContext
           onDragStart={() => setIsDragging(true)}
@@ -101,6 +109,7 @@ export default function BlockListPanel({
                 className={`flex-1 overflow-y-auto px-4 py-4 space-y-3 transition-colors ${
                   snapshot.isDraggingOver ? "bg-[#1a1a1a]" : ""
                 }`}
+                style={{ maxHeight: "calc(100vh - 120px)" }}
               >
                 {blocks.map((block, index) => (
                   <Draggable
@@ -126,6 +135,9 @@ export default function BlockListPanel({
                           onUpdate={onUpdateBlock}
                           onDelete={() => onDeleteBlock(block.id)}
                           onDuplicate={() => onDuplicateBlock(block.id)}
+                          onSplit={() => onSplitBlock(block.id)}
+                          onAutoSplit={() => onAutoSplitBlock(block.id)}
+                          onMerge={() => onMergeBlock(block.id)}
                         />
 
                         {/* 순서 변경 버튼 (선택 시에만 표시) */}

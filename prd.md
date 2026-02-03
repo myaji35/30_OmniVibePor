@@ -22,7 +22,9 @@ Visual: Google Veo (Cinematic Video) + Nano Banana (Consistent Character Referen
 Lip-Sync: HeyGen API 또는 Wav2Lip 기반 아바타 동기화.
 
 3.2 Backend & Orchestration
-Main Framework: FastAPI (Python 3.11+).
+Main Framework:
+- FastAPI (Python 3.11+) - AI 파이프라인 및 에이전트 관리
+- Ruby on Rails 8 - 관리자 대시보드 및 비즈니스 로직
 
 Orchestration: LangGraph (에이전트 상태 관리 및 워크플로우 제어).
 
@@ -31,7 +33,7 @@ Task Queue: Celery + Redis (대규모 비디오 렌더링 관리).
 Monitoring: Logfire (실시간 관측성 및 API 비용 추적).
 
 3.3 Data & Memory Architecture
-Strategy Source: Google Sheets API (전략, 소제목, 스케줄 연동).
+Database: SQLite3 (개발 및 Single Source of Truth) + PostgreSQL (프로덕션 확장성 대비).
 
 Long-term Memory: Neo4j (GraphRAG) + Pinecone.
 
@@ -41,9 +43,16 @@ Media Optimization: Cloudinary.
 
 플랫폼(YT, IG, FB)별 해상도 및 포맷 실시간 변환/배포.
 
+3.4 Frontend & Admin Dashboard
+User Frontend: Next.js 14 (React 18 + TypeScript) - Studio 워크플로우 UI.
+
+Admin Dashboard: Ruby on Rails 8 + Hotwire (Turbo + Stimulus) - 실시간 관리자 인터페이스.
+
+Real-time Updates: Hotwire Turbo Streams (WebSocket 대체).
+
 4. Key Workflows
 Phase 1: Planning (The Writer)
-Data Sync: 구글 시트 링크 연동 시 전략 및 소재목 로드.
+Data Source: SQLite3 Database에서 캠페인 전략 및 소재목 로드.
 
 Persona Selection: 작가의 성향(성별, 톤, 스타일) 설정.
 
@@ -66,6 +75,6 @@ Step 1 (PoC): ElevenLabs + Whisper 오디오 보정 파이프라인 구축.
 
 Step 2 (Alpha): LangGraph 기반 에이전트 협업 및 Neo4j 기억 저장소 연동.
 
-Step 3 (Beta): Google Sheets 커넥터 및 Cloudinary 미디어 최적화 연동.
+Step 3 (Beta): SQLite3 Database 통합 및 Cloudinary 미디어 최적화 연동.
 
 Step 4 (Launch): Next.js 기반 SaaS 대시보드 완성 및 상용 서비스 런칭.

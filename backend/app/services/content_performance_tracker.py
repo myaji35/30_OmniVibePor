@@ -2,7 +2,12 @@
 from typing import List, Dict, Optional
 from datetime import datetime, timedelta
 import asyncio
-import logfire
+# Logfire는 optional
+try:
+    import logfire
+    LOGFIRE_AVAILABLE = True
+except ImportError:
+    LOGFIRE_AVAILABLE = False
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 

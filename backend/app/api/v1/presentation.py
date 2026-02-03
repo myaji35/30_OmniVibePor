@@ -55,6 +55,8 @@ async def upload_presentation(
     **출력**: presentation_id, 슬라이드 목록
     """
     try:
+        from urllib.parse import unquote
+        
         logger.info(f"Uploading presentation PDF: {file.filename}, project_id: {project_id}")
 
         # PDF 파일 읽기
@@ -62,10 +64,13 @@ async def upload_presentation(
 
         # PDF 저장
         pdf_service = get_pdf_to_slides_service()
+        # UTF-8 URL 인코딩된 파일명 복호화
+        decoded_filename = unquote(file.filename)
+        
         pdf_path = await pdf_service.save_uploaded_pdf(
             file_data=pdf_bytes,
             user_id=project_id,
-            original_filename=file.filename
+            original_filename=decoded_filename
         )
 
         # PDF → 슬라이드 이미지 변환

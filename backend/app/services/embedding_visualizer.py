@@ -3,7 +3,12 @@ from typing import List, Dict
 import numpy as np
 from pathlib import Path
 import json
-import logfire
+# Logfire는 optional
+try:
+    import logfire
+    LOGFIRE_AVAILABLE = True
+except ImportError:
+    LOGFIRE_AVAILABLE = False
 
 
 class EmbeddingVisualizer:

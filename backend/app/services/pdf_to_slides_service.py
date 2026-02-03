@@ -5,7 +5,12 @@ import asyncio
 import hashlib
 import time
 from pdf2image import convert_from_path
-import logfire
+# Logfire는 optional
+try:
+    import logfire
+    LOGFIRE_AVAILABLE = True
+except ImportError:
+    LOGFIRE_AVAILABLE = False
 
 from app.core.config import get_settings
 

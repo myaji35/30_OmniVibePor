@@ -9,7 +9,12 @@ import torch
 from transformers import CLIPProcessor, CLIPModel
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-import logfire
+# Logfire는 optional
+try:
+    import logfire
+    LOGFIRE_AVAILABLE = True
+except ImportError:
+    LOGFIRE_AVAILABLE = False
 from openai import OpenAI
 
 from app.core.config import get_settings

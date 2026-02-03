@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Play,
   Pause,
@@ -20,15 +21,38 @@ import {
   ArrowUp,
   ArrowDown,
   BarChart3,
+  Database,
+  Folder,
+  ChevronRight,
+  Zap,
+  Share2,
+  Clock,
+  ArrowRight,
+  Layout,
+  ChevronDown,
 } from "lucide-react";
 import ClientsList from "@/components/ClientsList";
 import AudioWaveform from "@/components/AudioWaveform";
-import BlockListPanel from "@/components/BlockListPanel";
+import BlockList from "@/components/BlockList";
+import BlockEffectsEditor from "@/components/BlockEffectsEditor";
+import AddBlockButton from "@/components/AddBlockButton";
 import {
   ScriptBlock,
   splitScriptIntoBlocks,
   reorderBlocks,
 } from "@/lib/blocks/types";
+import StudioSidebar from "@/components/studio/StudioSidebar";
+import StudioHeader from "@/components/studio/StudioHeader";
+import StudioPreview from "@/components/studio/StudioPreview";
+import StudioTimeline from "@/components/studio/StudioTimeline";
+import StudioInspector from "@/components/studio/StudioInspector";
+import {
+  addBlock as utilAddBlock,
+  deleteBlock as utilDeleteBlock,
+  updateBlock as utilUpdateBlock,
+  duplicateBlock as utilDuplicateBlock,
+  getTotalDuration
+} from "@/lib/blocks/utils";
 import { Button } from "@/components/ui/Button";
 import ABTestManager from "@/components/ABTestManager";
 
@@ -47,7 +71,6 @@ export default function StudioPage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(180); // 기본 180초 (3분)
-  const [selectedSection, setSelectedSection] = useState<number | null>(null);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(
     null,
   );
@@ -55,6 +78,7 @@ export default function StudioPage() {
   const [showContentCreateForm, setShowContentCreateForm] = useState(false);
   const [sheetUrl, setSheetUrl] = useState("");
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<"preview" | "script" | "storyboard">("preview");
   const [newContent, setNewContent] = useState({
     title: "",
     platform: "Youtube",
@@ -69,6 +93,163 @@ export default function StudioPage() {
   const [scheduleItems, setScheduleItems] = useState<any[]>([]);
   const [showSchedule, setShowSchedule] = useState(false);
   const [workflowStep, setWorkflowStep] = useState<string | null>(null);
+  const [showDriveSelect, setShowDriveSelect] = useState(false);
+  const [clients, setClients] = useState<any[]>([]);
+  const [selectedClient, setSelectedClient] = useState<any | null>(null);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // ✅ URL 파라미터 처리 (Deep Linking)
+  useEffect(() => {
+    const contentIdParam = searchParams.get("contentId");
+    const durationParam = searchParams.get("duration");
+    const modeParam = searchParams.get("mode");
+
+    if (contentIdParam && modeParam === "video") {
+      const contentId = parseInt(contentIdParam);
+
+      // 상태 초기화
+      setCurrentContentId(contentId);
+      if (durationParam) {
+        setDuration(parseInt(durationParam));
+      }
+
+      // 콘텐츠 상세 로드 및 워크플로우 시작
+      loadContentAndStartWorkflow(contentId);
+    }
+  }, [searchParams]);
+
+  const loadContentAndStartWorkflow = async (id: number) => {
+    try {
+      const res = await fetch(`http://localhost:8000/api/v1/content-schedule/${id}`);
+      if (!res.ok) return;
+
+      const item = await res.json();
+
+      // UI 설정
+      setShowSheetsModal(false);
+      setWorkflowStep("script_generating");
+
+      // 워크플로우 실행
+      // NOTE: 여기서는 기존 로직을 재사용하기 위해 item 객체를 구성합니다.
+      // 실제로는 API 응답 구조에 맞게 매핑해야 합니다.
+      const mappedItem = {
+        id: item.id,
+        "캠페인명": "Default Campaign", // API에서 가져오거나 기본값
+        "소제목": item.title,
+        "주제": item.topic || "",
+        "플랫폼": item.platform || "YouTube",
+        "발행일": item.publish_date
+      };
+
+      // 스크립트 생성 로직 호출
+      triggerScriptGeneration(mappedItem);
+    } catch (e) {
+      console.error("Deep link load failed:", e);
+    }
+  };
+
+
+  const triggerScriptGeneration = async (item: any) => {
+    // 1단계: 스크립트 생성 시작
+    setWorkflowStep("script_generating");
+
+    try {
+      const targetDuration = parseInt(searchParams.get("duration") || "180");
+
+      console.log(`🎬 스크립트 생성 시작 (목표: ${targetDuration}초)`);
+
+      // 🔍 1. Writer Agent: 스크립트 생성
+      const res = await fetch("/api/writer-generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content_id: item.id,
+          spreadsheet_id: connectionResult?.spreadsheet_id,
+          campaign_name: item["캠페인명"],
+          topic: item["소제목"] || item["주제"],
+          platform: item["플랫폼"] || "YouTube",
+          target_duration: targetDuration,
+          regenerate: true, // 강제 재생성
+        }),
+      });
+
+      const data = await res.json();
+      setScriptCached(data.cached || false);
+      setScriptLoadedAt(data.metadata?.loaded_at || data.metadata?.generated_at || null);
+
+      if (data.success) {
+        setGeneratedScript(data.script || data.body || "");
+        console.log("✅ 스크립트 생성 완료, 스토리보드 분할 시작...");
+
+        // 🔍 2. Storyboard API: 블록 분할
+        try {
+          const storyboardRes = await fetch(
+            `http://127.0.0.1:8000/api/v1/storyboard/campaigns/${selectedCampaign?.id || 1}/content/${item.id}/generate`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                script: data.script,
+                campaign_concept: {
+                  gender: selectedCampaign?.concept_gender || "neutral",
+                  tone: selectedCampaign?.concept_tone || "professional",
+                  style: selectedCampaign?.concept_style || "modern",
+                  platform: item["플랫폼"] || "YouTube",
+                },
+                target_duration: targetDuration,
+              }),
+            },
+          );
+
+          const storyboardData = await storyboardRes.json();
+
+          if (storyboardData.success && storyboardData.storyboard_blocks?.length > 0) {
+            // AI가 생성한 동적 블록을 ScriptBlock으로 변환
+            const colors = [
+              "bg-red-500", "bg-blue-500", "bg-green-500",
+              "bg-yellow-500", "bg-purple-500", "bg-pink-500"
+            ];
+
+            const newBlocks = storyboardData.storyboard_blocks.map((block: any, idx: number) => ({
+              id: `block-${Date.now()}-${idx}`,
+              type: (block.block_type || "body").toLowerCase(),
+              content: block.content, // 여기가 중요: 분할된 스크립트 내용
+              duration: Math.round(block.end_time - block.start_time),
+              effects: {},
+              media: {},
+              timing: {
+                start: block.start_time,
+                end: block.end_time
+              },
+              order: idx,
+              color: colors[idx % colors.length]
+            }));
+
+            setBlocks(newBlocks);
+            console.log(`✅ 스토리보드 분할 완료: ${newBlocks.length}개 블록`);
+          } else {
+            console.warn("⚠️ 스토리보드 API 응답 없음, 기본 분할 사용");
+            // Fallback: 단순 3등분
+            const partDuration = Math.floor(targetDuration / 3);
+            setBlocks([
+              { id: "hook-fb", type: "hook", content: data.hook || data.script.substring(0, 50), duration: partDuration, timing: { start: 0, end: partDuration }, order: 0, effects: {}, media: {} },
+              { id: "body-fb", type: "body", content: data.script.substring(50), duration: partDuration, timing: { start: partDuration, end: partDuration * 2 }, order: 1, effects: {}, media: {} },
+              { id: "cta-fb", type: "cta", content: data.cta || "구독 좋아요", duration: partDuration, timing: { start: partDuration * 2, end: targetDuration }, order: 2, effects: {}, media: {} }
+            ]);
+          }
+
+        } catch (storyErr) {
+          console.error("스토리보드 생성 실패:", storyErr);
+        }
+
+        setWorkflowStep("script_ready");
+        setActiveTab("script");
+      }
+    } catch (err) {
+      console.error("Workflow trigger failed:", err);
+    }
+  };
 
   // ✅ 블록 시스템으로 전환 (VREW 스타일 동적 블록)
   const [blocks, setBlocks] = useState<ScriptBlock[]>([
@@ -105,9 +286,6 @@ export default function StudioPage() {
   ]);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
 
-  // 레거시: sections state (호환성 유지)
-  const [sections, setSections] = useState<any[]>([]);
-
   // ✅ 추가: 현재 작업 중인 콘텐츠 ID 및 결과물 URL 저장
   const [currentContentId, setCurrentContentId] = useState<number | null>(null);
   const [generatedScript, setGeneratedScript] = useState<string | null>(null);
@@ -120,7 +298,12 @@ export default function StudioPage() {
   const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
 
   // A/B 테스트 모달 상태
+  // A/B 테스트 모달 상태
   const [showABTestModal, setShowABTestModal] = useState(false);
+
+  // ✅ 오디오 진행률 상태 추가
+  const [audioProgress, setAudioProgress] = useState(0);
+  const [audioStatusMessage, setAudioStatusMessage] = useState("");
 
   // 모달이 열릴 때 자동으로 스케줄 로드
   useEffect(() => {
@@ -193,6 +376,55 @@ export default function StudioPage() {
     });
   };
 
+  // ✅ 스크립트 자동 저장 (blocks 변경 시)
+  useEffect(() => {
+    if (!currentContentId || blocks.length === 0) return;
+
+    const saveScript = async () => {
+      try {
+        const res = await fetch('/api/content-script', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content_id: currentContentId, blocks }),
+        });
+
+        if (res.ok) {
+          console.log('💾 스크립트 자동 저장 완료');
+        }
+      } catch (error) {
+        console.error('스크립트 저장 실패:', error);
+      }
+    };
+
+    // Debounce: 500ms 후 저장
+    const timeoutId = setTimeout(saveScript, 500);
+    return () => clearTimeout(timeoutId);
+  }, [blocks, currentContentId]);
+
+  // ✅ 스크립트 자동 로드 (currentContentId 변경 시)
+  useEffect(() => {
+    if (!currentContentId) return;
+
+    const loadScript = async () => {
+      try {
+        const res = await fetch(`/api/content-script?content_id=${currentContentId}`);
+        const data = await res.json();
+
+        if (data.success && data.script_data && Array.isArray(data.script_data) && data.script_data.length > 0) {
+          setBlocks(data.script_data);
+          console.log(`📜 저장된 스크립트 로드 완료 (${data.script_data.length}개 블록)`);
+        } else {
+          console.log('📜 저장된 스크립트 없음 - 새로 생성된 블록 유지');
+        }
+      } catch (error) {
+        console.error('스크립트 로드 실패:', error);
+      }
+    };
+
+    // 약간의 딜레이를 주어 applyScheduleToTimeline의 setBlocks() 이후에 실행
+    setTimeout(loadScript, 100);
+  }, [currentContentId]);
+
   const deleteBlock = (blockId: string) => {
     setBlocks((prev) => {
       const filtered = prev.filter((b) => b.id !== blockId);
@@ -246,6 +478,206 @@ export default function StudioPage() {
     setBlocks(reorderBlocks(newBlocks));
   };
 
+  const splitBlock = (blockId: string) => {
+    const block = blocks.find((b) => b.id === blockId);
+    if (!block) return;
+
+    // 문장 단위로 분할 (마침표, 물음표, 느낌표 기준)
+    const sentences = block.content.split(/([.!?]\s+)/).filter(s => s.trim().length > 0);
+
+    if (sentences.length <= 1) {
+      alert('문장이 너무 짧아서 분할할 수 없습니다.');
+      return;
+    }
+
+    // 전체 글자 수
+    const totalLength = block.content.length;
+    const targetMidPoint = totalLength / 2;
+
+    // 중간 지점에 가장 가까운 문장 경계 찾기
+    let currentLength = 0;
+    let splitIndex = 0;
+    let minDistance = Infinity;
+
+    for (let i = 0; i < sentences.length; i++) {
+      currentLength += sentences[i].length;
+      const distance = Math.abs(currentLength - targetMidPoint);
+
+      if (distance < minDistance) {
+        minDistance = distance;
+        splitIndex = i + 1;
+      }
+    }
+
+    // 첫 번째와 두 번째 그룹으로 분할
+    const firstSentences = sentences.slice(0, splitIndex).join('');
+    const secondSentences = sentences.slice(splitIndex).join('');
+
+    if (!firstSentences.trim() || !secondSentences.trim()) {
+      alert('분할할 수 없는 위치입니다.');
+      return;
+    }
+
+    // Duration을 문장 길이 비율로 계산
+    const firstRatio = firstSentences.length / totalLength;
+    const firstDuration = Math.floor(block.duration * firstRatio);
+    const secondDuration = block.duration - firstDuration;
+
+    // 첫 번째 블록
+    const firstBlock: ScriptBlock = {
+      ...block,
+      duration: firstDuration,
+      content: firstSentences.trim(),
+      timing: {
+        start: block.timing.start,
+        end: block.timing.start + firstDuration,
+      },
+    };
+
+    // 두 번째 블록
+    const secondBlock: ScriptBlock = {
+      ...block,
+      id: `block-${Date.now()}`,
+      order: block.order + 1,
+      duration: secondDuration,
+      content: secondSentences.trim(),
+      timing: {
+        start: block.timing.start + firstDuration,
+        end: block.timing.end,
+      },
+    };
+
+    // 배열에서 원본 블록을 첫 번째, 두 번째 블록으로 교체
+    const newBlocks = [
+      ...blocks.slice(0, block.order),
+      firstBlock,
+      secondBlock,
+      ...blocks.slice(block.order + 1),
+    ];
+
+    console.log(`✂️ 블록 분할: ${block.type} (${block.duration}초) → ${firstDuration}초 + ${secondDuration}초`);
+    console.log(`   첫 번째: "${firstSentences.substring(0, 30)}..."`);
+    console.log(`   두 번째: "${secondSentences.substring(0, 30)}..."`);
+    setBlocks(reorderBlocks(newBlocks));
+  };
+
+  const autoSplitBlock = async (blockId: string) => {
+    const block = blocks.find((b) => b.id === blockId);
+    if (!block) return;
+
+    if (block.content.length < 50) {
+      alert('블록이 너무 짧아서 자동 분할이 불필요합니다.');
+      return;
+    }
+
+    console.log(`🤖 AI 맥락 기반 자동 분할 시작: ${block.type} (${block.duration}초)`);
+
+    try {
+      // Storyboard API 호출 (맥락 분석 기반 분할)
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/v1/storyboard/campaigns/1/content/1/generate?async_mode=false`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            script: block.content,
+            campaign_concept: {
+              gender: 'female',
+              tone: 'professional',
+              style: 'modern',
+              platform: 'YouTube'
+            },
+            target_duration: block.duration
+          })
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('AI 분할 실패');
+      }
+
+      const data = await response.json();
+
+      if (!data.success || !data.storyboard_blocks || data.storyboard_blocks.length === 0) {
+        alert('AI가 의미 있는 분할 지점을 찾지 못했습니다.');
+        return;
+      }
+
+      console.log(`✅ AI가 ${data.storyboard_blocks.length}개 블록으로 분할 완료`);
+
+      // Storyboard 블록을 ScriptBlock으로 변환
+      const splitBlocks: ScriptBlock[] = data.storyboard_blocks.map((sb: any, idx: number) => ({
+        id: idx === 0 ? block.id : `block-${Date.now()}-${idx}`,
+        type: sb.block_type || block.type,
+        content: sb.content,
+        duration: Math.round(sb.end_time - sb.start_time),
+        effects: {
+          fadeIn: sb.transition_in === 'fade',
+          fadeOut: sb.transition_out === 'fade',
+          zoomIn: sb.transition_in === 'zoom',
+          zoomOut: sb.transition_out === 'zoom',
+          slide: sb.transition_in?.includes('slide') ? sb.transition_in : undefined,
+          highlight: sb.visual_emphasis === 'highlight'
+        },
+        media: {
+          backgroundUrl: sb.background_url,
+          backgroundType: sb.background_type
+        },
+        timing: {
+          start: block.timing.start + sb.start_time,
+          end: block.timing.start + sb.end_time
+        },
+        order: block.order + idx
+      }));
+
+      // 원본 블록을 AI 분할 블록들로 교체
+      const newBlocks = [
+        ...blocks.slice(0, block.order),
+        ...splitBlocks,
+        ...blocks.slice(block.order + 1),
+      ];
+
+      setBlocks(reorderBlocks(newBlocks));
+      alert(`AI가 맥락을 분석하여 ${splitBlocks.length}개 블록으로 분할했습니다!`);
+
+    } catch (error) {
+      console.error('AI 자동 분할 실패:', error);
+      alert('AI 분할 중 오류가 발생했습니다. 백엔드가 실행 중인지 확인해주세요.');
+    }
+  };
+
+  const mergeWithNextBlock = (blockId: string) => {
+    const blockIndex = blocks.findIndex((b) => b.id === blockId);
+    if (blockIndex === -1 || blockIndex >= blocks.length - 1) {
+      alert('다음 블록이 없어서 합칠 수 없습니다.');
+      return;
+    }
+
+    const currentBlock = blocks[blockIndex];
+    const nextBlock = blocks[blockIndex + 1];
+
+    // 두 블록 합치기
+    const mergedBlock: ScriptBlock = {
+      ...currentBlock,
+      duration: currentBlock.duration + nextBlock.duration,
+      content: `${currentBlock.content} ${nextBlock.content}`.trim(),
+      timing: {
+        start: currentBlock.timing.start,
+        end: nextBlock.timing.end,
+      },
+    };
+
+    // 다음 블록 제거하고 현재 블록을 합쳐진 블록으로 교체
+    const newBlocks = [
+      ...blocks.slice(0, blockIndex),
+      mergedBlock,
+      ...blocks.slice(blockIndex + 2),
+    ];
+
+    console.log(`🔗 블록 합치기: ${currentBlock.duration}초 + ${nextBlock.duration}초 → ${mergedBlock.duration}초`);
+    setBlocks(reorderBlocks(newBlocks));
+  };
+
   const reorderBlocksByDragDrop = (reorderedBlocks: ScriptBlock[]) => {
     // 드래그 앤 드롭으로 순서 변경 시, 타이밍 자동 재계산
     setBlocks(reorderBlocks(reorderedBlocks));
@@ -255,16 +687,29 @@ export default function StudioPage() {
   const loadSchedule = async (spreadsheetId: string) => {
     try {
       const res = await fetch(
-        `/api/sheets-schedule?spreadsheet_id=${spreadsheetId}`,
+        `/api/content-schedule?spreadsheet_id=${spreadsheetId}`,
       );
       const data = await res.json();
 
       if (data.success) {
+        // DB 데이터를 컴포넌트에서 사용하는 형식으로 매핑
+        const rawItems = data.contents || data.schedule || [];
+        const mappedItems = rawItems.map((item: any) => ({
+          ...item,
+          // DB 필드가 있으면 사용, 없으면 기존 키 사용 (호환성)
+          "캠페인명": item.campaign_name || item["캠페인명"] || "미지정 캠페인",
+          "소제목": item.subtitle || item["소제목"] || "",
+          "주제": item.topic || item["주제"] || "",
+          "플랫폼": item.platform || item["플랫폼"] || "YouTube",
+          "발행일": item.publish_date || item["발행일"] || "",
+          "상태": item.status || item["상태"] || "draft"
+        }));
+
         // 선택된 캠페인에 속한 콘텐츠만 필터링
-        let filteredSchedule = data.schedule;
+        let filteredSchedule = mappedItems;
 
         if (selectedCampaign) {
-          filteredSchedule = data.schedule.filter(
+          filteredSchedule = mappedItems.filter(
             (item: any) => item["캠페인명"] === selectedCampaign.name,
           );
           console.log(
@@ -274,12 +719,12 @@ export default function StudioPage() {
 
         setScheduleItems(filteredSchedule);
         console.log(
-          "✅ SQLite에서 로드된 캠페인:",
+          "✅ 로드된 스케줄:",
           filteredSchedule.length,
           "개",
         );
       } else {
-        console.error("❌ 스케줄 로드 실패:", data.message);
+        console.error("❌ 스케줄 로드 실패:", data.message || data.error);
       }
     } catch (err) {
       console.error("❌ 스케줄 로드 실패:", err);
@@ -288,8 +733,14 @@ export default function StudioPage() {
     }
   };
 
-  // 스케줄 항목 선택하여 타임라인에 적용
+  // 스케줄 항목 선택하여 타임라인에 적용 (라우팅 변경)
   const applyScheduleToTimeline = async (item: any) => {
+    // 선택 화면으로 이동
+    router.push(`/studio/content/${item.id}/edit`);
+  };
+
+  /* 기존 로직 백업 (Deep Linking에서 사용됨) */
+  const _unused_applyScheduleToTimeline = async (item: any) => {
     setShowSheetsModal(false);
 
     // ✅ 콘텐츠 ID 저장 (워크플로우 전체에서 사용)
@@ -343,7 +794,7 @@ export default function StudioPage() {
         // Storyboard API 호출 - AI가 동적으로 블록 분할
         try {
           const storyboardRes = await fetch(
-            `http://localhost:8000/api/v1/storyboard/campaigns/${selectedCampaign?.id}/content/${item.id}/generate`,
+            `http://127.0.0.1:8000/api/v1/storyboard/campaigns/${selectedCampaign?.id}/content/${item.id}/generate`,
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -504,7 +955,7 @@ export default function StudioPage() {
         setGeneratedScript(data.script || data.body || "");
 
         setWorkflowStep("script_ready");
-        setSelectedSection(1); // 첫 번째 섹션 자동 선택
+        setActiveTab("script"); // 스크립트 탭으로 자동 전환
       } else {
         alert(`스크립트 생성 실패: ${data.error || "알 수 없는 오류"}`);
         setWorkflowStep(null);
@@ -599,8 +1050,8 @@ export default function StudioPage() {
     setWorkflowStep("audio_generating");
 
     try {
-      // 전체 스크립트 결합 (모든 섹션)
-      const fullScript = sections.map((s) => s.script).join("\n\n");
+      // 전체 스크립트 결합 (모든 블록)
+      const fullScript = blocks.map((b) => b.content).join("\n\n");
 
       if (!fullScript.trim()) {
         alert("스크립트가 비어있습니다");
@@ -609,7 +1060,7 @@ export default function StudioPage() {
       }
 
       // Audio API 호출 (Celery 비동기 처리)
-      const res = await fetch("http://localhost:8000/api/v1/audio/generate", {
+      const res = await fetch("http://127.0.0.1:8000/api/v1/audio/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -626,25 +1077,43 @@ export default function StudioPage() {
 
       if (data.task_id) {
         console.log(`✅ 오디오 생성 작업 시작: ${data.task_id}`);
+        setAudioProgress(0);
+        setAudioStatusMessage("작업 초기화 중...");
 
-        // 상태 폴링 (5초마다 확인)
+        // 상태 폴링 (1초마다 확인 - 더 빠른 피드백)
         const pollInterval = setInterval(async () => {
           try {
             const statusRes = await fetch(
-              `http://localhost:8000/api/v1/audio/status/${data.task_id}`,
+              `http://127.0.0.1:8000/api/v1/audio/status/${data.task_id}`,
             );
             const statusData = await statusRes.json();
 
-            console.log(`🔄 오디오 생성 상태: ${statusData.status}`);
+            // 진행률 업데이트 (Backend가 progress를 반환한다고 가정)
+            if (statusData.info && statusData.info.progress !== undefined) {
+              setAudioProgress(Math.round(statusData.info.progress * 100));
+            } else if (statusData.progress !== undefined) {
+              setAudioProgress(Math.round(statusData.progress * 100));
+            }
+
+            // 메시지 업데이트
+            if (statusData.info && statusData.info.message) {
+              setAudioStatusMessage(statusData.info.message);
+            } else if (statusData.message) {
+              setAudioStatusMessage(statusData.message);
+            }
+
+            console.log(`🔄 오디오 생성 상태: ${statusData.status} (${audioProgress}%)`);
 
             if (statusData.status === "SUCCESS" && statusData.result) {
               clearInterval(pollInterval);
+              setAudioProgress(100);
+              setAudioStatusMessage("생성 완료!");
 
-              // 실제 파일 경로 저장 (Director Agent에서 사용)
-              const audioPath = statusData.result.audio_path;
-              setAudioUrl(audioPath);
+              // task_id를 사용한 오디오 다운로드 URL
+              const audioUrl = `http://127.0.0.1:8000/api/v1/audio/download/${data.task_id}`;
+              setAudioUrl(audioUrl);
 
-              console.log(`✅ 오디오 생성 완료: ${audioPath}`);
+              console.log(`✅ 오디오 생성 완료: ${statusData.result.audio_path}`);
               setWorkflowStep("audio_ready");
             } else if (statusData.status === "FAILURE") {
               clearInterval(pollInterval);
@@ -656,7 +1125,7 @@ export default function StudioPage() {
           } catch (pollErr) {
             console.error("상태 확인 실패:", pollErr);
           }
-        }, 5000);
+        }, 1000);
       } else {
         alert("오디오 생성 요청 실패");
         setWorkflowStep("script_ready");
@@ -681,11 +1150,11 @@ export default function StudioPage() {
 
     try {
       // 전체 스크립트 결합
-      const fullScript = sections.map((s) => s.script).join("\n\n");
+      const fullScript = blocks.map((b) => b.content).join("\n\n");
 
       // Director Agent API 호출 (비동기 작업)
       const res = await fetch(
-        "http://localhost:8000/api/v1/director/generate-video",
+        "http://127.0.0.1:8000/api/v1/director/generate-video",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -717,13 +1186,27 @@ export default function StudioPage() {
           try {
             // 진행률 API 호출 (Backend director API의 task-status 엔드포인트)
             const statusRes = await fetch(
-              `http://localhost:8000/api/v1/director/task-status/${data.task_id}`,
+              `http://127.0.0.1:8000/api/v1/director/task-status/${data.task_id}`,
             );
             const statusData = await statusRes.json();
 
             console.log(
-              `🔄 영상 생성 상태: ${statusData.status} (${statusData.progress?.toFixed(1)}%)`,
+              `🔄 영상 생성 상태: ${statusData.status} (${statusData.progress?.toFixed(1) || 'N/A'}%)`,
             );
+
+            // UNKNOWN 상태 처리 (Celery 연결 실패)
+            if (statusData.status === "UNKNOWN") {
+              clearInterval(pollInterval);
+              setRenderProgress(0);
+              setRenderStatus(
+                statusData.error || "영상 생성 실패: Celery 워커 연결 오류"
+              );
+              // setIsRendering(false); // Removed undefined state setter
+              alert(
+                `영상 생성 실패\n\n${statusData.message || "Celery 워커가 실행되지 않았거나 연결에 실패했습니다."}\n\n오디오 생성까지만 완료되었습니다.`
+              );
+              return;
+            }
 
             // 진행률 업데이트
             if (statusData.progress !== undefined) {
@@ -848,864 +1331,187 @@ export default function StudioPage() {
   };
 
   // 캠페인 선택 핸들러
-  const handleCampaignSelect = (campaign: Campaign) => {
+  const handleCampaignSelect = async (campaign: Campaign) => {
     console.log("🎯 캠페인 선택됨:", campaign);
 
     setSelectedCampaign(campaign);
 
-    // 캠페인 선택 시 기본 스크립트 로드
+    // 캠페인의 콘텐츠 목록 로드
+    try {
+      const res = await fetch(`/api/content-schedule?campaign_id=${campaign.id}`);
+      const data = await res.json();
+
+      if (data.success && Array.isArray(data.contents)) {
+        const formattedContents = data.contents.map((item: any) => ({
+          id: item.id,
+          소제목: item.subtitle,
+          캠페인명: campaign.name,
+          플랫폼: item.platform,
+          발행일: item.publish_date,
+          주제: item.topic,
+          상태: item.status
+        }));
+        setScheduleItems(formattedContents);
+        console.log(`📋 콘텐츠 ${formattedContents.length}개 로드됨`);
+      } else {
+        setScheduleItems([]);
+        console.log("📋 콘텐츠 없음");
+      }
+    } catch (err) {
+      console.error("콘텐츠 로드 실패:", err);
+      setScheduleItems([]);
+    }
+
+    // 캠페인 선택 시 duration 설정 (스크립트는 콘텐츠 선택 시에만 생성)
     const targetDuration = campaign.target_duration || 180;
 
     console.log(
       `📊 목표 분량: ${targetDuration}초 (${Math.floor(targetDuration / 60)}분 ${targetDuration % 60}초)`,
     );
 
-    const newSections = [
-      {
-        id: 1,
-        type: "훅",
-        duration: Math.round(targetDuration * 0.15), // 15%
-        color: "bg-red-500",
-        script: `안녕하세요! ${campaign.name}에 대해 알아보겠습니다.`,
-      },
-      {
-        id: 2,
-        type: "본문",
-        duration: Math.round(targetDuration * 0.7), // 70%
-        color: "bg-blue-500",
-        script:
-          '여기에 본문 스크립트를 작성하세요. 우측 패널에서 직접 수정하거나, "구글 시트 연동" 버튼으로 AI 스크립트를 자동 생성할 수 있습니다.',
-      },
-      {
-        id: 3,
-        type: "CTA",
-        duration: Math.round(targetDuration * 0.15), // 15%
-        color: "bg-green-500",
-        script: "좋아요와 구독 부탁드립니다!",
-      },
-    ];
-
-    console.log("📝 생성된 섹션:", newSections);
-
-    setSections(newSections);
+    // ✅ Blocks 시스템으로 전환 완료 - duration 설정
+    console.log("📝 캠페인 duration 설정:", targetDuration);
     setDuration(targetDuration);
-    setSelectedSection(1); // 첫 번째 섹션 자동 선택
+
     setWorkflowStep("campaign_loaded"); // 캠페인 로드 완료 상태
 
-    console.log(`✅ 타임라인 업데이트 완료 - 총 ${targetDuration}초`);
+    console.log(`✅ 캠페인 로드 완료 - 총 ${targetDuration}초`);
 
     // 콘텐츠 선택 모달 자동 오픈
     setShowSheetsModal(true);
   };
 
   return (
-    <div className="h-screen bg-[#1a1a1a] text-white flex flex-col overflow-hidden">
-      {/* 상단 헤더 */}
-      <header className="h-14 bg-surface-darkest border-b border-gray-800 flex items-center justify-between px-4">
-        <div className="flex items-center gap-4">
-          <h1 className="heading-3 bg-gradient-to-r from-brand-primary-400 to-brand-secondary-600 bg-clip-text text-transparent">
-            OmniVibe Pro
-          </h1>
-          <span className="text-sm text-gray-400">|</span>
-          <span className="body text-gray-300">
-            {selectedCampaign ? selectedCampaign.name : "새 프로젝트"}
-          </span>
-        </div>
+    <div className="flex h-screen bg-[#050505] text-white overflow-hidden font-inter selection:bg-purple-500/30">
+      <StudioSidebar
+        selectedCampaignName={selectedCampaign?.name || null}
+        onCampaignSelect={handleCampaignSelect}
+        onSheetsModalOpen={() => setShowSheetsModal(true)}
+        onDriveSelectOpen={() => setShowDriveSelect(true)}
+      />
 
-        <div className="flex items-center gap-2">
-          <Button
-            onClick={() => setShowABTestModal(true)}
-            variant="secondary"
-            size="sm"
-            className="flex items-center gap-2"
-            disabled={!currentContentId}
-            title={!currentContentId ? "먼저 콘텐츠를 선택하세요" : "A/B 테스트 관리"}
-          >
-            <BarChart3 className="w-4 h-4" />
-            A/B 테스트
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            className="flex items-center gap-2"
-          >
-            <Save className="w-4 h-4" />
-            저장
-          </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            className="flex items-center gap-2"
-          >
-            <Download className="w-4 h-4" />
-            내보내기
-          </Button>
-        </div>
-      </header>
-
-      {/* 메인 컨텐츠 영역 */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* 좌측 패널 - 클라이언트 & 캠페인 */}
-        <aside className="w-64 bg-[#2a2a2a] border-r border-gray-800 flex flex-col">
-          <div className="p-4 border-b border-gray-800">
-            <Button
-              onClick={() => setShowSheetsModal(true)}
-              variant="primary"
-              size="sm"
-              className="w-full flex items-center justify-center gap-2"
-            >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z" />
-              </svg>
-              구글 시트 연동
-            </Button>
-          </div>
-
-          <div className="flex-1 overflow-y-auto p-4">
-            <ClientsList onCampaignSelect={handleCampaignSelect} />
-          </div>
-
-          <div className="p-4 border-t border-gray-800">
-            <h3 className="text-xs font-semibold text-gray-400 mb-2">
-              빠른 미디어
-            </h3>
-            <div className="space-y-2">
-              <button className="w-full p-2 border-2 border-dashed border-gray-700 rounded-lg hover:border-gray-600 transition-colors">
-                <Upload className="w-4 h-4 mx-auto mb-1 text-gray-500" />
-                <p className="text-xs text-gray-500">파일 추가</p>
-              </button>
-            </div>
-          </div>
-        </aside>
-
-        {/* 중앙 영역 */}
-        <div className="flex-1 flex flex-col">
-          {/* 워크플로우 진행 상태 */}
-          {workflowStep && (
-            <div className="bg-[#2a2a2a] border-b border-gray-800 p-4">
-              <div className="max-w-4xl mx-auto">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-semibold text-gray-300">
-                    🎬 제작 진행 상황
-                  </h3>
-                  <div className="text-xs text-gray-400">
-                    {workflowStep === "script_generating" ||
-                    workflowStep === "script_ready" ||
-                    workflowStep === "campaign_loaded"
-                      ? "1/3 단계"
-                      : workflowStep === "audio_generating" ||
-                          workflowStep === "audio_ready"
-                        ? "2/3 단계"
-                        : "3/3 단계"}
-                  </div>
-                </div>
-
-                {/* Progress Bar */}
-                <div className="h-2 bg-gray-700 rounded-full overflow-hidden mb-4">
-                  <div
-                    className="h-full bg-gradient-to-r from-purple-600 to-pink-600 transition-all duration-500"
-                    style={{
-                      width:
-                        workflowStep === "script_generating"
-                          ? "10%"
-                          : workflowStep === "script_ready" ||
-                              workflowStep === "campaign_loaded"
-                            ? "33%"
-                            : workflowStep === "audio_generating"
-                              ? "50%"
-                              : workflowStep === "audio_ready"
-                                ? "66%"
-                                : workflowStep === "video_rendering"
-                                  ? "85%"
-                                  : workflowStep === "video_ready"
-                                    ? "100%"
-                                    : "0%",
-                    }}
-                  ></div>
-                </div>
-
-                {/* 진행 단계 표시 */}
-                <div className="flex items-center gap-2 mb-4">
-                  {/* 1. 스크립트 생성 */}
-                  <div
-                    className={`flex-1 px-4 py-2 rounded-lg text-center text-sm font-semibold transition-all ${
-                      workflowStep === "script_generating"
-                        ? "bg-purple-600 animate-pulse"
-                        : workflowStep === "script_ready" ||
-                            workflowStep === "audio_generating" ||
-                            workflowStep === "audio_ready" ||
-                            workflowStep === "video_rendering" ||
-                            workflowStep === "video_ready"
-                          ? "bg-green-600"
-                          : "bg-gray-700"
-                    }`}
-                  >
-                    {workflowStep === "script_generating"
-                      ? "📝 스크립트 생성 중..."
-                      : "✅ 스크립트 완료"}
-                  </div>
-
-                  <div className="text-gray-600">→</div>
-
-                  {/* 2. 오디오 생성 */}
-                  <div
-                    className={`flex-1 px-4 py-2 rounded-lg text-center text-sm font-semibold transition-all ${
-                      workflowStep === "audio_generating"
-                        ? "bg-blue-600 animate-pulse"
-                        : workflowStep === "audio_ready" ||
-                            workflowStep === "video_rendering" ||
-                            workflowStep === "video_ready"
-                          ? "bg-green-600"
-                          : "bg-gray-700"
-                    }`}
-                  >
-                    {workflowStep === "audio_generating"
-                      ? "🎤 오디오 생성 중..."
-                      : workflowStep === "audio_ready" ||
-                          workflowStep === "video_rendering" ||
-                          workflowStep === "video_ready"
-                        ? "✅ 오디오 완료"
-                        : "⏳ 오디오 대기"}
-                  </div>
-
-                  <div className="text-gray-600">→</div>
-
-                  {/* 3. 영상 렌더링 */}
-                  <div
-                    className={`flex-1 px-4 py-2 rounded-lg text-center text-sm font-semibold transition-all ${
-                      workflowStep === "video_rendering"
-                        ? "bg-red-600 animate-pulse"
-                        : workflowStep === "video_ready"
-                          ? "bg-green-600"
-                          : "bg-gray-700"
-                    }`}
-                  >
-                    {workflowStep === "video_rendering"
-                      ? "🎬 영상 렌더링 중..."
-                      : workflowStep === "video_ready"
-                        ? "✅ 영상 완료"
-                        : "⏳ 렌더링 대기"}
-                  </div>
-                </div>
-
-                {/* 액션 버튼 */}
-                <div className="flex gap-2">
-                  {workflowStep === "campaign_loaded" && (
-                    <div className="flex items-center gap-3 w-full">
-                      <div className="flex-1 px-4 py-3 bg-green-600/20 border border-green-600 rounded-lg">
-                        <p className="text-green-400 font-semibold text-sm">
-                          ✅ 캠페인 &quot;{selectedCampaign?.name}&quot; 로드
-                          완료!
-                        </p>
-                        <p className="text-gray-300 text-xs mt-1">
-                          총 {Math.floor(duration / 60)}분 {duration % 60}초
-                          분량의 스크립트가 생성되었습니다. 우측 패널에서
-                          편집하거나, 아래 버튼으로 AI 스크립트를 자동
-                          생성하세요.
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => setShowSheetsModal(true)}
-                        className="px-4 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg text-sm font-semibold transition-colors whitespace-nowrap"
-                      >
-                        🪄 AI 스크립트 생성
-                      </button>
-                      <button
-                        onClick={() => setSelectedSection(1)}
-                        className="px-4 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm transition-colors whitespace-nowrap"
-                      >
-                        ✏️ 직접 작성
-                      </button>
-                    </div>
-                  )}
-                  {workflowStep === "script_ready" && (
-                    <>
-                      {/* 캐시 인디케이터 */}
-                      {scriptCached && (
-                        <div className="flex items-center gap-2 px-3 py-2 bg-green-600/20 border border-green-600 rounded-lg text-xs">
-                          <span className="text-green-400">
-                            💾 저장된 스크립트 사용
-                          </span>
-                          {scriptLoadedAt && (
-                            <span className="text-gray-400">
-                              (
-                              {new Date(scriptLoadedAt).toLocaleTimeString(
-                                "ko-KR",
-                              )}
-                              )
-                            </span>
-                          )}
-                        </div>
-                      )}
-
-                      <button
-                        onClick={generateAudio}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-semibold transition-colors"
-                      >
-                        🔵 오디오 생성하기
-                      </button>
-                      <button
-                        onClick={() => setSelectedSection(1)}
-                        className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 rounded-lg text-sm font-semibold transition-colors"
-                      >
-                        📝 스크립트 수정
-                      </button>
-                      {scriptCached && (
-                        <button
-                          onClick={regenerateScript}
-                          className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-sm font-semibold transition-colors"
-                        >
-                          🔄 스크립트 재생성
-                        </button>
-                      )}
-                    </>
-                  )}
-                  {workflowStep === "audio_ready" && (
-                    <button
-                      onClick={renderVideo}
-                      className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm font-semibold transition-colors"
-                    >
-                      🎬 영상 렌더링 시작
-                    </button>
-                  )}
-                  {workflowStep === "video_ready" && videoUrl && (
-                    <div className="flex items-center gap-2">
-                      <span className="text-green-400 font-semibold">
-                        🎉 영상이 준비되었습니다!
-                      </span>
-                      <a
-                        href={videoUrl}
-                        download
-                        className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-sm font-semibold transition-colors inline-flex items-center"
-                      >
-                        <Download className="w-4 h-4 mr-2" />
-                        다운로드
-                      </a>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* 미리보기 영역 */}
-          <div className="flex-1 bg-[#0f0f0f] flex items-center justify-center p-4">
-            <div className="relative w-full max-w-4xl aspect-video bg-black rounded-lg overflow-hidden shadow-2xl">
-              {/* 비디오 플레이어 영역 */}
-              {workflowStep === "video_ready" && videoUrl ? (
-                // ✅ 영상 준비 완료 시: 실제 비디오 플레이어 표시
-                <video
-                  className="absolute inset-0 w-full h-full object-contain"
-                  controls
-                  autoPlay
-                  src={videoUrl}
-                >
-                  <source src={videoUrl} type="video/mp4" />
-                  비디오를 재생할 수 없습니다.
-                </video>
-              ) : (
-                // ❌ 영상 준비 전: 플레이스홀더 표시
-                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-900 to-black">
-                  <div className="text-center w-full max-w-md px-6">
-                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-purple-600/20 flex items-center justify-center">
-                      <Play className="w-10 h-10 text-purple-400" />
-                    </div>
-                    <p className="text-gray-400 mb-6">
-                      {workflowStep === "script_generating"
-                        ? "스크립트 생성 중..."
-                        : workflowStep === "script_ready"
-                          ? "스크립트 완료. 오디오를 생성하세요"
-                          : workflowStep === "audio_generating"
-                            ? "오디오 생성 중..."
-                            : workflowStep === "audio_ready"
-                              ? "오디오 완료. 영상을 렌더링하세요"
-                              : workflowStep === "video_rendering"
-                                ? "영상 렌더링 중..."
-                                : "미리보기 준비 중"}
-                    </p>
-
-                    {/* 🎬 영상 렌더링 진행률 표시 */}
-                    {workflowStep === "video_rendering" && (
-                      <div className="space-y-3">
-                        {/* 진행률 바 */}
-                        <div className="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
-                          <div
-                            className="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full transition-all duration-300"
-                            style={{ width: `${renderProgress}%` }}
-                          />
-                        </div>
-
-                        {/* 진행률 숫자 및 상태 메시지 */}
-                        <div className="flex items-center justify-between text-xs text-gray-400">
-                          <span className="font-semibold text-purple-400">
-                            {renderProgress}% 완료
-                          </span>
-                          <span className="text-gray-500 text-center flex-1">
-                            {renderStatus}
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* 재생 컨트롤 오버레이 - video_ready 상태일 때는 숨김 (네이티브 컨트롤 사용) */}
-              {workflowStep !== "video_ready" && (
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-                  <div className="flex items-center gap-4">
-                    <button
-                      className="p-2 hover:bg-white/10 rounded-full transition-colors"
-                      disabled
-                    >
-                      <SkipBack className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={() => setIsPlaying(!isPlaying)}
-                      className="p-3 bg-purple-600/50 rounded-full transition-colors cursor-not-allowed"
-                      disabled
-                    >
-                      <Play className="w-6 h-6" />
-                    </button>
-                    <button
-                      className="p-2 hover:bg-white/10 rounded-full transition-colors"
-                      disabled
-                    >
-                      <SkipForward className="w-5 h-5" />
-                    </button>
-
-                    <div className="flex-1 flex items-center gap-2">
-                      <span className="text-sm text-gray-300 w-12">0:00</span>
-                      <div className="flex-1 h-1 bg-gray-700 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-purple-600"
-                          style={{ width: "0%" }}
-                        ></div>
-                      </div>
-                      <span className="text-sm text-gray-300 w-12">0:23</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* 타임라인 영역 */}
-          <div className="h-64 bg-[#2a2a2a] border-t border-gray-800 p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-gray-300">
-                타임라인 & 콘티
-              </h3>
-              <div className="flex items-center gap-2">
-                <button className="px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded text-xs transition-colors">
-                  확대
-                </button>
-                <button className="px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded text-xs transition-colors">
-                  축소
-                </button>
-              </div>
-            </div>
-
-            {/* 타임라인 트랙 */}
-            <div className="space-y-2">
-              {/* 시간 눈금 - 화면 너비에 맞춤 */}
-              <div className="h-6 bg-[#1a1a1a] rounded flex items-center justify-between px-2">
-                {(() => {
-                  // duration에 따라 적절한 눈금 개수 결정
-                  const tickCount = Math.min(Math.ceil(duration / 30), 20);
-                  return Array.from({ length: tickCount + 1 }).map((_, i) => {
-                    const timeInSeconds = Math.round(
-                      (duration / tickCount) * i,
-                    );
-                    const minutes = Math.floor(timeInSeconds / 60);
-                    const seconds = timeInSeconds % 60;
-                    return (
-                      <div
-                        key={i}
-                        className="text-xs text-gray-500 whitespace-nowrap"
-                      >
-                        {minutes}:{seconds.toString().padStart(2, "0")}
-                      </div>
-                    );
-                  });
-                })()}
-              </div>
-
-              {/* 비디오 트랙 */}
-              <div className="relative h-16 bg-[#1a1a1a] rounded overflow-hidden">
-                <div className="absolute inset-0 flex">
-                  {(() => {
-                    // 600초를 기준 스케일로 고정
-                    const TIMELINE_BASE = 600;
-                    const totalDuration = sections.reduce(
-                      (sum, s) => sum + s.duration,
-                      0,
-                    );
-
-                    return sections.map((section) => {
-                      // 각 섹션의 실제 시간을 600초 기준으로 스케일링
-                      const widthPercent =
-                        (section.duration / TIMELINE_BASE) * 100;
-                      const minWidthPx = 80; // 최소 너비 보장
-                      console.log(
-                        `섹션 ${section.type}: ${section.duration}초 → ${widthPercent.toFixed(2)}% (기준: ${TIMELINE_BASE}초)`,
-                      );
-
-                      return (
-                        <div
-                          key={section.id}
-                          onClick={() => setSelectedSection(section.id)}
-                          title={`${section.type} - ${section.duration}초 (${widthPercent.toFixed(1)}%)`}
-                          className={`${section.color} ${
-                            selectedSection === section.id
-                              ? "opacity-100 ring-2 ring-white scale-105 z-10 shadow-lg"
-                              : "opacity-50 hover:opacity-80 hover:scale-102"
-                          } cursor-pointer transition-all duration-200 flex items-center justify-center text-xs font-semibold border-r border-black/30 relative group`}
-                          style={{
-                            width: `${widthPercent}%`,
-                            minWidth: `${minWidthPx}px`,
-                          }}
-                        >
-                          <span className="truncate px-2">
-                            {section.type} ({section.duration}s)
-                          </span>
-                          {/* Hover Tooltip */}
-                          <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-3 py-2 rounded-lg text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20 shadow-xl">
-                            <div className="font-semibold">{section.type}</div>
-                            <div className="text-gray-300">
-                              {section.duration}초 ({widthPercent.toFixed(1)}%)
-                            </div>
-                            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
-                          </div>
-                        </div>
-                      );
-                    });
-                  })()}
-                </div>
-              </div>
-
-              {/* 오디오 트랙 - AudioWaveform 컴포넌트 */}
-              <div className="relative">
-                <div className="absolute left-0 top-0 h-full flex items-center px-4 text-xs font-semibold text-gray-400 bg-[#1a1a1a] border-r border-gray-700 z-10 rounded-l">
-                  <Volume2 className="w-4 h-4 text-blue-400" />
-                </div>
-                <div className="ml-20">
-                  <AudioWaveform
-                    audioUrl={audioUrl}
-                    duration={duration}
-                    onTimeUpdate={setCurrentTime}
-                    className="h-20"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* 우측 패널 - 블록 목록 (VREW 스타일) */}
-        <BlockListPanel
-          blocks={blocks}
-          selectedBlockId={selectedBlockId}
-          onAddBlock={addBlock}
-          onSelectBlock={setSelectedBlockId}
-          onUpdateBlock={updateBlock}
-          onDeleteBlock={deleteBlock}
-          onDuplicateBlock={duplicateBlock}
-          onMoveBlockUp={moveBlockUp}
-          onMoveBlockDown={moveBlockDown}
-          onReorderBlocks={reorderBlocksByDragDrop}
+      <div className="flex-1 flex flex-col relative overflow-hidden bg-[radial-gradient(circle_at_50%_0%,rgba(168,85,247,0.08)_0%,transparent_60%)]">
+        <StudioHeader
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          selectedCampaignName={selectedCampaign?.name || null}
+          onABTestClick={() => setShowABTestModal(true)}
+          onExport={() => console.log("Export triggered")}
         />
 
-      </div>
+        <main className="flex-1 flex flex-col overflow-hidden relative">
+          <div className="flex-1 overflow-hidden relative">
+            {activeTab === "preview" && (
+              <StudioPreview
+                workflowStep={workflowStep}
+                videoUrl={videoUrl || null}
+                isPlaying={isPlaying}
+                setIsPlaying={setIsPlaying}
+                currentTime={currentTime}
+              />
+            )}
 
-      {/* 캠페인 선택 모달 */}
-      {showSheetsModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#2a2a2a] rounded-2xl border border-gray-700 w-full max-w-3xl max-h-[80vh] overflow-hidden flex flex-col">
-            {/* 모달 헤더 */}
-            <div className="p-6 border-b border-gray-700">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-2xl font-bold flex items-center gap-2">
-                  <svg
-                    className="w-6 h-6 text-purple-500"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z" />
-                  </svg>
-                  콘텐츠 선택
-                </h2>
-                <button
-                  onClick={() => {
-                    setShowSheetsModal(false);
-                    setShowSchedule(false);
-                    setConnectionResult(null);
-                  }}
-                  className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-              {selectedCampaign && (
-                <div className="flex items-center gap-2 text-sm text-gray-400">
-                  <span>캠페인:</span>
-                  <span className="px-2 py-1 bg-purple-600/20 text-purple-300 rounded">
-                    {selectedCampaign.name}
-                  </span>
-                </div>
-              )}
-            </div>
-
-            {/* 모달 본문 */}
-            <div className="flex-1 overflow-y-auto p-6">
-              {loading ? (
-                <div className="flex flex-col items-center justify-center py-12">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mb-4"></div>
-                  <p className="text-gray-400">캠페인 로드 중...</p>
-                </div>
-              ) : scheduleItems.length > 0 ? (
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-bold">
-                      📅 콘텐츠 목록 ({scheduleItems.length}개)
-                    </h3>
-                    <button
-                      onClick={() =>
-                        alert("새 콘텐츠 추가 기능은 곧 구현됩니다!")
-                      }
-                      className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 rounded-lg text-sm flex items-center gap-1 transition-colors"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M12 5v14M5 12h14" />
-                      </svg>
-                      새 콘텐츠
-                    </button>
+            {activeTab === "script" && (
+              <div className="h-full flex flex-col pt-10">
+                <div className="flex-1 overflow-y-auto px-12 custom-scrollbar pb-20">
+                  <div className="max-w-4xl mx-auto space-y-10">
+                    <div className="flex items-end justify-between border-b border-white/5 pb-8">
+                      <div>
+                        <h2 className="text-3xl font-black font-outfit text-white mb-2 tracking-tight">대본 마스터링</h2>
+                        <p className="text-gray-500 font-medium">VREW 스타일의 컨텍스트 블록 에디터 시스템</p>
+                      </div>
+                    </div>
+                    <BlockList
+                      blocks={blocks}
+                      selectedBlockId={selectedBlockId}
+                      onBlockSelect={setSelectedBlockId}
+                      onBlockUpdate={(id, updates) => setBlocks(prev => utilUpdateBlock(prev, id, updates))}
+                      onBlockDelete={(id) => setBlocks(prev => utilDeleteBlock(prev, id))}
+                      onBlockDuplicate={duplicateBlock}
+                      onBlockReorder={setBlocks}
+                    />
+                    <div className="pt-10">
+                      <AddBlockButton onAdd={(type) => setBlocks(prev => utilAddBlock(prev, type))} className="max-w-xl mx-auto" />
+                    </div>
                   </div>
+                </div>
+              </div>
+            )}
 
-                  <div className="space-y-3">
-                    {scheduleItems.map((item: any, index: number) => (
+            {activeTab === "storyboard" && (
+              <div className="h-full p-12 overflow-y-auto custom-scrollbar">
+                <div className="max-w-screen-xl mx-auto">
+                  <h2 className="text-4xl font-black font-outfit premium-gradient-text mb-12 tracking-tighter uppercase italic">VISUAL FLOW</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                    {blocks.map((block) => (
                       <div
-                        key={index}
-                        onClick={() => applyScheduleToTimeline(item)}
-                        className="p-4 bg-[#1a1a1a] border border-gray-700 rounded-lg hover:border-purple-500 cursor-pointer transition-all group"
+                        key={block.id}
+                        onClick={() => setSelectedBlockId(block.id)}
+                        className={`premium-card rounded-[2rem] p-6 transition-all cursor-pointer group ${selectedBlockId === block.id ? "ring-2 ring-brand-primary-500 bg-brand-primary-500/[0.03]" : "border-white/5 bg-white/[0.02]"}`}
                       >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-white mb-1 group-hover:text-purple-400 transition-colors">
-                              {item["소제목"]}
-                            </h4>
-                            <p className="text-sm text-gray-400 mb-2">
-                              {item["캠페인명"]} | {item["플랫폼"]} |{" "}
-                              {item["발행일"] || "미정"}
-                            </p>
-                            {item["주제"] && (
-                              <p className="text-xs text-gray-500">
-                                주제: {item["주제"]}
-                              </p>
-                            )}
-                          </div>
-                          <div className="text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                            →
-                          </div>
+                        <div className="aspect-video bg-[#0a0a0c] rounded-2xl mb-6 flex items-center justify-center border border-white/5">
+                          <ImageIcon className="w-12 h-12 text-white/5" />
                         </div>
+                        <div className="flex items-center gap-3 mb-4">
+                          <span className={`px-3 py-1 rounded-full text-[9px] font-black text-white uppercase tracking-widest ${block.type === 'hook' ? 'bg-red-500' : block.type === 'body' ? 'bg-blue-600' : 'bg-green-600'}`}>
+                            {block.type}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-400 leading-relaxed truncate">{block.content}</p>
                       </div>
                     ))}
                   </div>
                 </div>
-              ) : showContentCreateForm ? (
-                <div className="p-6 space-y-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-white">
-                      새 콘텐츠 추가
-                    </h3>
-                    <button
-                      onClick={() => {
-                        setShowContentCreateForm(false);
-                        setNewContent({
-                          title: "",
-                          platform: "Youtube",
-                          publish_date: "",
-                          topic: "",
-                        });
-                      }}
-                      className="text-gray-400 hover:text-white transition-colors"
-                    >
-                      <X className="w-5 h-5" />
-                    </button>
-                  </div>
+              </div>
+            )}
+          </div>
 
-                  <div className="space-y-4">
-                    {/* 소제목 */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        소제목 <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        value={newContent.title}
-                        onChange={(e) =>
-                          setNewContent({
-                            ...newContent,
-                            title: e.target.value,
-                          })
-                        }
-                        placeholder="예: 시각장애인을 위한 AI 기술의 발전"
-                        className="w-full px-4 py-2 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
-                      />
+          <StudioTimeline
+            blocks={blocks}
+            selectedBlockId={selectedBlockId}
+            onBlockSelect={setSelectedBlockId}
+            audioUrl={audioUrl}
+            currentTime={currentTime}
+            onTimeUpdate={setCurrentTime}
+            totalDuration={getTotalDuration(blocks)}
+          />
+        </main>
+      </div>
+
+      <StudioInspector
+        selectedBlock={blocks.find(b => b.id === selectedBlockId) || null}
+        onBlockUpdate={(id, updates) => setBlocks(prev => prev.map(b => b.id === id ? { ...b, ...updates } : b))}
+        onAutoSplit={(id) => autoSplitBlock(id)}
+        blockCount={blocks.length}
+        totalDuration={getTotalDuration(blocks)}
+      />
+
+      {/* 모달 영역 */}
+      {showSheetsModal && (
+        <div className="fixed inset-0 bg-[#000]/90 backdrop-blur-[50px] flex items-center justify-center z-[100] p-8">
+          <div className="bg-[#0f0f12] rounded-[3rem] border border-white/10 w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl relative">
+            <div className="p-12 border-b border-white/5 flex items-center justify-between">
+              <div>
+                <h2 className="text-4xl font-black font-outfit premium-gradient-text mb-2 tracking-tighter uppercase italic">Asset Library</h2>
+                <p className="text-sm text-gray-500 font-bold uppercase tracking-widest">Select your narrative orchestrator</p>
+              </div>
+              <button onClick={() => setShowSheetsModal(false)} className="p-4 bg-white/5 hover:bg-white/10 rounded-3xl transition-all"><X className="w-8 h-8 text-gray-400" /></button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-12 custom-scrollbar">
+              {loading ? (
+                <div className="h-64 flex flex-col items-center justify-center gap-6 text-brand-primary-400 animate-pulse font-bold tracking-widest">데이터 동기화 중...</div>
+              ) : scheduleItems.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {scheduleItems.map((item, idx) => (
+                    <div key={idx} onClick={() => applyScheduleToTimeline(item)} className="premium-card rounded-[2rem] p-8 border-white/5 hover:border-brand-primary-500/50 cursor-pointer transition-all active:scale-95">
+                      <h4 className="font-black text-xl mb-2">{item["소제목"]}</h4>
+                      <p className="text-[10px] text-gray-600 font-black uppercase tracking-widest">{item["플랫폼"]} • {item["캠페인명"]}</p>
                     </div>
-
-                    {/* 플랫폼 */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        플랫폼
-                      </label>
-                      <select
-                        value={newContent.platform}
-                        onChange={(e) =>
-                          setNewContent({
-                            ...newContent,
-                            platform: e.target.value,
-                          })
-                        }
-                        className="w-full px-4 py-2 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500 transition-colors"
-                      >
-                        <option value="Youtube">Youtube</option>
-                        <option value="Instagram">Instagram</option>
-                        <option value="TikTok">TikTok</option>
-                        <option value="Facebook">Facebook</option>
-                      </select>
-                    </div>
-
-                    {/* 발행일 */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        발행일
-                      </label>
-                      <input
-                        type="date"
-                        value={newContent.publish_date}
-                        onChange={(e) =>
-                          setNewContent({
-                            ...newContent,
-                            publish_date: e.target.value,
-                          })
-                        }
-                        className="w-full px-4 py-2 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple-500 transition-colors"
-                      />
-                    </div>
-
-                    {/* 주제 */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        주제
-                      </label>
-                      <input
-                        type="text"
-                        value={newContent.topic}
-                        onChange={(e) =>
-                          setNewContent({
-                            ...newContent,
-                            topic: e.target.value,
-                          })
-                        }
-                        placeholder="예: AI 기술"
-                        className="w-full px-4 py-2 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex gap-3 pt-4 border-t border-gray-700">
-                    <button
-                      onClick={handleCreateContent}
-                      disabled={!newContent.title.trim()}
-                      className="flex-1 px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed rounded-lg text-sm font-semibold transition-colors"
-                    >
-                      콘텐츠 추가
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowContentCreateForm(false);
-                        setNewContent({
-                          title: "",
-                          platform: "Youtube",
-                          publish_date: "",
-                          topic: "",
-                        });
-                      }}
-                      className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm transition-colors"
-                    >
-                      취소
-                    </button>
-                  </div>
+                  ))}
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center py-12">
-                  <div className="w-16 h-16 mb-4 rounded-full bg-gray-700/50 flex items-center justify-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="32"
-                      height="32"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="text-gray-500"
-                    >
-                      <path d="M3 7v10c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2Z" />
-                      <path d="M12 11v6M9 14h6" />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-semibold text-white mb-2">
-                    {selectedCampaign
-                      ? `"${selectedCampaign.name}"에 콘텐츠가 없습니다`
-                      : "콘텐츠가 없습니다"}
-                  </h3>
-                  <p className="text-sm text-gray-400 mb-6 text-center max-w-md">
-                    이 캠페인에 첫 번째 콘텐츠를 추가하거나,
-                    <br />
-                    다른 캠페인을 선택해보세요.
-                  </p>
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => setShowContentCreateForm(true)}
-                      className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M12 5v14M5 12h14" />
-                      </svg>
-                      새 콘텐츠 추가
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowSheetsModal(false);
-                      }}
-                      className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm transition-colors"
-                    >
-                      다른 캠페인 선택
-                    </button>
-                  </div>
+                <div className="text-center py-20 bg-white/5 rounded-3xl border border-dashed border-white/10">
+                  <p className="text-gray-500 font-bold">불러올 수 있는 스케쥴이 없습니다.</p>
                 </div>
               )}
             </div>
@@ -1713,14 +1519,15 @@ export default function StudioPage() {
         </div>
       )}
 
-      {/* A/B 테스트 모달 */}
       {showABTestModal && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-900 rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <ABTestManager
-              contentId={currentContentId}
-              onClose={() => setShowABTestModal(false)}
-            />
+        <div className="fixed inset-0 bg-black/95 backdrop-blur-[100px] flex items-center justify-center z-[150] p-12">
+          <div className="w-full max-w-6xl h-full bg-[#0a0a0c] rounded-[4rem] border border-white/10 overflow-hidden relative shadow-2xl">
+            <div className="absolute top-8 right-8 z-[200]">
+              <button onClick={() => setShowABTestModal(false)} className="p-4 bg-white/5 hover:bg-white/10 rounded-3xl transition-all"><X className="w-8 h-8" /></button>
+            </div>
+            <div className="h-full overflow-y-auto custom-scrollbar">
+              <ABTestManager contentId={currentContentId} onClose={() => setShowABTestModal(false)} />
+            </div>
           </div>
         </div>
       )}

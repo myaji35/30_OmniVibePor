@@ -14,8 +14,8 @@ from enum import Enum
 import logging
 
 from langchain_anthropic import ChatAnthropic
-from langchain.prompts import PromptTemplate
-from langchain.schema import HumanMessage, SystemMessage
+from langchain_core.prompts import PromptTemplate
+from langchain_core.messages import HumanMessage, SystemMessage
 
 from app.services.duration_calculator import get_duration_calculator, Language
 

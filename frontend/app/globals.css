@@ -1,33 +1,99 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap');
 
 :root {
   --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 0, 0, 0;
-  --background-end-rgb: 0, 0, 0;
+  --background-start-rgb: 10, 10, 12;
+  --background-end-rgb: 5, 5, 5;
+  
+  --brand-primary: #a855f7;
+  --brand-secondary: #ec4899;
+  --brand-accent: #3b82f6;
+  
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-blur: blur(12px);
+  
+  --card-bg: #1a1a1c;
+  --card-border: #2a2a2e;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #0a0a0c 100%);
+  font-family: 'Inter', -apple-system, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
-/* ProgressBar Shimmer Animation */
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
+.font-outfit {
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Glassmorphism Classes */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+}
+
+.premium-gradient-text {
+  background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.premium-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.premium-card:hover {
+  border-color: rgba(168, 85, 247, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(168, 85, 247, 0.3);
+}
+
+@layer base {
+  @tailwind base;
+}
+
+@layer components {
+  @tailwind components;
+  
+  .heading-1 {
+    font-family: 'Outfit', sans-serif;
+    @apply text-4xl md:text-5xl font-bold tracking-tight;
   }
-  100% {
-    transform: translateX(100%);
+  .heading-2 {
+    font-family: 'Outfit', sans-serif;
+    @apply text-3xl md:text-4xl font-bold tracking-tight;
+  }
+  .heading-3 {
+    font-family: 'Outfit', sans-serif;
+    @apply text-2xl md:text-3xl font-semibold;
   }
 }
 
-.animate-shimmer {
-  animation: shimmer 2s infinite;
+@layer utilities {
+  @tailwind utilities;
 }

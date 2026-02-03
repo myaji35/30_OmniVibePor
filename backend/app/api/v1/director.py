@@ -358,6 +358,74 @@ async def get_cost_report(project_id: str):
         )
 
 
+
+@router.get("/task-status/{task_id}")
+async def get_task_status(task_id: str):
+    """
+    Celery 작업 진행률 조회
+
+    Args:
+        task_id: Celery 작업 ID
+
+    Returns:
+        {
+            "status": "PENDING" | "PROGRESS" | "SUCCESS" | "FAILURE",
+            "progress": 0.0 ~ 1.0 (PROGRESS 상태일 때만),
+            "message": str,
+            "metadata": dict,
+            "result": dict (SUCCESS 상태일 때만)
+        }
+    """
+    try:
+        from app.tasks.celery_app import celery_app
+
+        task_result = celery_app.AsyncResult(task_id)
+
+        response = {
+            "task_id": task_id,
+            "status": task_result.status
+        }
+
+        # PROGRESS 상태: 진행률 정보 포함
+        if task_result.status == "PROGRESS":
+            meta = task_result.info or {}
+            response.update({
+                "progress": meta.get("progress", 0),
+                "message": meta.get("message", "처리 중..."),
+                "metadata": meta.get("metadata", {})
+            })
+
+        # SUCCESS 상태: 결과 포함
+        elif task_result.status == "SUCCESS":
+            response["result"] = task_result.result or {}
+
+        # FAILURE 상태: 에러 정보 포함
+        elif task_result.status == "FAILURE":
+            try:
+                if isinstance(task_result.info, Exception):
+                    response["error"] = f"{type(task_result.info).__name__}: {str(task_result.info)}"
+                else:
+                    response["error"] = str(task_result.info or "Unknown error")
+            except Exception:
+                response["error"] = "Task failed with unknown error"
+
+        # PENDING 상태: Celery 워커가 실행되지 않았을 가능성
+        elif task_result.status == "PENDING":
+            response["message"] = "작업 대기 중 (Celery 워커 확인 필요)"
+
+        return response
+
+    except Exception as e:
+        logger.error(f"Task status retrieval failed: {e}", exc_info=True)
+        # Celery 워커가 없어도 최소한의 정보 반환
+        return {
+            "task_id": task_id,
+            "status": "UNKNOWN",
+            "error": f"Celery 연결 실패: {str(e)}",
+            "message": "영상 생성 기능을 사용하려면 Celery 워커를 실행해주세요."
+        }
+
+
 @router.get("/download-video/{project_id}/{filename}")
 async def download_video(project_id: str, filename: str):
     """
