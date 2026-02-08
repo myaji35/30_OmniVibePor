@@ -1,0 +1,204 @@
+version: '3.8'
+
+services:
+  # ==================== Backend API ====================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.production
+    container_name: omnivibe-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      # Database
+      - DATABASE_URL=sqlite:///omni_db.sqlite
+
+      # Redis & Celery
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+
+      # Neo4j GraphRAG
+      - NEO4J_URI=bolt://neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD:-omnivibe2026}
+
+      # API Keys (환경 변수로 주입)
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+
+      # Monitoring
+      - LOGFIRE_TOKEN=${LOGFIRE_TOKEN:-}
+
+      # Production settings
+      - DEBUG=false
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+    volumes:
+      - ./backend:/app
+      - ./backend/outputs:/app/outputs
+      - ./backend/omni_db.sqlite:/app/omni_db.sqlite
+    depends_on:
+      - redis
+      - neo4j
+    networks:
+      - omnivibe-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==================== Celery Worker ====================
+  celery-worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.production
+    container_name: omnivibe-celery-worker
+    restart: unless-stopped
+    command: celery -A app.tasks.celery_app worker --loglevel=info --concurrency=4
+    environment:
+      # Same as backend
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - NEO4J_URI=bolt://neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD:-omnivibe2026}
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+    volumes:
+      - ./backend:/app
+      - ./backend/outputs:/app/outputs
+    depends_on:
+      - redis
+      - neo4j
+    networks:
+      - omnivibe-network
+
+  # ==================== Celery Beat (스케줄러) ====================
+  celery-beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.production
+    container_name: omnivibe-celery-beat
+    restart: unless-stopped
+    command: celery -A app.tasks.celery_app beat --loglevel=info
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - redis
+    networks:
+      - omnivibe-network
+
+  # ==================== Frontend (Next.js) ====================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.production
+    container_name: omnivibe-frontend
+    restart: unless-stopped
+    ports:
+      - "3020:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=https://api.omnivibepro.com
+      - NODE_ENV=production
+    depends_on:
+      - backend
+    networks:
+      - omnivibe-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==================== Redis (Task Queue & Cache) ====================
+  redis:
+    image: redis:7-alpine
+    container_name: omnivibe-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - omnivibe-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # ==================== Neo4j (GraphRAG Memory) ====================
+  neo4j:
+    image: neo4j:5.16
+    container_name: omnivibe-neo4j
+    restart: unless-stopped
+    ports:
+      - "7474:7474"  # HTTP
+      - "7687:7687"  # Bolt
+    environment:
+      - NEO4J_AUTH=neo4j/${NEO4J_PASSWORD:-omnivibe2026}
+      - NEO4J_PLUGINS=["apoc"]
+      - NEO4J_dbms_memory_heap_max__size=2G
+      - NEO4J_dbms_memory_pagecache_size=1G
+    volumes:
+      - neo4j-data:/data
+      - neo4j-logs:/logs
+      - ./backend/scripts/init_neo4j_schema.cypher:/scripts/init_neo4j_schema.cypher
+    networks:
+      - omnivibe-network
+    healthcheck:
+      test: ["CMD", "cypher-shell", "-u", "neo4j", "-p", "${NEO4J_PASSWORD:-omnivibe2026}", "RETURN 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # ==================== Nginx (Reverse Proxy) ====================
+  nginx:
+    image: nginx:alpine
+    container_name: omnivibe-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/logs:/var/log/nginx
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - omnivibe-network
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  redis-data:
+    driver: local
+  neo4j-data:
+    driver: local
+  neo4j-logs:
+    driver: local
+
+networks:
+  omnivibe-network:
+    driver: bridge

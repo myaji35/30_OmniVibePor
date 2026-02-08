@@ -13,3 +13,11 @@ yarn-error.log*
 .vscode
 *.swp
 *.swo
+
+# macOS
+.DS_Store
+._*
+.AppleDouble
+.LSOverride
+._*
+.DS_Store

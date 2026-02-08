@@ -532,6 +532,128 @@ class Neo4jClient:
             "min_score": min_score
         })
 
+    # ==================== Writer Agent Memory (Week 1) ====================
+
+    def search_similar_scripts(
+        self,
+        platform: str,
+        tone: str,
+        limit: int = 3,
+        min_performance: float = 8.0
+    ) -> List[Dict[str, Any]]:
+        """
+        유사한 스타일의 고성과 스크립트 검색 (Writer Agent용)
+
+        Args:
+            platform: 플랫폼 (YouTube, Instagram, TikTok)
+            tone: 톤 (professional, energetic, casual, educational, playful, inspiring)
+            limit: 반환할 최대 개수
+            min_performance: 최소 성과 점수
+
+        Returns:
+            고성과 스크립트 리스트
+        """
+        query = """
+        MATCH (s:Script)
+        WHERE s.platform = $platform
+          AND s.tone = $tone
+          AND s.performance_score >= $min_performance
+        RETURN s.id AS id,
+               s.content AS content,
+               s.performance_score AS performance_score,
+               s.views AS views,
+               s.ctr AS ctr,
+               s.word_count AS word_count,
+               s.gender AS gender
+        ORDER BY s.performance_score DESC
+        LIMIT $limit
+        """
+
+        return self.query(query, {
+            "platform": platform,
+            "tone": tone,
+            "min_performance": min_performance,
+            "limit": limit
+        })
+
+    def save_script_to_memory(
+        self,
+        script_id: str,
+        content: str,
+        platform: str,
+        tone: str,
+        gender: str,
+        word_count: int,
+        campaign_id: str = None,
+        performance_score: float = None,
+        views: int = 0,
+        ctr: float = 0.0
+    ) -> bool:
+        """
+        새 스크립트를 GraphRAG Memory에 저장
+
+        Args:
+            script_id: 스크립트 고유 ID
+            content: 스크립트 전문
+            platform: 플랫폼
+            tone: 톤
+            gender: 성별
+            word_count: 단어 수
+            campaign_id: 캠페인 ID (선택)
+            performance_score: 성과 점수 (선택)
+            views: 조회수
+            ctr: 클릭률
+
+        Returns:
+            성공 여부
+        """
+        try:
+            query = """
+            CREATE (s:Script {
+                id: $script_id,
+                content: $content,
+                platform: $platform,
+                tone: $tone,
+                gender: $gender,
+                word_count: $word_count,
+                performance_score: $performance_score,
+                views: $views,
+                ctr: $ctr,
+                created_at: datetime()
+            })
+            """
+
+            self.query(query, {
+                "script_id": script_id,
+                "content": content,
+                "platform": platform,
+                "tone": tone,
+                "gender": gender,
+                "word_count": word_count,
+                "performance_score": performance_score,
+                "views": views,
+                "ctr": ctr
+            })
+
+            # Campaign 관계 연결
+            if campaign_id:
+                link_query = """
+                MATCH (s:Script {id: $script_id})
+                MATCH (c:Campaign {id: $campaign_id})
+                CREATE (s)-[:BELONGS_TO]->(c)
+                """
+                self.query(link_query, {
+                    "script_id": script_id,
+                    "campaign_id": campaign_id
+                })
+
+            self.logger.info(f"✅ Script saved to memory: {script_id}")
+            return True
+
+        except Exception as e:
+            self.logger.error(f"❌ Script save failed: {e}")
+            return False
+
 
 # 싱글톤 인스턴스
 _neo4j_client_instance = None

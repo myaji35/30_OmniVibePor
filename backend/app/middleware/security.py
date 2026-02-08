@@ -1,131 +1,166 @@
-"""보안 헤더 미들웨어"""
-from typing import Callable
-from fastapi import Request, Response
+"""Security Middleware - Rate Limiting & API Key Authentication"""
+import time
+import hashlib
+from typing import Optional, Callable
+from collections import defaultdict
+from datetime import datetime, timedelta
+
+from fastapi import Request, HTTPException, status
+from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.datastructures import Headers
+
 from app.core.config import get_settings
 
 settings = get_settings()
 
 
-class SecurityHeadersMiddleware(BaseHTTPMiddleware):
-    """
-    보안 헤더 추가 미들웨어
+class RateLimitMiddleware(BaseHTTPMiddleware):
+    """Rate Limiting Middleware"""
 
-    OWASP 권장 보안 헤더를 자동으로 추가합니다.
-    """
+    def __init__(self, app, calls: int = 60, period: int = 60):
+        super().__init__(app)
+        self.calls = calls  # 허용 호출 수
+        self.period = period  # 기간 (초)
+        self.clients = defaultdict(list)  # IP별 요청 기록
 
-    async def dispatch(self, request: Request, call_next: Callable) -> Response:
-        """
-        모든 응답에 보안 헤더 추가
+    async def dispatch(self, request: Request, call_next: Callable):
+        # Health check는 제외
+        if request.url.path in ["/health", "/", "/docs", "/openapi.json"]:
+            return await call_next(request)
 
-        Args:
-            request: FastAPI Request
-            call_next: 다음 미들웨어/핸들러
+        # 클라이언트 IP 추출
+        client_ip = request.client.host
 
-        Returns:
-            보안 헤더가 추가된 Response
-        """
-        response = await call_next(request)
+        # 현재 시간
+        now = time.time()
 
-        # Content Security Policy (CSP)
-        # 스크립트, 스타일, 이미지 등의 로드 소스 제한
-        response.headers["Content-Security-Policy"] = (
-            "default-src 'self'; "
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; "
-            "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
-            "img-src 'self' data: https:; "
-            "font-src 'self' data: https://cdn.jsdelivr.net; "
-            "connect-src 'self' https://api.openai.com https://api.elevenlabs.io; "
-            "frame-ancestors 'none'; "
-            "base-uri 'self'; "
-            "form-action 'self';"
-        )
+        # 오래된 기록 삭제 (메모리 절약)
+        self.clients[client_ip] = [
+            timestamp for timestamp in self.clients[client_ip]
+            if now - timestamp < self.period
+        ]
 
-        # X-Frame-Options
-        # 클릭재킹(Clickjacking) 방지
-        response.headers["X-Frame-Options"] = "DENY"
-
-        # X-Content-Type-Options
-        # MIME 타입 스니핑 방지
-        response.headers["X-Content-Type-Options"] = "nosniff"
-
-        # X-XSS-Protection
-        # XSS 필터 활성화 (레거시 브라우저 지원)
-        response.headers["X-XSS-Protection"] = "1; mode=block"
-
-        # Strict-Transport-Security (HSTS)
-        # HTTPS 강제 (프로덕션 환경에서만)
-        if not settings.DEBUG:
-            response.headers["Strict-Transport-Security"] = (
-                "max-age=31536000; includeSubDomains; preload"
+        # Rate limit 체크
+        if len(self.clients[client_ip]) >= self.calls:
+            return JSONResponse(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                content={
+                    "error": "Rate limit exceeded",
+                    "detail": f"Too many requests. Max {self.calls} requests per {self.period} seconds.",
+                    "retry_after": int(self.period - (now - self.clients[client_ip][0]))
+                }
             )
 
-        # Referrer-Policy
-        # 리퍼러 정보 제어
-        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        # 요청 기록
+        self.clients[client_ip].append(now)
 
-        # Permissions-Policy (Feature-Policy)
-        # 브라우저 기능 접근 제어
-        response.headers["Permissions-Policy"] = (
-            "geolocation=(), "
-            "microphone=(), "
-            "camera=(), "
-            "payment=(), "
-            "usb=(), "
-            "magnetometer=(), "
-            "gyroscope=(), "
-            "accelerometer=()"
+        # 다음 미들웨어로
+        response = await call_next(request)
+        
+        # Rate limit 헤더 추가
+        response.headers["X-RateLimit-Limit"] = str(self.calls)
+        response.headers["X-RateLimit-Remaining"] = str(
+            self.calls - len(self.clients[client_ip])
+        )
+        response.headers["X-RateLimit-Reset"] = str(
+            int(now + self.period)
         )
 
-        # X-Permitted-Cross-Domain-Policies
-        # 크로스 도메인 정책 제한 (Adobe Flash 등)
-        response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
-
-        # Cache-Control (민감한 데이터)
-        # 인증 관련 엔드포인트는 캐시 금지
-        if "/auth/" in request.url.path or "/api-keys" in request.url.path:
-            response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, proxy-revalidate"
-            response.headers["Pragma"] = "no-cache"
-            response.headers["Expires"] = "0"
-
-        # Server 헤더 제거 (서버 정보 은닉)
-        response.headers["Server"] = "OmniVibe-Pro"
-
         return response
 
 
-class CORSSecurityMiddleware(BaseHTTPMiddleware):
-    """
-    CORS 보안 강화 미들웨어
+class APIKeyMiddleware(BaseHTTPMiddleware):
+    """API Key Authentication Middleware"""
 
-    개발 환경과 프로덕션 환경에서 다른 CORS 정책 적용
-    """
+    def __init__(
+        self,
+        app,
+        api_key_header: str = "X-API-Key",
+        exempt_paths: list[str] = None
+    ):
+        super().__init__(app)
+        self.api_key_header = api_key_header
+        self.exempt_paths = exempt_paths or [
+            "/health",
+            "/",
+            "/docs",
+            "/openapi.json",
+            "/redoc"
+        ]
+        # 프로덕션에서는 환경 변수나 DB에서 로드
+        self.valid_api_keys = self._load_api_keys()
 
-    async def dispatch(self, request: Request, call_next: Callable) -> Response:
-        """
-        CORS 헤더 검증 및 추가
+    def _load_api_keys(self) -> set[str]:
+        """API 키 로드 (환경 변수 또는 DB)"""
+        # 개발 환경용 기본 키
+        default_keys = {
+            hashlib.sha256("dev_key_123".encode()).hexdigest()
+        }
+        # 프로덕션에서는 DB나 Redis에서 로드
+        return default_keys
 
-        Args:
-            request: FastAPI Request
-            call_next: 다음 미들웨어/핸들러
+    async def dispatch(self, request: Request, call_next: Callable):
+        # 제외 경로 체크
+        if any(request.url.path.startswith(path) for path in self.exempt_paths):
+            return await call_next(request)
 
-        Returns:
-            Response
-        """
+        # API Key 추출
+        api_key = request.headers.get(self.api_key_header)
+
+        if not api_key:
+            return JSONResponse(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                content={
+                    "error": "Missing API Key",
+                    "detail": f"API Key required in '{self.api_key_header}' header"
+                }
+            )
+
+        # API Key 검증
+        api_key_hash = hashlib.sha256(api_key.encode()).hexdigest()
+        if api_key_hash not in self.valid_api_keys:
+            return JSONResponse(
+                status_code=status.HTTP_403_FORBIDDEN,
+                content={
+                    "error": "Invalid API Key",
+                    "detail": "The provided API Key is invalid"
+                }
+            )
+
+        # 다음 미들웨어로
+        return await call_next(request)
+
+
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    """Security Headers Middleware"""
+
+    async def dispatch(self, request: Request, call_next: Callable):
         response = await call_next(request)
 
-        # 프로덕션 환경: 특정 도메인만 허용
-        if not settings.DEBUG:
-            allowed_origins = [
-                "https://omnivibepro.com",
-                "https://app.omnivibepro.com",
-            ]
-
-            origin = request.headers.get("origin")
-            if origin in allowed_origins:
-                response.headers["Access-Control-Allow-Origin"] = origin
-            else:
-                # 허용되지 않은 Origin은 헤더 제거
-                response.headers.pop("Access-Control-Allow-Origin", None)
+        # Security Headers 추가
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        response.headers["Content-Security-Policy"] = "default-src 'self'"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
 
         return response
+
+
+def get_client_ip(request: Request) -> str:
+    """클라이언트 IP 추출 (Proxy 고려)"""
+    # X-Forwarded-For 헤더 확인 (Nginx, Cloudflare 등)
+    forwarded = request.headers.get("X-Forwarded-For")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+
+    # X-Real-IP 헤더 확인
+    real_ip = request.headers.get("X-Real-IP")
+    if real_ip:
+        return real_ip
+
+    # 직접 연결
+    return request.client.host

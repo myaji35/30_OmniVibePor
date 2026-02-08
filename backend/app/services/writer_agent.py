@@ -129,39 +129,55 @@ class WriterAgent:
                 return state
 
     async def _search_past_scripts(self, state: WriterState) -> WriterState:
-        """2단계: Neo4j에서 과거 스크립트 검색"""
+        """2단계: Neo4j GraphRAG에서 고성과 스크립트 검색 (Few-shot Learning)"""
         span_context = logfire.span("writer.search_past") if LOGFIRE_AVAILABLE else nullcontext()
 
         with span_context:
             try:
-                # Neo4j에서 유사한 과거 스크립트 검색
-                # (성과가 좋았던 스크립트 우선)
-                query = """
-                MATCH (s:Script)-[:BELONGS_TO]->(c:Campaign)
-                WHERE c.name = $campaign_name
-                  AND s.platform = $platform
-                OPTIONAL MATCH (s)-[:HAS_PERFORMANCE]->(p:Performance)
-                RETURN s.topic as topic,
-                       s.script as script,
-                       s.hook as hook,
-                       p.views as views,
-                       p.engagement_rate as engagement
-                ORDER BY p.views DESC
-                LIMIT 3
-                """
+                # ✅ Week 1: Neo4j Memory 통합
+                # 플랫폼 + 톤 기반으로 고성과 스크립트 검색
+                platform = state["platform"]
+                tone = state.get("tone", "professional")
 
-                results = self.neo4j_client.query(
-                    query,
-                    campaign_name=state["campaign_name"],
-                    platform=state["platform"]
+                # tone을 간단한 키워드로 매핑
+                tone_mapping = {
+                    "전문적이고 신뢰감 있는": "professional",
+                    "활기차고 에너제틱한": "energetic",
+                    "친근하고 편안한": "casual",
+                    "교육적이고 정보 전달": "educational",
+                    "재미있고 유쾌한": "playful",
+                    "영감을 주는": "inspiring"
+                }
+                simple_tone = tone_mapping.get(tone, "professional")
+
+                # Neo4j에서 유사한 고성과 스크립트 검색
+                similar_scripts = self.neo4j_client.search_similar_scripts(
+                    platform=platform,
+                    tone=simple_tone,
+                    limit=3,
+                    min_performance=8.0  # 8.0점 이상만
                 )
 
-                state["past_scripts"] = results
-                self.logger.info(f"Found {len(results)} past scripts")
+                # 검색 결과 변환
+                state["past_scripts"] = [
+                    {
+                        "id": script["id"],
+                        "content": script["content"],
+                        "performance_score": script["performance_score"],
+                        "views": script["views"],
+                        "ctr": script["ctr"]
+                    }
+                    for script in similar_scripts
+                ]
+
+                self.logger.info(
+                    f"✅ Found {len(similar_scripts)} high-performance scripts "
+                    f"(platform={platform}, tone={simple_tone})"
+                )
                 return state
 
             except Exception as e:
-                self.logger.warning(f"Failed to search past scripts: {e}")
+                self.logger.warning(f"⚠️ Failed to search past scripts: {e}")
                 state["past_scripts"] = []
                 return state
 
@@ -185,15 +201,18 @@ class WriterAgent:
 4. 플랫폼 특성에 맞는 길이와 구조를 유지하세요
 """
 
-                # 과거 스크립트 참고 정보
+                # ✅ Week 1: Few-shot Learning - 과거 고성과 스크립트 참고
                 past_context = ""
-                if state.get("past_scripts"):
-                    past_context = "\n\n**과거 성과가 좋았던 스크립트 스타일:**\n"
-                    for idx, script in enumerate(state["past_scripts"][:2], 1):
-                        past_context += f"\n{idx}. 주제: {script.get('topic')}\n"
-                        past_context += f"   훅: {script.get('hook')}\n"
-                        views = script.get('views') or 0
-                        past_context += f"   조회수: {views:,}\n"
+                if state.get("past_scripts") and len(state["past_scripts"]) > 0:
+                    past_context = "\n\n**🏆 과거 고성과 스크립트 (참고용 - 이 스타일을 학습하여 유사하게 작성):**\n"
+                    for idx, script in enumerate(state["past_scripts"], 1):
+                        content_preview = script.get('content', '')[:200]  # 처음 200자만
+                        score = script.get('performance_score', 0)
+                        views = script.get('views', 0)
+                        ctr = script.get('ctr', 0) * 100
+
+                        past_context += f"\n### 예시 {idx} (성과: {score}/10, 조회수: {views:,}, CTR: {ctr:.1f}%)\n"
+                        past_context += f"{content_preview}...\n"
 
                 # 목표 분량 계산
                 target_duration = state.get("target_duration") or 180

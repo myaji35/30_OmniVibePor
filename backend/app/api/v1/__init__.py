@@ -28,6 +28,8 @@ from .storyboard import router as storyboard_router
 # ⚠️ Backgrounds 임시 비활성화 (UTF-8 인코딩 문제)
 # from .backgrounds import router as backgrounds_router
 from .ab_tests import router as ab_tests_router
+from .remotion import router as remotion_router
+from .cache import router as cache_router
 
 router = APIRouter()
 
@@ -59,3 +61,5 @@ router.include_router(storyboard_router, tags=["Storyboard"])
 # ⚠️ Backgrounds 임시 비활성화
 # router.include_router(backgrounds_router, tags=["Backgrounds"])
 router.include_router(ab_tests_router, tags=["A/B Tests"])
+router.include_router(remotion_router, tags=["Remotion Rendering"])
+router.include_router(cache_router, prefix="/cache", tags=["Cache Management"])

@@ -18,6 +18,7 @@
     "@types/wavesurfer.js": "^6.0.12",
     "autoprefixer": "^10.4.17",
     "axios": "^1.6.5",
+    "clsx": "^2.1.1",
     "framer-motion": "^12.29.2",
     "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.563.0",
@@ -27,16 +28,21 @@
     "react-dom": "^18.2.0",
     "sqlite": "^5.1.1",
     "sqlite3": "^5.1.7",
+    "tailwind-merge": "^3.4.0",
     "tailwindcss": "^3.4.1",
     "wavesurfer.js": "^7.12.1",
     "zustand": "^4.5.0"
   },
   "devDependencies": {
+    "@remotion/cli": "^4.0.419",
+    "@remotion/lambda": "^4.0.419",
+    "@remotion/player": "^4.0.419",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "14.1.0",
+    "remotion": "^4.0.419",
     "typescript": "^5"
   }
 }

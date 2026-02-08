@@ -6,6 +6,10 @@ from functools import lru_cache
 class Settings(BaseSettings):
     """환경 변수 기반 설정"""
 
+    # Paths
+    BASE_DIR: str = "/Volumes/Extreme SSD/02_GitHub.nosync/0030_OmniVibePro/backend"
+    OUTPUTS_DIR: str = "./outputs"
+
     # FastAPI
     API_HOST: str = "0.0.0.0"
     API_PORT: int = 8000

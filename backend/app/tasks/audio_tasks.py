@@ -21,7 +21,12 @@ logger = logging.getLogger(__name__)
     name="generate_verified_audio",
     bind=True,
     max_retries=3,
-    default_retry_delay=60
+    default_retry_delay=60,
+    autoretry_for=(Exception,),
+    retry_backoff=True,  # Exponential backoff
+    retry_backoff_max=600,  # 최대 10분
+    retry_jitter=True,  # 재시도 시간에 랜덤 지터 추가
+    queue='high_priority'  # 높은 우선순위
 )
 def generate_verified_audio_task(
     self,
@@ -192,7 +197,11 @@ def generate_verified_audio_task(
         }
 
 
-@celery_app.task(name="batch_generate_verified_audio")
+@celery_app.task(
+    name="batch_generate_verified_audio",
+    queue='low_priority',  # 배치 작업은 낮은 우선순위
+    time_limit=3600  # 1시간 제한
+)
 def batch_generate_verified_audio_task(
     texts: list[str],
     voice_id: Optional[str] = None,

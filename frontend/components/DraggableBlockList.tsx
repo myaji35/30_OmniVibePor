@@ -4,7 +4,7 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { ScriptBlock } from '@/lib/blocks/types'
+import { ScriptBlock, reorderBlocks } from '@/lib/blocks/types'
 import { Edit2, Trash2, Copy, GripVertical, Check, X } from 'lucide-react'
 import { useState, useRef } from 'react'
 
@@ -266,8 +266,13 @@ export default function DraggableBlockList(props: DraggableBlockListProps) {
             const oldIndex = props.blocks.findIndex(b => b.id === active.id)
             const newIndex = props.blocks.findIndex(b => b.id === over.id)
 
+            // 블록 순서 변경
             const reorderedBlocks = arrayMove(props.blocks, oldIndex, newIndex)
-            props.onBlockReorder(reorderedBlocks)
+
+            // 타이밍 자동 재계산 (start_time, end_time)
+            const blocksWithUpdatedTiming = reorderBlocks(reorderedBlocks)
+
+            props.onBlockReorder(blocksWithUpdatedTiming)
         }
     }
 
