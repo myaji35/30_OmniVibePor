@@ -30,12 +30,14 @@ from .storyboard import router as storyboard_router
 from .ab_tests import router as ab_tests_router
 from .remotion import router as remotion_router
 from .cache import router as cache_router
+from .auth import router as auth_router
+from .billing import router as billing_router
+from .webhooks import router as webhooks_router
 
 router = APIRouter()
 
 # 서브 라우터 등록
-# ⚠️ Auth 임시 비활성화
-# router.include_router(auth_router, tags=["Authentication"])
+router.include_router(auth_router, tags=["Authentication"])
 # router.include_router(thumbnail_router, prefix="/thumbnails", tags=["Thumbnail Learning"])
 router.include_router(performance_router, prefix="/performance", tags=["Performance Tracking"])
 router.include_router(audio_router, prefix="/audio", tags=["Zero-Fault Audio"])
@@ -63,3 +65,5 @@ router.include_router(storyboard_router, tags=["Storyboard"])
 router.include_router(ab_tests_router, tags=["A/B Tests"])
 router.include_router(remotion_router, tags=["Remotion Rendering"])
 router.include_router(cache_router, prefix="/cache", tags=["Cache Management"])
+router.include_router(billing_router, tags=["Billing & Subscription"])
+router.include_router(webhooks_router, tags=["Webhooks"])

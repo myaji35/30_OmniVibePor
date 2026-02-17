@@ -1,0 +1,102 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "login": "Login",
+    "logout": "Logout",
+    "signup": "Sign Up",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "search": "Search"
+  },
+  "nav": {
+    "home": "Home",
+    "studio": "Studio",
+    "campaigns": "Campaigns",
+    "billing": "Billing",
+    "settings": "Settings",
+    "dashboard": "Dashboard"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "confirm_password": "Confirm Password",
+    "full_name": "Full Name",
+    "sign_in_with_google": "Sign in with Google",
+    "forgot_password": "Forgot password?",
+    "no_account": "Don't have an account?",
+    "have_account": "Already have an account?",
+    "sign_up_now": "Sign up now",
+    "sign_in_now": "Sign in"
+  },
+  "studio": {
+    "title": "Video Studio",
+    "create_video": "Create Video",
+    "script": "Script",
+    "storyboard": "Storyboard",
+    "audio": "Audio",
+    "video": "Video",
+    "preview": "Preview",
+    "render": "Render",
+    "export": "Export",
+    "add_block": "Add Block",
+    "generate_script": "Generate Script"
+  },
+  "billing": {
+    "title": "Billing & Subscription",
+    "current_plan": "Current Plan",
+    "upgrade": "Upgrade",
+    "downgrade": "Downgrade",
+    "cancel_subscription": "Cancel Subscription",
+    "billing_history": "Billing History",
+    "payment_method": "Payment Method",
+    "add_payment_method": "Add Payment Method",
+    "usage": "Usage",
+    "quota": {
+      "used": "Used",
+      "remaining": "Remaining",
+      "limit": "Limit",
+      "videos": "Videos"
+    },
+    "plans": {
+      "free": {
+        "name": "Free",
+        "description": "Perfect for getting started",
+        "price": "Free"
+      },
+      "pro": {
+        "name": "Pro",
+        "description": "For professionals",
+        "price": "$49/mo"
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "description": "For large organizations",
+        "price": "Contact us"
+      }
+    }
+  },
+  "quota": {
+    "exceeded": "Monthly quota exceeded",
+    "exceeded_description": "Upgrade your plan to create more videos.",
+    "warning": "Approaching quota limit",
+    "warning_description": "You've used {{used}} of {{limit}} videos."
+  },
+  "error": {
+    "generic": "Something went wrong. Please try again.",
+    "network": "Please check your network connection.",
+    "unauthorized": "Please sign in to continue.",
+    "forbidden": "You don't have permission to access this.",
+    "not_found": "Page not found.",
+    "server_error": "Server error occurred."
+  }
+}

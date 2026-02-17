@@ -3,6 +3,7 @@ import logging
 import time
 from celery import Celery
 from celery.signals import task_prerun, task_postrun, task_failure, task_retry
+from celery.schedules import crontab
 from kombu import Queue, Exchange
 
 from app.core.config import get_settings
@@ -79,6 +80,19 @@ celery_app.conf.update(
         'cleanup-old-results': {
             'task': 'cleanup_old_task_results',
             'schedule': 3600.0,  # 1시간마다
+        },
+        # Week 5: Quota 관리
+        'reset-monthly-quotas': {
+            'task': 'quota.reset_monthly_quotas',
+            'schedule': crontab(day_of_month='1', hour='0', minute='0'),  # 매월 1일 00:00
+        },
+        'check-quota-warnings': {
+            'task': 'quota.check_quota_warnings',
+            'schedule': crontab(hour='9', minute='0'),  # 매일 09:00
+        },
+        'generate-usage-report': {
+            'task': 'quota.generate_usage_report',
+            'schedule': crontab(day_of_month='28', hour='23', minute='0'),  # 매월 28일 23:00
         },
     },
 )

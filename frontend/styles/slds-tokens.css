@@ -1,0 +1,174 @@
+/**
+ * Salesforce Lightning Design System (SLDS) Design Tokens
+ * OmniVibe Pro - Enterprise-grade UI/UX
+ */
+
+:root {
+  /* ========================================
+     COLOR PALETTE - Salesforce Standard
+     ======================================== */
+
+  /* Brand Colors */
+  --slds-color-brand: #00A1E0;           /* Salesforce Blue */
+  --slds-color-brand-dark: #0070D2;
+  --slds-color-brand-light: #1AB9FF;
+
+  /* Semantic Colors */
+  --slds-color-success: #4BCA81;
+  --slds-color-success-dark: #2E844A;
+  --slds-color-warning: #FFB75D;
+  --slds-color-warning-dark: #DD7A01;
+  --slds-color-error: #EA001E;
+  --slds-color-error-dark: #BA0517;
+  --slds-color-info: #00A1E0;
+
+  /* Neutral Colors */
+  --slds-color-background: #F3F2F2;
+  --slds-color-background-alt: #FFFFFF;
+  --slds-color-border: #DDDBDA;
+  --slds-color-border-light: #E5E5E5;
+
+  /* Text Colors */
+  --slds-color-text-default: #16325C;    /* Primary Text */
+  --slds-color-text-weak: #706E6B;       /* Secondary Text */
+  --slds-color-text-inverse: #FFFFFF;
+  --slds-color-text-link: #0070D2;
+
+  /* ========================================
+     SPACING SYSTEM
+     ======================================== */
+  --slds-spacing-xxx-small: 0.125rem;    /* 2px */
+  --slds-spacing-xx-small: 0.25rem;      /* 4px */
+  --slds-spacing-x-small: 0.5rem;        /* 8px */
+  --slds-spacing-small: 0.75rem;         /* 12px */
+  --slds-spacing-medium: 1rem;           /* 16px - DEFAULT */
+  --slds-spacing-large: 1.5rem;          /* 24px */
+  --slds-spacing-x-large: 2rem;          /* 32px */
+  --slds-spacing-xx-large: 3rem;         /* 48px */
+
+  /* ========================================
+     TYPOGRAPHY
+     ======================================== */
+  --slds-font-family: 'Salesforce Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+
+  /* Font Sizes */
+  --slds-font-size-1: 0.625rem;          /* 10px */
+  --slds-font-size-2: 0.75rem;           /* 12px */
+  --slds-font-size-3: 0.8125rem;         /* 13px */
+  --slds-font-size-4: 0.875rem;          /* 14px - Body Default */
+  --slds-font-size-5: 1rem;              /* 16px */
+  --slds-font-size-6: 1.125rem;          /* 18px */
+  --slds-font-size-7: 1.25rem;           /* 20px */
+  --slds-font-size-8: 1.5rem;            /* 24px */
+  --slds-font-size-9: 1.75rem;           /* 28px */
+  --slds-font-size-10: 2rem;             /* 32px */
+  --slds-font-size-11: 2.625rem;         /* 42px */
+
+  /* Font Weights */
+  --slds-font-weight-light: 300;
+  --slds-font-weight-regular: 400;
+  --slds-font-weight-bold: 700;
+
+  /* Line Heights */
+  --slds-line-height-heading: 1.25;
+  --slds-line-height-text: 1.5;
+
+  /* ========================================
+     BORDERS & RADIUS
+     ======================================== */
+  --slds-border-radius-small: 0.125rem;  /* 2px */
+  --slds-border-radius-medium: 0.25rem;  /* 4px - DEFAULT */
+  --slds-border-radius-large: 0.5rem;    /* 8px */
+  --slds-border-radius-circle: 50%;
+
+  --slds-border-width-thin: 1px;
+  --slds-border-width-thick: 2px;
+
+  /* ========================================
+     SHADOWS
+     ======================================== */
+  --slds-shadow-small: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --slds-shadow-medium: 0 2px 4px 0 rgba(0, 0, 0, 0.08);
+  --slds-shadow-large: 0 4px 8px 0 rgba(0, 0, 0, 0.12);
+  --slds-shadow-card: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
+
+  /* ========================================
+     Z-INDEX LAYERS
+     ======================================== */
+  --slds-z-index-default: 1;
+  --slds-z-index-dropdown: 7000;
+  --slds-z-index-dialog: 9000;
+  --slds-z-index-popup: 9001;
+  --slds-z-index-overlay: 9002;
+  --slds-z-index-toast: 10000;
+
+  /* ========================================
+     TRANSITIONS
+     ======================================== */
+  --slds-transition-duration: 0.1s;
+  --slds-transition-timing: cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+/* Spacing Utilities */
+.p-slds-xxx-small { padding: var(--slds-spacing-xxx-small); }
+.p-slds-xx-small { padding: var(--slds-spacing-xx-small); }
+.p-slds-x-small { padding: var(--slds-spacing-x-small); }
+.p-slds-small { padding: var(--slds-spacing-small); }
+.p-slds-medium { padding: var(--slds-spacing-medium); }
+.p-slds-large { padding: var(--slds-spacing-large); }
+.p-slds-x-large { padding: var(--slds-spacing-x-large); }
+
+.gap-slds-x-small { gap: var(--slds-spacing-x-small); }
+.gap-slds-small { gap: var(--slds-spacing-small); }
+.gap-slds-medium { gap: var(--slds-spacing-medium); }
+.gap-slds-large { gap: var(--slds-spacing-large); }
+
+/* Typography Utilities */
+.slds-text-heading_large {
+  font-size: var(--slds-font-size-10);
+  font-weight: var(--slds-font-weight-bold);
+  line-height: var(--slds-line-height-heading);
+  color: var(--slds-color-text-default);
+}
+
+.slds-text-heading_medium {
+  font-size: var(--slds-font-size-8);
+  font-weight: var(--slds-font-weight-bold);
+  line-height: var(--slds-line-height-heading);
+  color: var(--slds-color-text-default);
+}
+
+.slds-text-heading_small {
+  font-size: var(--slds-font-size-7);
+  font-weight: var(--slds-font-weight-bold);
+  line-height: var(--slds-line-height-heading);
+  color: var(--slds-color-text-default);
+}
+
+.slds-text-body_regular {
+  font-size: var(--slds-font-size-4);
+  font-weight: var(--slds-font-weight-regular);
+  line-height: var(--slds-line-height-text);
+  color: var(--slds-color-text-default);
+}
+
+.slds-text-body_small {
+  font-size: var(--slds-font-size-2);
+  font-weight: var(--slds-font-weight-regular);
+  line-height: var(--slds-line-height-text);
+  color: var(--slds-color-text-weak);
+}
+
+/* Color Utilities */
+.slds-text-brand { color: var(--slds-color-brand); }
+.slds-text-success { color: var(--slds-color-success); }
+.slds-text-warning { color: var(--slds-color-warning); }
+.slds-text-error { color: var(--slds-color-error); }
+
+.slds-bg-brand { background-color: var(--slds-color-brand); }
+.slds-bg-white { background-color: var(--slds-color-background-alt); }
+.slds-bg-gray { background-color: var(--slds-color-background); }

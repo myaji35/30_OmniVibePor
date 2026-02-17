@@ -1,4 +1,5 @@
 """멀티 플랫폼 컨텐츠 성과 추적 및 자가학습 시스템"""
+import logging
 from typing import List, Dict, Optional
 from datetime import datetime, timedelta
 import asyncio
@@ -18,7 +19,6 @@ settings = get_settings()
 
 class ContentPerformanceTracker:
     """
-import logging
     YouTube, Facebook, Instagram 등 멀티 플랫폼의
     자신이 게시한 컨텐츠 성과를 추적하고 학습하는 시스템
     """

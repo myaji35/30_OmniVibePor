@@ -1,0 +1,102 @@
+{
+  "common": {
+    "welcome": "ようこそ",
+    "login": "ログイン",
+    "logout": "ログアウト",
+    "signup": "登録",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "edit": "編集",
+    "create": "作成",
+    "loading": "読み込み中...",
+    "error": "エラー",
+    "success": "成功",
+    "confirm": "確認",
+    "back": "戻る",
+    "next": "次へ",
+    "submit": "送信",
+    "search": "検索"
+  },
+  "nav": {
+    "home": "ホーム",
+    "studio": "スタジオ",
+    "campaigns": "キャンペーン",
+    "billing": "請求",
+    "settings": "設定",
+    "dashboard": "ダッシュボード"
+  },
+  "auth": {
+    "email": "メールアドレス",
+    "password": "パスワード",
+    "confirm_password": "パスワード確認",
+    "full_name": "氏名",
+    "sign_in_with_google": "Googleでログイン",
+    "forgot_password": "パスワードを忘れましたか？",
+    "no_account": "アカウントをお持ちではありませんか？",
+    "have_account": "すでにアカウントをお持ちですか？",
+    "sign_up_now": "今すぐ登録",
+    "sign_in_now": "ログイン"
+  },
+  "studio": {
+    "title": "ビデオスタジオ",
+    "create_video": "ビデオを作成",
+    "script": "スクリプト",
+    "storyboard": "ストーリーボード",
+    "audio": "オーディオ",
+    "video": "ビデオ",
+    "preview": "プレビュー",
+    "render": "レンダリング",
+    "export": "エクスポート",
+    "add_block": "ブロック追加",
+    "generate_script": "スクリプト生成"
+  },
+  "billing": {
+    "title": "請求とサブスクリプション",
+    "current_plan": "現在のプラン",
+    "upgrade": "アップグレード",
+    "downgrade": "ダウングレード",
+    "cancel_subscription": "サブスクリプションをキャンセル",
+    "billing_history": "請求履歴",
+    "payment_method": "支払い方法",
+    "add_payment_method": "支払い方法を追加",
+    "usage": "使用量",
+    "quota": {
+      "used": "使用済み",
+      "remaining": "残り",
+      "limit": "上限",
+      "videos": "動画"
+    },
+    "plans": {
+      "free": {
+        "name": "無料",
+        "description": "始めるのに最適",
+        "price": "無料"
+      },
+      "pro": {
+        "name": "プロ",
+        "description": "プロフェッショナル向け",
+        "price": "$49/月"
+      },
+      "enterprise": {
+        "name": "エンタープライズ",
+        "description": "大企業向け",
+        "price": "お問い合わせ"
+      }
+    }
+  },
+  "quota": {
+    "exceeded": "月間上限を超えました",
+    "exceeded_description": "より多くの動画を作成するには、プランをアップグレードしてください。",
+    "warning": "上限に近づいています",
+    "warning_description": "{{used}}/{{limit}}本の動画を使用しました。"
+  },
+  "error": {
+    "generic": "問題が発生しました。もう一度お試しください。",
+    "network": "ネットワーク接続を確認してください。",
+    "unauthorized": "続行するにはログインしてください。",
+    "forbidden": "このページにアクセスする権限がありません。",
+    "not_found": "ページが見つかりません。",
+    "server_error": "サーバーエラーが発生しました。"
+  }
+}

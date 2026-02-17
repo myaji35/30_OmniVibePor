@@ -4,6 +4,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Salesforce Lightning Design System Tokens */
+@import '../styles/slds-tokens.css';
+
 :root {
   --foreground-rgb: 255, 255, 255;
   --background-start-rgb: 10, 10, 12;

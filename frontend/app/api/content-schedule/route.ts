@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
     if (contentId) {
       // 특정 콘텐츠 ID가 지정된 경우
       const allContents = await getAllContentSchedules()
-      const found = allContents.find(c => c.id.toString() === contentId)
+      const found = allContents.find(c => c.id?.toString() === contentId)
       return NextResponse.json({
         success: true,
         content: found || null

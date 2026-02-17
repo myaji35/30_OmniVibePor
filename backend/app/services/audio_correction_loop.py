@@ -334,7 +334,6 @@ class AudioCorrectionLoop:
                 "normalized_text": tts_text,
                 "normalization_mappings": normalization_mappings,
                 "final_similarity": best_similarity,
-                "original_text": text,
                 "transcribed_text": iterations[-1]["transcribed_text"],
                 "iterations": iterations,
                 "warning": f"Could not achieve target accuracy ({self.accuracy_threshold:.0%})"

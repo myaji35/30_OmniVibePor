@@ -1,0 +1,110 @@
+# Kamal Deployment Configuration
+# OmniVibe Pro Production Deployment
+
+service: omnivibe-pro
+image: omnivibepro/backend
+
+# Registry
+registry:
+  username: omnivibepro
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+# Servers
+servers:
+  web:
+    hosts:
+      - 192.168.1.100  # 실제 서버 IP로 교체
+    labels:
+      traefik.http.routers.omnivibe.rule: Host(`api.omnivibepro.com`)
+      traefik.http.routers.omnivibe.entrypoints: websecure
+      traefik.http.routers.omnivibe.tls.certresolver: letsencrypt
+    options:
+      network: "private"
+
+  workers:
+    hosts:
+      - 192.168.1.101  # Celery Worker 서버
+      - 192.168.1.102
+    cmd: celery -A app.tasks.celery_app worker --loglevel=info
+
+# Environment Variables
+env:
+  clear:
+    REDIS_URL: redis://redis:6379/0
+    NEO4J_URI: bolt://neo4j:7687
+    DATABASE_URL: sqlite:///omni_db.sqlite
+    LOGFIRE_TOKEN: your_logfire_token
+
+  secret:
+    - SECRET_KEY
+    - ELEVENLABS_API_KEY
+    - OPENAI_API_KEY
+    - ANTHROPIC_API_KEY
+    - GOOGLE_CLIENT_ID
+    - GOOGLE_CLIENT_SECRET
+    - STRIPE_SECRET_KEY
+    - STRIPE_WEBHOOK_SECRET
+    - NEO4J_PASSWORD
+
+# Accessories (Redis, Neo4j)
+accessories:
+  redis:
+    image: redis:7-alpine
+    host: 192.168.1.100
+    port: 6379
+    directories:
+      - data:/data
+
+  neo4j:
+    image: neo4j:5.16
+    host: 192.168.1.100
+    port: 7687
+    env:
+      clear:
+        NEO4J_AUTH: neo4j/your_password
+    directories:
+      - data:/data
+
+# Traefik (Reverse Proxy + HTTPS)
+traefik:
+  options:
+    publish:
+      - "443:443"
+      - "80:80"
+    volume:
+      - "/letsencrypt/acme.json:/letsencrypt/acme.json"
+  args:
+    entrypoints.web.address: ":80"
+    entrypoints.websecure.address: ":443"
+    certificatesresolvers.letsencrypt.acme.email: "admin@omnivibepro.com"
+    certificatesresolvers.letsencrypt.acme.storage: "/letsencrypt/acme.json"
+    certificatesresolvers.letsencrypt.acme.httpchallenge: true
+    certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint: web
+
+# Asset Path (for volume mounts)
+asset_path: /var/www/omnivibe
+
+# Healthcheck
+healthcheck:
+  path: /health
+  port: 8000
+  max_attempts: 10
+  interval: 10s
+
+# SSH
+ssh:
+  user: deploy
+
+# Builder
+builder:
+  multiarch: false
+  args:
+    RUBY_VERSION: 3.2.0
+
+# Logging
+logging:
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"

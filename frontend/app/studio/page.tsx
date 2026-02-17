@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Play,
@@ -67,7 +67,8 @@ interface Campaign {
   target_duration?: number;
 }
 
-export default function StudioPage() {
+// StudioPage 내부 컴포넌트 (useSearchParams 사용)
+function StudioPageContent() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(180); // 기본 180초 (3분)
@@ -190,7 +191,7 @@ export default function StudioPage() {
         // 🔍 2. Storyboard API: 블록 분할
         try {
           const storyboardRes = await fetch(
-            `http://127.0.0.1:8000/api/v1/storyboard/campaigns/${selectedCampaign?.id || 1}/content/${item.id}/generate`,
+            `/api/storyboard/campaigns/${selectedCampaign?.id || 1}/content/${item.id}/generate`,
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -580,7 +581,7 @@ export default function StudioPage() {
     try {
       // Storyboard API 호출 (맥락 분석 기반 분할)
       const response = await fetch(
-        `http://127.0.0.1:8000/api/v1/storyboard/campaigns/1/content/1/generate?async_mode=false`,
+        `/api/storyboard/campaigns/1/content/1/generate?async_mode=false`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -799,7 +800,7 @@ export default function StudioPage() {
         // Storyboard API 호출 - AI가 동적으로 블록 분할
         try {
           const storyboardRes = await fetch(
-            `http://127.0.0.1:8000/api/v1/storyboard/campaigns/${selectedCampaign?.id}/content/${item.id}/generate`,
+            `/api/storyboard/campaigns/${selectedCampaign?.id}/content/${item.id}/generate`,
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -1065,7 +1066,7 @@ export default function StudioPage() {
       }
 
       // Audio API 호출 (Celery 비동기 처리)
-      const res = await fetch("http://127.0.0.1:8000/api/v1/audio/generate", {
+      const res = await fetch("/api/audio/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -1089,7 +1090,7 @@ export default function StudioPage() {
         const pollInterval = setInterval(async () => {
           try {
             const statusRes = await fetch(
-              `http://127.0.0.1:8000/api/v1/audio/status/${data.task_id}`,
+              `/api/audio/status/${data.task_id}`,
             );
             const statusData = await statusRes.json();
 
@@ -1115,7 +1116,7 @@ export default function StudioPage() {
               setAudioStatusMessage("생성 완료!");
 
               // task_id를 사용한 오디오 다운로드 URL
-              const audioUrl = `http://127.0.0.1:8000/api/v1/audio/download/${data.task_id}`;
+              const audioUrl = `/api/audio/download/${data.task_id}`;
               setAudioUrl(audioUrl);
 
               console.log(`✅ 오디오 생성 완료: ${statusData.result.audio_path}`);
@@ -1159,7 +1160,7 @@ export default function StudioPage() {
 
       // Director Agent API 호출 (비동기 작업)
       const res = await fetch(
-        "http://127.0.0.1:8000/api/v1/director/generate-video",
+        "/api/director/generate-video",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -1191,7 +1192,7 @@ export default function StudioPage() {
           try {
             // 진행률 API 호출 (Backend director API의 task-status 엔드포인트)
             const statusRes = await fetch(
-              `http://127.0.0.1:8000/api/v1/director/task-status/${data.task_id}`,
+              `/api/director/task-status/${data.task_id}`,
             );
             const statusData = await statusRes.json();
 
@@ -1233,7 +1234,8 @@ export default function StudioPage() {
               // 결과 데이터에서 영상 경로 추출
               if (statusData.result?.final_video_path) {
                 const videoPath = statusData.result.final_video_path;
-                setVideoUrl(`http://localhost:8000${videoPath}`);
+                const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'
+                setVideoUrl(`${backendUrl}${videoPath}`);
                 console.log(`✅ 영상 생성 완료: ${videoPath}`);
               }
 
@@ -1537,5 +1539,21 @@ export default function StudioPage() {
         </div>
       )}
     </div>
+  );
+}
+
+// Suspense로 감싼 메인 컴포넌트
+export default function StudioPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen bg-[#050505] text-white items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-16 h-16 border-4 border-brand-primary-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-gray-400 font-medium">Loading Studio...</p>
+        </div>
+      </div>
+    }>
+      <StudioPageContent />
+    </Suspense>
   );
 }

@@ -2,10 +2,9 @@
 from typing import Optional, List
 from fastapi import Depends, HTTPException, status, Security
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from app.auth.jwt_handler import verify_token
-from app.models.user import UserRole
-from app.services.neo4j_client import Neo4jClient
-from app.models.neo4j_models import Neo4jCRUDManager
+from app.auth.jwt import verify_access_token  # 새로운 JWT 모듈
+from app.models.user import UserRole, UserCRUD
+from app.services.neo4j_client import get_neo4j_client
 
 # HTTP Bearer 스키마 (Authorization: Bearer <token>)
 security = HTTPBearer()
@@ -30,7 +29,7 @@ async def get_current_user(
     token = credentials.credentials
 
     # 토큰 검증
-    payload = verify_token(token, token_type="access")
+    payload = verify_access_token(token)
     if not payload:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -38,7 +37,7 @@ async def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    user_id: str = payload.get("sub")
+    user_id: str = payload.get("user_id")
     if not user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -47,10 +46,10 @@ async def get_current_user(
         )
 
     # Neo4j에서 사용자 조회
-    neo4j_client = Neo4jClient()
-    crud_manager = Neo4jCRUDManager(neo4j_client)
+    neo4j_client = get_neo4j_client()
+    user_crud = UserCRUD(neo4j_client)
 
-    user = crud_manager.get_user(user_id)
+    user = user_crud.get_user_by_id(user_id)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

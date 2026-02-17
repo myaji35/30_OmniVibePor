@@ -23,13 +23,14 @@ from app.models.user import (
     APIKey,
     APIKeyCRUD,
 )
-from app.auth.jwt_handler import (
+from app.auth.jwt import (
     create_access_token,
     create_refresh_token,
-    verify_token,
-    blacklist_token,
+    verify_refresh_token,
+    get_password_hash,
+    verify_password,
 )
-from app.auth.password import get_password_hash, verify_password
+from app.auth.oauth import google_oauth
 from app.auth.dependencies import get_current_user, require_role
 from app.models.user import UserRole
 from app.services.neo4j_client import Neo4jClient
@@ -537,3 +538,136 @@ async def deactivate_user(user_id: str):
         )
 
     return None
+
+
+# ==================== Google OAuth 2.0 ====================
+
+@router.get("/google/login")
+async def google_login():
+    """
+    Google OAuth 2.0 로그인 시작
+
+    Google 로그인 페이지로 리다이렉트합니다.
+
+    Returns:
+        dict: Google 인증 URL
+    """
+    authorization_url = google_oauth.get_authorization_url(state="random_state_string")
+
+    return {
+        "authorization_url": authorization_url,
+        "message": "Redirect user to this URL for Google login"
+    }
+
+
+@router.post("/google/callback", response_model=LoginResponse)
+async def google_callback(code: str):
+    """
+    Google OAuth 2.0 콜백
+
+    Google에서 돌아온 Authorization Code를 처리하여 로그인/회원가입합니다.
+
+    Args:
+        code: Google Authorization Code
+
+    Returns:
+        LoginResponse: JWT 토큰 및 사용자 정보
+    """
+    # Google OAuth 인증
+    google_user = await google_oauth.authenticate(code)
+
+    if not google_user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Google authentication failed"
+        )
+
+    email = google_user.get("email")
+    if not email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email not provided by Google"
+        )
+
+    # 기존 사용자 확인
+    existing_user = user_crud.get_user_by_email(email)
+
+    if existing_user:
+        # 기존 사용자 로그인
+        user_crud.update_last_login(existing_user["user_id"])
+
+        # JWT 토큰 생성
+        token_data = {
+            "user_id": existing_user["user_id"],
+            "email": existing_user["email"],
+            "role": existing_user.get("role", "user"),
+        }
+
+        access_token = create_access_token(token_data)
+        refresh_token = create_refresh_token(token_data)
+
+        await log_auth_event(
+            event_type="google_login",
+            user_id=existing_user["user_id"],
+            email=email
+        )
+
+        user_data = {k: v for k, v in existing_user.items() if k != "hashed_password"}
+        return LoginResponse(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            user=UserResponse(**user_data)
+        )
+
+    else:
+        # 새 사용자 회원가입
+        new_user = User(
+            email=email,
+            name=google_user.get("name", "Google User"),
+            hashed_password="",  # OAuth 사용자는 비밀번호 없음
+            profile_image_url=google_user.get("picture"),
+            is_verified=google_user.get("verified_email", False),
+            subscription_tier="free"
+        )
+
+        created_user = user_crud.create_user(new_user)
+
+        # JWT 토큰 생성
+        token_data = {
+            "user_id": created_user["user_id"],
+            "email": created_user["email"],
+            "role": "user",
+        }
+
+        access_token = create_access_token(token_data)
+        refresh_token = create_refresh_token(token_data)
+
+        await log_auth_event(
+            event_type="google_register",
+            user_id=created_user["user_id"],
+            email=email
+        )
+
+        # 응답 데이터 준비
+        user_response_data = {
+            "user_id": created_user["user_id"],
+            "email": created_user["email"],
+            "name": new_user.name,
+            "role": UserRole.USER,
+            "is_active": True,
+            "is_verified": new_user.is_verified,
+            "created_at": new_user.created_at,
+            "updated_at": new_user.updated_at,
+            "last_login": None,
+            "profile_image_url": new_user.profile_image_url,
+            "phone": None,
+            "company": None,
+            "subscription_tier": "free",
+            "subscription_expires_at": None
+        }
+
+        return LoginResponse(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            user=UserResponse(**user_response_data)
+        )

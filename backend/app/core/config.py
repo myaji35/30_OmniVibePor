@@ -75,6 +75,27 @@ class Settings(BaseSettings):
     # Unsplash (이미지 검색)
     UNSPLASH_ACCESS_KEY: str | None = None
 
+    # JWT Authentication (Week 5)
+    SECRET_KEY: str  # JWT 서명용 비밀 키 (이미 위에 정의됨)
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+
+    # Google OAuth 2.0 (Week 5)
+    GOOGLE_CLIENT_ID: str | None = None
+    GOOGLE_CLIENT_SECRET: str | None = None
+    GOOGLE_REDIRECT_URI: str = "http://localhost:3020/api/auth/google/callback"  # FRONTEND_URL 설정 시 자동으로 맞게 변경할 것
+
+    # Stripe (Week 5)
+    STRIPE_SECRET_KEY: str | None = None
+    STRIPE_PUBLISHABLE_KEY: str | None = None
+    STRIPE_WEBHOOK_SECRET: str | None = None
+
+    # Frontend URL (프로덕션 배포 시 환경변수로 주입)
+    FRONTEND_URL: str = "http://localhost:3020"
+
+    # CORS (콤마 구분 다중 도메인 지원)
+    CORS_ORIGINS: str = "http://localhost:3020,http://localhost:3000"
+
     class Config:
         env_file = ".env"
         case_sensitive = True
@@ -85,3 +106,7 @@ class Settings(BaseSettings):
 def get_settings() -> Settings:
     """싱글톤 설정 인스턴스"""
     return Settings()
+
+
+# Global settings instance
+settings = get_settings()

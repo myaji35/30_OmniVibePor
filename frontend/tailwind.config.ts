@@ -6,6 +6,28 @@ const config: Config = {
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  safelist: [
+    // SLDS color classes
+    'bg-slds-brand', 'bg-slds-brand-dark', 'bg-slds-brand-darker', 'bg-slds-success', 'bg-slds-warning', 'bg-slds-error', 'bg-slds-info',
+    'bg-slds-background', 'bg-slds-background-alt', 'bg-slds-background-shade',
+    'text-slds-brand', 'text-slds-brand-dark', 'text-slds-text-heading', 'text-slds-text-body', 'text-slds-text-weak', 'text-slds-text-disabled',
+    'text-slds-success', 'text-slds-warning', 'text-slds-error', 'text-slds-info',
+    'border-slds', 'border-slds-border-strong', 'border-slds-brand',
+    // SLDS hover states
+    'hover:bg-slds-brand-dark', 'hover:bg-slds-background-shade', 'hover:text-slds-brand',
+    // SLDS spacing
+    'p-slds-small', 'p-slds-medium', 'p-slds-large', 'p-slds-x-large',
+    'px-slds-small', 'px-slds-medium', 'px-slds-large',
+    'py-slds-small', 'py-slds-medium', 'py-slds-large',
+    'm-slds-small', 'm-slds-medium', 'm-slds-large',
+    'mb-slds-small', 'mb-slds-medium', 'mb-slds-large',
+    'mt-slds-small', 'mt-slds-medium', 'mt-slds-large',
+    'gap-slds-small', 'gap-slds-medium', 'gap-slds-large',
+    // SLDS border radius
+    'rounded-slds', 'rounded-slds-sm', 'rounded-slds-md',
+    // SLDS shadows
+    'shadow-slds-card', 'shadow-slds-modal', 'shadow-slds-dropdown',
+  ],
   theme: {
     extend: {
       colors: {
@@ -65,8 +87,9 @@ const config: Config = {
         'slds-xx-large': '3rem',        // 48px
       },
       borderRadius: {
-        'slds-sm': '0.25rem',
-        'slds-md': '0.5rem',
+        'slds': '0.25rem',        // 4px - DEFAULT
+        'slds-sm': '0.125rem',    // 2px
+        'slds-md': '0.5rem',      // 8px
       },
       boxShadow: {
         'slds-card': '0 2px 2px 0 rgba(0, 0, 0, 0.1)',

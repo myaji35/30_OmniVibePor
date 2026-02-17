@@ -60,3 +60,6 @@ slowapi>=0.1.9
 httpx>=0.26.0
 tenacity>=8.2.3
 aiosqlite>=0.19.0
+
+# Stripe (Week 5)
+stripe>=7.0.0

@@ -1,0 +1,102 @@
+{
+  "common": {
+    "welcome": "환영합니다",
+    "login": "로그인",
+    "logout": "로그아웃",
+    "signup": "회원가입",
+    "save": "저장",
+    "cancel": "취소",
+    "delete": "삭제",
+    "edit": "수정",
+    "create": "생성",
+    "loading": "로딩 중...",
+    "error": "오류",
+    "success": "성공",
+    "confirm": "확인",
+    "back": "뒤로",
+    "next": "다음",
+    "submit": "제출",
+    "search": "검색"
+  },
+  "nav": {
+    "home": "홈",
+    "studio": "스튜디오",
+    "campaigns": "캠페인",
+    "billing": "결제",
+    "settings": "설정",
+    "dashboard": "대시보드"
+  },
+  "auth": {
+    "email": "이메일",
+    "password": "비밀번호",
+    "confirm_password": "비밀번호 확인",
+    "full_name": "이름",
+    "sign_in_with_google": "Google로 로그인",
+    "forgot_password": "비밀번호를 잊으셨나요?",
+    "no_account": "계정이 없으신가요?",
+    "have_account": "이미 계정이 있으신가요?",
+    "sign_up_now": "지금 가입하기",
+    "sign_in_now": "로그인하기"
+  },
+  "studio": {
+    "title": "비디오 스튜디오",
+    "create_video": "영상 만들기",
+    "script": "스크립트",
+    "storyboard": "스토리보드",
+    "audio": "오디오",
+    "video": "영상",
+    "preview": "미리보기",
+    "render": "렌더링",
+    "export": "내보내기",
+    "add_block": "블록 추가",
+    "generate_script": "스크립트 생성"
+  },
+  "billing": {
+    "title": "결제 및 구독",
+    "current_plan": "현재 플랜",
+    "upgrade": "업그레이드",
+    "downgrade": "다운그레이드",
+    "cancel_subscription": "구독 취소",
+    "billing_history": "결제 내역",
+    "payment_method": "결제 수단",
+    "add_payment_method": "결제 수단 추가",
+    "usage": "사용량",
+    "quota": {
+      "used": "사용",
+      "remaining": "남음",
+      "limit": "제한",
+      "videos": "영상"
+    },
+    "plans": {
+      "free": {
+        "name": "무료",
+        "description": "시작하기에 완벽합니다",
+        "price": "무료"
+      },
+      "pro": {
+        "name": "프로",
+        "description": "전문가를 위한 플랜",
+        "price": "$49/월"
+      },
+      "enterprise": {
+        "name": "엔터프라이즈",
+        "description": "대기업을 위한 플랜",
+        "price": "문의"
+      }
+    }
+  },
+  "quota": {
+    "exceeded": "월간 제한을 초과했습니다",
+    "exceeded_description": "더 많은 영상을 만들려면 플랜을 업그레이드하세요.",
+    "warning": "제한에 거의 도달했습니다",
+    "warning_description": "{{used}}/{{limit}} 영상을 사용했습니다."
+  },
+  "error": {
+    "generic": "문제가 발생했습니다. 다시 시도해주세요.",
+    "network": "네트워크 연결을 확인해주세요.",
+    "unauthorized": "로그인이 필요합니다.",
+    "forbidden": "권한이 없습니다.",
+    "not_found": "페이지를 찾을 수 없습니다.",
+    "server_error": "서버 오류가 발생했습니다."
+  }
+}

@@ -20,6 +20,7 @@ from app.core.secrets import initialize_secrets
 from app.api.v1 import router as api_v1_router
 from app.middleware.rate_limiter import RateLimitMiddleware
 from app.middleware.security import SecurityHeadersMiddleware
+from app.middleware.quota import QuotaMiddleware
 
 # 로거 설정
 logging.basicConfig(level=logging.INFO)
@@ -135,14 +136,12 @@ app = FastAPI(
     ]
 )
 
-# CORS 설정 (WebSocket 지원 포함)
+# CORS 설정 (settings.CORS_ORIGINS 환경변수 기반)
+_cors_origins = [o.strip() for o in settings.CORS_ORIGINS.split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "*",  # 프로덕션에서는 특정 도메인만 허용
-        "http://localhost:3000",  # Next.js Frontend
-        "ws://localhost:3000",  # Next.js WebSocket
-    ],
+    allow_origins=_cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -156,7 +155,10 @@ if settings.LOGFIRE_TOKEN and settings.LOGFIRE_TOKEN != "your_logfire_token_here
 app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(RateLimitMiddleware)
 
-logger.info("Security middleware initialized")
+# Quota 관리 미들웨어 추가 (Week 5)
+app.add_middleware(QuotaMiddleware)
+
+logger.info("Security and Quota middleware initialized")
 
 # API 라우터 등록
 app.include_router(api_v1_router, prefix="/api/v1")
