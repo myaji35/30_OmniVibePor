@@ -2,14 +2,14 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Play, Eye, Users } from 'lucide-react'
+import { Play, Eye, Users, Code2 } from 'lucide-react'
 import TemplatePreviewModal from './TemplatePreviewModal'
 
 export interface Template {
   id: string
   name: string
   description: string
-  platform: ('youtube' | 'instagram' | 'tiktok')[]
+  platform: ('youtube' | 'instagram' | 'tiktok' | 'web')[]
   tone: ('professional' | 'emotional' | 'trendy' | 'minimal' | 'dynamic')[]
   duration: number
   category: string
@@ -18,6 +18,14 @@ export interface Template {
   usageCount: number
   tags: string[]
   isPremium: boolean
+  // 실 사례 추가 필드
+  sourceUrl?: string
+  videoUrl?: string
+  youtubeId?: string
+  githubUrl?: string
+  liveUrl?: string
+  authorName?: string
+  isReal?: boolean
 }
 
 interface TemplateCardProps {
@@ -25,9 +33,10 @@ interface TemplateCardProps {
 }
 
 const platformStyles: Record<string, { bg: string; text: string; label: string }> = {
-  youtube: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'YouTube' },
+  youtube: { bg: 'bg-red-100', text: 'text-red-700', label: 'YouTube' },
   instagram: { bg: 'bg-pink-100', text: 'text-pink-700', label: 'Instagram' },
   tiktok: { bg: 'bg-gray-900', text: 'text-white', label: 'TikTok' },
+  web: { bg: 'bg-emerald-100', text: 'text-emerald-700', label: 'Web' },
 }
 
 const toneLabels: Record<string, string> = {
@@ -96,6 +105,19 @@ export default function TemplateCard({ template }: TemplateCardProps) {
             PRO
           </div>
         )}
+
+        {/* Real / YouTube Badge */}
+        {template.youtubeId && !template.isPremium && (
+          <div className="absolute top-2 right-2 bg-red-600/90 text-white text-[9px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+            <Play className="w-2.5 h-2.5 fill-white" />
+            YouTube
+          </div>
+        )}
+        {template.isReal && !template.youtubeId && !template.isPremium && (
+          <div className="absolute top-2 right-2 bg-black/60 text-white text-[9px] font-bold px-2 py-0.5 rounded-full border border-white/20">
+            실 사례
+          </div>
+        )}
       </div>
 
       {/* Info Section */}
@@ -105,14 +127,23 @@ export default function TemplateCard({ template }: TemplateCardProps) {
 
         {/* Platform Badges */}
         <div className="flex flex-wrap gap-1.5 mb-2">
-          {template.platform.map((p) => (
-            <span
-              key={p}
-              className={`${platformStyles[p].bg} ${platformStyles[p].text} text-[10px] font-semibold px-2 py-0.5 rounded-full`}
-            >
-              {platformStyles[p].label}
+          {template.platform
+            .filter((p) => platformStyles[p])
+            .map((p) => (
+              <span
+                key={p}
+                className={`${platformStyles[p].bg} ${platformStyles[p].text} text-[10px] font-semibold px-2 py-0.5 rounded-full`}
+              >
+                {platformStyles[p].label}
+              </span>
+            ))}
+          {/* 소스 코드 포함 뱃지 */}
+          {template.githubUrl && (
+            <span className="bg-violet-100 text-violet-700 text-[10px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-0.5">
+              <Code2 className="w-2.5 h-2.5" />
+              소스
             </span>
-          ))}
+          )}
         </div>
 
         {/* Tone Tags */}
@@ -127,11 +158,26 @@ export default function TemplateCard({ template }: TemplateCardProps) {
           ))}
         </div>
 
+        {/* Author / Source */}
+        {template.authorName && (
+          <div className="flex items-center gap-1 mb-2">
+            <span className="text-[10px] text-[#706E6B] truncate">by {template.authorName}</span>
+            {template.githubUrl && (
+              <a href={template.githubUrl} target="_blank" rel="noopener noreferrer"
+                className="text-[10px] text-[#00A1E0] hover:underline shrink-0 ml-auto"
+                onClick={(e) => e.stopPropagation()}>
+                GitHub ↗
+              </a>
+            )}
+          </div>
+        )}
+
         {/* Footer: Usage Count + CTA */}
         <div className="flex items-center justify-between pt-2 border-t border-[#DDDBDA]">
           <span className="flex items-center gap-1 text-[11px] text-[#706E6B]">
             <Users className="w-3 h-3" />
-            {template.usageCount.toLocaleString()}회 사용
+            {template.usageCount.toLocaleString()}
+            {template.isReal ? '★' : '회 사용'}
           </span>
           <div className="flex items-center gap-1.5">
             <button

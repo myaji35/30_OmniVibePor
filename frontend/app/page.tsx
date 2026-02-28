@@ -107,128 +107,105 @@ function PipelineBar({ steps, visible }: { steps: { label: string; pct: number; 
 }
 
 // ── 히어로 미니 플레이어 (Remotion 샘플 느낌) ────────────────────────────────
-// Remotion 공식 사이트 실제 데모 영상 (remotion.dev/img/)
-const REMOTION_SAMPLES = [
+// 갤러리 실 사례에서 youtubeId 있는 인기 TOP 항목 + Remotion 공식 데모 혼합
+const HERO_SAMPLES = [
   {
-    title: "React → 영상 합성",
-    duration: "데모",
-    tag: "Compose",
-    gradient: "from-violet-600 via-indigo-500 to-blue-500",
-    src: "https://www.remotion.dev/img/compose.webm",
+    tag: "Trailer",
+    title: "Remotion 공식 트레일러",
+    author: "Jonny Burger",
+    youtubeId: "gwlDorikqgY",
   },
   {
-    title: "동적 편집 파이프라인",
-    duration: "데모",
-    tag: "Edit",
-    gradient: "from-fuchsia-600 via-pink-500 to-rose-500",
-    src: "https://www.remotion.dev/img/editing-vp9-chrome.webm",
+    tag: "Shorts",
+    title: "Short Video Maker",
+    author: "David Gyori",
+    youtubeId: "jzsQpn-AciM",
   },
   {
-    title: "렌더링 진행 현황",
-    duration: "데모",
-    tag: "Render",
-    gradient: "from-emerald-500 via-teal-500 to-cyan-500",
-    src: "https://www.remotion.dev/img/render-progress.webm",
+    tag: "Mockup",
+    title: "Mockoops — 스크린 애니메이션",
+    author: "Mohit",
+    youtubeId: "SSNmU3FXW4s",
   },
 ];
 
 function MiniPlayer({ visible }: { visible: boolean }) {
   const [active, setActive] = useState(0);
-  const [playing, setPlaying] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const [progress, setProgress] = useState(0);
+  const INTERVAL_MS = 8000; // 8초마다 자동 넘김
 
-  const sample = REMOTION_SAMPLES[active];
-
-  const togglePlay = () => {
-    const v = videoRef.current;
-    if (!v) return;
-    if (v.paused) { v.play().catch(() => {}); setPlaying(true); }
-    else { v.pause(); setPlaying(false); }
-  };
-
-  // visible 되면 자동재생
+  // 자동 캐러셀 + 진행 바
   useEffect(() => {
-    const v = videoRef.current;
-    if (visible && v) {
-      v.play().then(() => setPlaying(true)).catch(() => {});
-    }
-  }, [visible]);
+    if (!visible) return;
+    setProgress(0);
+    const startTime = Date.now();
+    const rafId = { current: 0 };
 
-  // 탭 전환 시 새 영상 자동재생
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    v.pause(); v.currentTime = 0; setPlaying(false);
-    if (visible) {
-      // src 변경 후 약간 딜레이 뒤 재생 (src 로딩 시간)
-      const id = setTimeout(() => {
-        v.play().then(() => setPlaying(true)).catch(() => {});
-      }, 150);
-      return () => clearTimeout(id);
-    }
-  }, [active]);
+    const tick = () => {
+      const elapsed = Date.now() - startTime;
+      const pct = Math.min((elapsed / INTERVAL_MS) * 100, 100);
+      setProgress(pct);
+      if (pct < 100) {
+        rafId.current = requestAnimationFrame(tick);
+      } else {
+        setActive((a) => (a + 1) % HERO_SAMPLES.length);
+      }
+    };
+    rafId.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId.current);
+  }, [visible, active]);
 
   if (!visible) return null;
+
+  const sample = HERO_SAMPLES[active];
+  // autoplay=1 mute=1 controls=0 loop=1
+  const embedUrl = `https://www.youtube.com/embed/${sample.youtubeId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${sample.youtubeId}&modestbranding=1&rel=0&showinfo=0`;
 
   return (
     <div className="rounded-xl overflow-hidden"
       style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.08)" }}>
-      {/* 탭 선택 */}
+
+      {/* 탭 + 진행 바 */}
       <div className="flex gap-1 p-2 border-b border-white/[0.06]">
-        {REMOTION_SAMPLES.map((s, i) => (
-          <button
-            key={i}
-            onClick={() => setActive(i)}
-            className="flex-1 text-[9px] font-bold py-1.5 rounded-lg transition-all"
+        {HERO_SAMPLES.map((s, i) => (
+          <button key={i} onClick={() => setActive(i)}
+            className="flex-1 text-[9px] font-bold py-1.5 rounded-lg transition-all relative overflow-hidden"
             style={{
               color: active === i ? "#fff" : "#64748b",
-              background: active === i ? `rgba(99,102,241,0.25)` : "transparent",
+              background: active === i ? "rgba(99,102,241,0.25)" : "transparent",
               border: active === i ? "1px solid rgba(99,102,241,0.4)" : "1px solid transparent",
-            }}
-          >
+            }}>
+            {/* 진행 바 (활성 탭만) */}
+            {active === i && (
+              <div className="absolute bottom-0 left-0 h-0.5 rounded-full"
+                style={{ width: `${progress}%`, background: "linear-gradient(90deg,#a78bfa,#6366f1)", transition: "width 0.1s linear" }} />
+            )}
             {s.tag}
           </button>
         ))}
       </div>
 
-      {/* 비디오 영역 */}
-      <div className="relative aspect-video bg-black cursor-pointer" onClick={togglePlay}>
-        <video
-          ref={videoRef}
-          src={sample.src}
-          className="w-full h-full object-cover"
-          loop
-          muted
-          autoPlay
-          playsInline
-          preload="auto"
+      {/* YouTube iframe */}
+      <div className="relative aspect-video bg-black">
+        <iframe
+          key={sample.youtubeId}
+          src={embedUrl}
+          className="w-full h-full"
+          allow="autoplay; encrypted-media"
+          allowFullScreen
+          style={{ border: "none" }}
         />
-        {/* 그라디언트 오버레이 */}
-        <div className={`absolute inset-0 bg-gradient-to-br ${sample.gradient} opacity-20 pointer-events-none`} />
-
-        {/* 재생/일시정지 버튼 */}
-        <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${playing ? "opacity-0 hover:opacity-100" : "opacity-100"}`}>
-          <div className="w-10 h-10 rounded-full flex items-center justify-center"
-            style={{ background: "rgba(0,0,0,0.6)", border: "1.5px solid rgba(255,255,255,0.3)", backdropFilter: "blur(8px)" }}>
-            {playing
-              ? <div className="flex gap-1"><div className="w-1 h-4 bg-white rounded-sm" /><div className="w-1 h-4 bg-white rounded-sm" /></div>
-              : <Play className="w-4 h-4 text-white fill-white ml-0.5" />
-            }
-          </div>
-        </div>
-
         {/* 상단 뱃지 */}
-        <div className="absolute top-2 left-2 flex items-center gap-1.5 px-2 py-0.5 rounded-full"
-          style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.15)" }}>
-          <div className="w-1.5 h-1.5 rounded-full bg-violet-400" />
+        <div className="absolute top-2 left-2 flex items-center gap-1.5 px-2 py-0.5 rounded-full pointer-events-none"
+          style={{ background: "rgba(0,0,0,0.65)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.15)" }}>
+          <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
           <span className="text-[9px] font-bold text-white">Remotion</span>
         </div>
-
         {/* 하단 정보 */}
-        <div className="absolute bottom-0 left-0 right-0 p-2"
-          style={{ background: "linear-gradient(to top, rgba(0,0,0,0.8), transparent)" }}>
+        <div className="absolute bottom-0 left-0 right-0 p-2 pointer-events-none"
+          style={{ background: "linear-gradient(to top, rgba(0,0,0,0.75), transparent)" }}>
           <p className="text-[10px] font-bold text-white">{sample.title}</p>
-          <p className="text-[9px] text-white/50 font-mono">{sample.duration}</p>
+          <p className="text-[9px] text-white/50">by {sample.author}</p>
         </div>
       </div>
     </div>

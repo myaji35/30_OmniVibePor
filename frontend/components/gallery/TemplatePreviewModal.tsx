@@ -10,6 +10,9 @@ import {
   Film,
   Tag,
   ChevronRight,
+  Code2,
+  ExternalLink,
+  Github,
 } from 'lucide-react'
 import type { Template } from './TemplateCard'
 
@@ -19,9 +22,10 @@ interface TemplatePreviewModalProps {
 }
 
 const platformStyles: Record<string, { bg: string; text: string; label: string }> = {
-  youtube: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'YouTube' },
+  youtube: { bg: 'bg-red-100', text: 'text-red-700', label: 'YouTube' },
   instagram: { bg: 'bg-pink-100', text: 'text-pink-700', label: 'Instagram' },
   tiktok: { bg: 'bg-gray-900', text: 'text-white', label: 'TikTok' },
+  web: { bg: 'bg-emerald-100', text: 'text-emerald-700', label: 'Web' },
 }
 
 const toneLabels: Record<string, string> = {
@@ -161,14 +165,16 @@ export default function TemplatePreviewModal({ template, onClose }: TemplatePrev
 
               {/* 플랫폼 + 분위기 */}
               <div className="flex flex-wrap gap-2">
-                {template.platform.map((p) => (
-                  <span
-                    key={p}
-                    className={`${platformStyles[p].bg} ${platformStyles[p].text} text-xs font-semibold px-2.5 py-1 rounded-full`}
-                  >
-                    {platformStyles[p].label}
-                  </span>
-                ))}
+                {template.platform
+                  .filter((p) => platformStyles[p])
+                  .map((p) => (
+                    <span
+                      key={p}
+                      className={`${platformStyles[p].bg} ${platformStyles[p].text} text-xs font-semibold px-2.5 py-1 rounded-full`}
+                    >
+                      {platformStyles[p].label}
+                    </span>
+                  ))}
                 {template.tone.map((t) => (
                   <span key={t} className="text-xs text-[#706E6B] bg-[#F3F2F2] px-2.5 py-1 rounded-full">
                     {toneLabels[t]}
@@ -217,6 +223,64 @@ export default function TemplatePreviewModal({ template, onClose }: TemplatePrev
               </div>
             </div>
 
+            {/* YouTube 플레이어 */}
+            {template.youtubeId && (
+              <div>
+                <h3 className="text-sm font-bold text-[#16325C] mb-3 flex items-center gap-2">
+                  <Play className="w-4 h-4 text-red-600" />
+                  실제 영상 미리보기
+                </h3>
+                <div className="relative w-full rounded-xl overflow-hidden bg-black" style={{ paddingBottom: '56.25%' }}>
+                  <iframe
+                    className="absolute inset-0 w-full h-full"
+                    src={`https://www.youtube.com/embed/${template.youtubeId}?modestbranding=1&rel=0`}
+                    title={template.name}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* 소스 코드 */}
+            {(template.githubUrl || template.liveUrl) && (
+              <div>
+                <h3 className="text-sm font-bold text-[#16325C] mb-3 flex items-center gap-2">
+                  <Code2 className="w-4 h-4 text-violet-600" />
+                  소스 코드 & 라이브 데모
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {template.githubUrl && (
+                    <a
+                      href={template.githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-4 py-2.5 bg-[#24292f] hover:bg-[#1c2128] text-white text-sm font-semibold rounded-lg transition-colors"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Github className="w-4 h-4" />
+                      소스 코드 보기 (GitHub)
+                    </a>
+                  )}
+                  {template.liveUrl && (
+                    <a
+                      href={template.liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-lg transition-colors"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      라이브 데모
+                    </a>
+                  )}
+                </div>
+                {template.authorName && (
+                  <p className="text-xs text-[#706E6B] mt-2">제작자: {template.authorName}</p>
+                )}
+              </div>
+            )}
+
             {/* 태그 */}
             {template.tags.length > 0 && (
               <div>
@@ -244,14 +308,28 @@ export default function TemplatePreviewModal({ template, onClose }: TemplatePrev
           >
             닫기
           </button>
-          <button
-            onClick={handleUseTemplate}
-            className="flex items-center gap-2 px-6 py-2.5 bg-[#00A1E0] hover:bg-[#0090c7] text-white text-sm font-bold rounded-lg transition-colors shadow-md shadow-[#00A1E0]/30"
-          >
-            <Play className="w-4 h-4" />
-            이 템플릿으로 시작
-            <ChevronRight className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            {template.githubUrl && (
+              <a
+                href={template.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 px-4 py-2.5 border border-[#DDDBDA] text-[#3E3E3C] text-sm font-medium rounded-lg hover:bg-[#F3F2F2] transition-colors"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Github className="w-4 h-4" />
+                소스
+              </a>
+            )}
+            <button
+              onClick={handleUseTemplate}
+              className="flex items-center gap-2 px-6 py-2.5 bg-[#00A1E0] hover:bg-[#0090c7] text-white text-sm font-bold rounded-lg transition-colors shadow-md shadow-[#00A1E0]/30"
+            >
+              <Play className="w-4 h-4" />
+              이 템플릿으로 시작
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
     </div>

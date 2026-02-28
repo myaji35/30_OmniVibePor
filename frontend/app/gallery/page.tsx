@@ -6,8 +6,17 @@ import { LayoutGrid, Bookmark, ChevronLeft, ChevronRight } from 'lucide-react'
 import TemplateCard, { type Template } from '@/components/gallery/TemplateCard'
 import TemplateFilter, { type FilterState } from '@/components/gallery/TemplateFilter'
 import AIPlannerButton from '@/components/gallery/AIPlannerButton'
+import { REMOTION_SHOWCASE } from '@/data/remotion-showcase'
 
-// ─── Mock Template Data (20 templates) ────────────────────────────────────────
+// ─── Real Remotion Showcase Data ───────────────────────────────────────────────
+// RemotionShowcaseItem → Template 타입 매핑 (web 플랫폼 포함)
+const REAL_TEMPLATES: Template[] = REMOTION_SHOWCASE.map((item) => ({
+  ...item,
+  // 'web' 플랫폼은 필터용으로 youtube로 포함 처리 (web 전용이면 빈 배열)
+  platform: item.platform.filter((p): p is 'youtube' | 'instagram' | 'tiktok' | 'web' => true),
+}))
+
+// ─── Mock Template Data (20 templates) — 레거시 보관 ──────────────────────────
 
 const MOCK_TEMPLATES: Template[] = [
   // IT / Startup (4)
@@ -333,7 +342,7 @@ export default function GalleryPage() {
   const [currentPage, setCurrentPage] = useState(1)
 
   const filteredTemplates = useMemo(() => {
-    let result = [...MOCK_TEMPLATES]
+    let result = [...REAL_TEMPLATES]
 
     // Platform filter
     if (filters.platforms.length > 0) {
@@ -383,9 +392,9 @@ export default function GalleryPage() {
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <LayoutGrid className="w-6 h-6 text-[#00A1E0]" />
-            <h1 className="text-xl font-bold text-[#16325C]">Template Gallery</h1>
+            <h1 className="text-xl font-bold text-[#16325C]">Remotion Showcase</h1>
             <span className="text-xs text-[#706E6B] bg-[#F3F2F2] px-2 py-0.5 rounded-full">
-              {filteredTemplates.length}개
+              실 사례 {filteredTemplates.length}개
             </span>
           </div>
 
