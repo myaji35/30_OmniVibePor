@@ -1,7 +1,31 @@
+import React from 'react';
 import { Composition } from 'remotion';
 import { YouTubeTemplate } from './templates/YouTubeTemplate';
 import { InstagramTemplate } from './templates/InstagramTemplate';
 import { TikTokTemplate } from './templates/TikTokTemplate';
+import type { VideoTemplateProps } from './types';
+
+const calculateDuration = (
+  props: VideoTemplateProps
+): { durationInFrames: number } => {
+  if (props.blocks.length === 0) {
+    return { durationInFrames: 900 }; // 30 seconds default
+  }
+  const totalDuration = props.blocks.reduce(
+    (max, b) => Math.max(max, b.startTime + b.duration),
+    0
+  );
+  return { durationInFrames: Math.max(Math.ceil(totalDuration * 30), 30) };
+};
+
+const DEFAULT_PROPS: VideoTemplateProps = {
+  blocks: [],
+  audioUrl: '',
+  branding: {
+    logo: '',
+    primaryColor: '#00A1E0',
+  },
+};
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -10,18 +34,12 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="youtube"
         component={YouTubeTemplate}
-        durationInFrames={900} // 30 seconds @ 30fps
+        durationInFrames={900}
         fps={30}
         width={1920}
         height={1080}
-        defaultProps={{
-          blocks: [],
-          audioUrl: '',
-          branding: {
-            logo: '',
-            primaryColor: '#00A1E0'
-          }
-        }}
+        defaultProps={DEFAULT_PROPS}
+        calculateMetadata={async ({ props }: { props: VideoTemplateProps }) => calculateDuration(props)}
       />
 
       {/* Instagram Template (1080x1350) */}
@@ -32,14 +50,8 @@ export const RemotionRoot: React.FC = () => {
         fps={30}
         width={1080}
         height={1350}
-        defaultProps={{
-          blocks: [],
-          audioUrl: '',
-          branding: {
-            logo: '',
-            primaryColor: '#00A1E0'
-          }
-        }}
+        defaultProps={DEFAULT_PROPS}
+        calculateMetadata={async ({ props }: { props: VideoTemplateProps }) => calculateDuration(props)}
       />
 
       {/* TikTok Template (1080x1920) */}
@@ -50,14 +62,8 @@ export const RemotionRoot: React.FC = () => {
         fps={30}
         width={1080}
         height={1920}
-        defaultProps={{
-          blocks: [],
-          audioUrl: '',
-          branding: {
-            logo: '',
-            primaryColor: '#00A1E0'
-          }
-        }}
+        defaultProps={DEFAULT_PROPS}
+        calculateMetadata={async ({ props }: { props: VideoTemplateProps }) => calculateDuration(props)}
       />
     </>
   );

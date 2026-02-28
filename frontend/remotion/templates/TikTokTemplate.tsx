@@ -1,6 +1,12 @@
 import React from 'react';
-import { AbsoluteFill, Audio, Sequence, Img, useCurrentFrame, interpolate } from 'remotion';
+import {
+  AbsoluteFill,
+  Audio,
+  Sequence,
+  Img,
+} from 'remotion';
 import { VideoTemplateProps } from '../types';
+import { HookScene, IntroScene, BodyScene, CTAScene, OutroScene } from '../scenes';
 
 export const TikTokTemplate: React.FC<VideoTemplateProps> = ({
   blocks,
@@ -19,7 +25,7 @@ export const TikTokTemplate: React.FC<VideoTemplateProps> = ({
           from={block.startTime * 30}
           durationInFrames={block.duration * 30}
         >
-          <TikTokScene block={block} branding={branding} />
+          <SceneByType block={block} branding={branding} />
         </Sequence>
       ))}
 
@@ -29,7 +35,7 @@ export const TikTokTemplate: React.FC<VideoTemplateProps> = ({
           style={{
             justifyContent: 'flex-end',
             alignItems: 'center',
-            paddingBottom: 120 // Space for TikTok UI
+            paddingBottom: 120
           }}
         >
           <Img src={branding.logo} style={{ width: 80, opacity: 0.85 }} />
@@ -39,70 +45,22 @@ export const TikTokTemplate: React.FC<VideoTemplateProps> = ({
   );
 };
 
-const TikTokScene: React.FC<{
+const SceneByType: React.FC<{
   block: VideoTemplateProps['blocks'][0];
   branding: VideoTemplateProps['branding'];
 }> = ({ block, branding }) => {
-  const frame = useCurrentFrame();
-
-  // Fast fade in (TikTok style)
-  const opacity = interpolate(frame, [0, 10], [0, 1], {
-    extrapolateRight: 'clamp'
-  });
-
-  // Zoom in effect
-  const scale = interpolate(frame, [0, 30], [1.1, 1], {
-    extrapolateRight: 'clamp'
-  });
-
-  return (
-    <AbsoluteFill style={{ opacity }}>
-      {/* Background with zoom */}
-      {block.backgroundUrl && (
-        <div style={{ transform: `scale(${scale})`, width: '100%', height: '100%' }}>
-          <Img
-            src={block.backgroundUrl}
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover'
-            }}
-          />
-        </div>
-      )}
-
-      {/* Subtle Gradient */}
-      <AbsoluteFill
-        style={{
-          background: 'linear-gradient(to top, rgba(0,0,0,0.6), transparent 40%)'
-        }}
-      />
-
-      {/* Text (Center - TikTok Caption Style) */}
-      <AbsoluteFill
-        style={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: 60
-        }}
-      >
-        <div
-          style={{
-            fontSize: block.fontSize || 42,
-            fontWeight: 'bold',
-            color: '#FFFFFF',
-            textAlign: 'center',
-            textShadow: '0 3px 15px rgba(0,0,0,0.9)',
-            maxWidth: '85%',
-            lineHeight: 1.3,
-            backgroundColor: 'rgba(0,0,0,0.4)',
-            padding: '20px 30px',
-            borderRadius: 12
-          }}
-        >
-          {block.text}
-        </div>
-      </AbsoluteFill>
-    </AbsoluteFill>
-  );
+  switch (block.type) {
+    case 'hook':
+      return <HookScene block={block} branding={branding} />;
+    case 'intro':
+      return <IntroScene block={block} branding={branding} />;
+    case 'body':
+      return <BodyScene block={block} branding={branding} />;
+    case 'cta':
+      return <CTAScene block={block} branding={branding} />;
+    case 'outro':
+      return <OutroScene block={block} branding={branding} />;
+    default:
+      return <BodyScene block={block} branding={branding} />;
+  }
 };

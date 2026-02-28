@@ -23,3 +23,15 @@ export interface VideoTemplateProps {
   audioUrl: string;
   branding: BrandingConfig;
 }
+
+export interface RenderConfig {
+  format: 'youtube' | 'instagram' | 'tiktok';
+  fps: number;
+  quality: 'low' | 'medium' | 'high';
+}
+
+export interface WordTimestamp {
+  word: string;
+  start: number;
+  end: number;
+}

@@ -1,6 +1,7 @@
 "use client";
 
-import { Zap, Database, Plus, Upload } from "lucide-react";
+import Link from "next/link";
+import { Zap, Database, Plus, Upload, LayoutGrid } from "lucide-react";
 import ClientsList from "@/components/ClientsList";
 
 interface StudioSidebarProps {
@@ -45,6 +46,17 @@ export default function StudioSidebar({
                         <span className="text-xs font-black tracking-widest uppercase text-gray-300 group-hover:text-white transition-colors">에셋 라이브러리</span>
                     </div>
                 </button>
+
+                <Link
+                    href="/gallery"
+                    className="mt-4 w-full relative group overflow-hidden p-0.5 rounded-2xl transition-all duration-500 hover:scale-[1.02] active:scale-95 block"
+                >
+                    <div className="absolute inset-0 bg-gradient-to-r from-brand-secondary-500 via-brand-primary-500 to-brand-secondary-500 animate-gradient-x opacity-20 group-hover:opacity-100 transition-opacity" />
+                    <div className="relative py-4 bg-[#0a0a0c] rounded-[calc(1rem-2px)] flex items-center justify-center gap-3 border border-white/5 group-hover:border-transparent transition-colors">
+                        <LayoutGrid className="w-5 h-5 text-brand-secondary-400 group-hover:scale-110 transition-transform" />
+                        <span className="text-xs font-black tracking-widest uppercase text-gray-300 group-hover:text-white transition-colors">템플릿 갤러리</span>
+                    </div>
+                </Link>
             </div>
 
             <div className="flex-1 overflow-y-auto px-8 space-y-4 pb-8 custom-scrollbar">

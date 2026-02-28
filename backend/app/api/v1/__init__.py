@@ -29,6 +29,7 @@ from .storyboard import router as storyboard_router
 # from .backgrounds import router as backgrounds_router
 from .ab_tests import router as ab_tests_router
 from .remotion import router as remotion_router
+from .render import router as render_router
 from .cache import router as cache_router
 from .auth import router as auth_router
 from .billing import router as billing_router
@@ -64,6 +65,7 @@ router.include_router(storyboard_router, tags=["Storyboard"])
 # router.include_router(backgrounds_router, tags=["Backgrounds"])
 router.include_router(ab_tests_router, tags=["A/B Tests"])
 router.include_router(remotion_router, tags=["Remotion Rendering"])
+router.include_router(render_router, tags=["Multi-format Render"])
 router.include_router(cache_router, prefix="/cache", tags=["Cache Management"])
 router.include_router(billing_router, tags=["Billing & Subscription"])
 router.include_router(webhooks_router, tags=["Webhooks"])

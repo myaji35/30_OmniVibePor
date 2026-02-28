@@ -1,6 +1,12 @@
 "use client";
 
+import { useMemo } from "react";
 import { Play, SkipBack, SkipForward, Maximize2, Settings2, Zap } from "lucide-react";
+import { Player } from "@remotion/player";
+import { YouTubeTemplate } from "@/remotion/templates/YouTubeTemplate";
+import { InstagramTemplate } from "@/remotion/templates/InstagramTemplate";
+import { TikTokTemplate } from "@/remotion/templates/TikTokTemplate";
+import type { ScriptBlock, BrandingConfig, VideoTemplateProps } from "@/remotion/types";
 
 interface StudioPreviewProps {
     workflowStep: string | null;
@@ -8,7 +14,23 @@ interface StudioPreviewProps {
     isPlaying: boolean;
     setIsPlaying: (playing: boolean) => void;
     currentTime: number;
+    blocks?: ScriptBlock[];
+    audioUrl?: string;
+    branding?: BrandingConfig;
+    format?: "youtube" | "instagram" | "tiktok";
 }
+
+const FORMAT_CONFIG = {
+    youtube: { width: 1920, height: 1080 },
+    instagram: { width: 1080, height: 1350 },
+    tiktok: { width: 1080, height: 1920 },
+} as const;
+
+const TEMPLATE_MAP: Record<string, React.FC<VideoTemplateProps>> = {
+    youtube: YouTubeTemplate,
+    instagram: InstagramTemplate,
+    tiktok: TikTokTemplate,
+};
 
 export default function StudioPreview({
     workflowStep,
@@ -16,10 +38,71 @@ export default function StudioPreview({
     isPlaying,
     setIsPlaying,
     currentTime,
+    blocks,
+    audioUrl,
+    branding,
+    format = "youtube",
 }: StudioPreviewProps) {
+    const hasBlocks = blocks && blocks.length > 0;
+
+    const durationInFrames = useMemo(() => {
+        if (!hasBlocks) return 300;
+        const totalDuration = blocks.reduce(
+            (sum, b) => Math.max(sum, b.startTime + b.duration),
+            0
+        );
+        return Math.max(Math.ceil(totalDuration * 30), 30);
+    }, [blocks, hasBlocks]);
+
+    const config = FORMAT_CONFIG[format];
+    const TemplateComponent = TEMPLATE_MAP[format];
+
+    const inputProps: VideoTemplateProps = useMemo(() => ({
+        blocks: blocks || [],
+        audioUrl: audioUrl || "",
+        branding: branding || { logo: "", primaryColor: "#00A1E0" },
+    }), [blocks, audioUrl, branding]);
+
+    // Show Remotion Player if blocks exist
+    if (hasBlocks) {
+        return (
+            <div className="h-full flex flex-col items-center justify-center relative bg-[#050505] p-6">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-brand-primary-500/5 rounded-full blur-[120px] pointer-events-none" />
+
+                <div className="relative w-full max-w-5xl">
+                    {/* Format badge */}
+                    <div className="absolute -top-8 left-0 z-10 flex items-center gap-2">
+                        <div className="px-3 py-1 bg-black/60 backdrop-blur-xl rounded-full border border-white/10">
+                            <span className="text-[10px] font-bold text-white/60 uppercase tracking-[0.15em]">
+                                {format} &middot; {config.width}x{config.height}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div className="rounded-2xl overflow-hidden border border-white/10 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9)]">
+                        <Player
+                            component={TemplateComponent}
+                            inputProps={inputProps}
+                            durationInFrames={durationInFrames}
+                            compositionWidth={config.width}
+                            compositionHeight={config.height}
+                            fps={30}
+                            controls
+                            showVolumeControls
+                            style={{
+                                width: "100%",
+                                aspectRatio: `${config.width}/${config.height}`,
+                            }}
+                        />
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Fallback: original Neural Rendering UI when no blocks
     return (
         <div className="h-full flex flex-col p-12 items-center justify-center relative bg-[#050505]">
-            {/* Background Light Effect */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-brand-primary-500/5 rounded-full blur-[120px] pointer-events-none" />
 
             <div className="relative w-full max-w-6xl aspect-video premium-card rounded-[3rem] overflow-hidden shadow-[0_50px_120px_-30px_rgba(0,0,0,0.9)] flex items-center justify-center p-0 group border border-white/10 group">
