@@ -78,15 +78,18 @@ export default function StudioSidebar({
             {/* 하단 미디어 슬라이드 (Glass Card) */}
             <div className="p-8 mt-auto border-t border-white/5 bg-white/[0.01] relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-t from-brand-primary-500/5 to-transparent pointer-events-none" />
-                <div className="premium-card rounded-[2rem] p-5 bg-white/[0.03] border-white/10 group cursor-pointer relative overflow-hidden shadow-2xl">
+                <Link
+                    href="/upload"
+                    className="premium-card rounded-[2rem] p-5 bg-white/[0.03] border-white/10 group cursor-pointer relative overflow-hidden shadow-2xl block"
+                >
                     <div className="absolute inset-0 bg-gradient-to-tr from-brand-primary-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                     <div className="flex flex-col items-center justify-center py-8 border-2 border-dashed border-white/5 rounded-[1.5rem] group-hover:border-brand-primary-500/40 transition-all duration-500">
                         <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(168,85,247,0.3)] transition-all">
                             <Upload className="w-6 h-6 text-gray-500 group-hover:text-brand-primary-400 group-hover:animate-bounce transition-colors" />
                         </div>
-                        <span className="text-[10px] font-black text-gray-600 group-hover:text-white tracking-[0.2em] uppercase transition-colors">즉시 미디어 업로드</span>
+                        <span className="text-[10px] font-black text-gray-600 group-hover:text-white tracking-[0.2em] uppercase transition-colors">목소리 · PDF 업로드</span>
                     </div>
-                </div>
+                </Link>
             </div>
         </aside>
     );
