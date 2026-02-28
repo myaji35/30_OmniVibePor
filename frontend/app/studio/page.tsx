@@ -118,6 +118,16 @@ function StudioPageContent() {
       // 콘텐츠 상세 로드 및 워크플로우 시작
       loadContentAndStartWorkflow(contentId);
     }
+
+    // ✅ Upload 페이지에서 전달된 voice_id / presentation_id 처리
+    const voiceIdParam = searchParams.get("voice_id");
+    const presentationIdParam = searchParams.get("presentation_id");
+    if (voiceIdParam || presentationIdParam) {
+      setWorkflowStep("upload_ready");
+      if (presentationIdParam) {
+        setCurrentContentId(null); // 기존 content 연결 초기화
+      }
+    }
   }, [searchParams]);
 
   const loadContentAndStartWorkflow = async (id: number) => {
@@ -1407,6 +1417,19 @@ function StudioPageContent() {
         />
 
         <main className="flex-1 flex flex-col overflow-hidden relative">
+          {/* ✅ 업로드 재료 준비 완료 배너 */}
+          {workflowStep === "upload_ready" && (
+            <div className="flex items-center gap-3 px-6 py-3 bg-brand-primary-500/10 border-b border-brand-primary-500/20 text-sm">
+              <div className="w-2 h-2 rounded-full bg-brand-primary-400 animate-pulse" />
+              <span className="text-brand-primary-300 font-bold">
+                목소리 + PDF 등록 완료 —{" "}
+                {searchParams.get("presentation_id") && `슬라이드 ID: ${searchParams.get("presentation_id")?.slice(0, 12)}...`}
+                {searchParams.get("voice_id") && `  ·  목소리 ID: ${searchParams.get("voice_id")?.slice(0, 12)}...`}
+              </span>
+              <span className="ml-auto text-white/30 text-xs">스크립트 생성 후 영상을 렌더링하세요</span>
+            </div>
+          )}
+
           <div className="flex-1 overflow-hidden relative">
             {activeTab === "preview" && (
               <StudioPreview

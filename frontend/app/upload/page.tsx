@@ -178,7 +178,7 @@ export default function UploadPage() {
             const form = new FormData();
             form.append("file", pdfState.file);
             form.append("project_id", `proj_${Date.now()}`);
-            form.append("dpi", "150");
+            form.append("dpi", "200");
             form.append("lang", "kor+eng");
 
             const res = await fetch(`${API_BASE}/api/v1/presentations/upload`, {
@@ -191,8 +191,8 @@ export default function UploadPage() {
             if (!res.ok) throw new Error(data.detail || "PDF 업로드 실패");
 
             setPdfResult({
-                presentation_id: data.id || data.presentation_id || `pres_${Date.now()}`,
-                slide_count: data.slide_count || 0,
+                presentation_id: data.presentation_id || `pres_${Date.now()}`,
+                slide_count: data.total_slides || 0,
                 message: data.message || "PDF가 성공적으로 업로드되었습니다.",
             });
             setPdfState(s => ({ ...s, uploading: false, done: true }));
