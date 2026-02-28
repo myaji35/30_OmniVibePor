@@ -113,3 +113,24 @@ body {
 .animate-fade-in {
   animation: fade-in 0.8s ease-out forwards;
 }
+
+@keyframes shimmer {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(200%); }
+}
+.animate-shimmer {
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+@keyframes wave {
+  from { transform: scaleY(0.4); }
+  to   { transform: scaleY(1); }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.7s ease-out forwards;
+}

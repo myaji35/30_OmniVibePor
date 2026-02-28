@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import {
   LogIn,
   Zap,
@@ -57,26 +57,163 @@ function FadeIn({ children, delay = 0, className = "" }: { children: React.React
   );
 }
 
+// ── CountUp 숫자 애니메이션 ──────────────────────────────────────────────────
+function CountUp({ target, suffix = "", visible }: { target: number; suffix?: string; visible: boolean }) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    if (!visible) return;
+    let start: number | null = null;
+    const duration = 1200;
+    const step = (ts: number) => {
+      if (!start) start = ts;
+      const progress = Math.min((ts - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - progress, 3);
+      setValue(Math.floor(ease * target));
+      if (progress < 1) requestAnimationFrame(step);
+      else setValue(target);
+    };
+    requestAnimationFrame(step);
+  }, [visible, target]);
+  return <>{value.toLocaleString()}{suffix}</>;
+}
+
 // ── Animated Pipeline Bar (히어로 우측 목업용) ──────────────────────────────
-function PipelineBar({ steps, visible }: { steps: { label: string; pct: number; color: string }[]; visible: boolean }) {
+function PipelineBar({ steps, visible }: { steps: { label: string; pct: number; color: string; active?: boolean }[]; visible: boolean }) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-2.5">
       {steps.map((s, i) => (
         <div key={s.label} className="flex items-center gap-3">
-          <span className="text-[10px] text-gray-500 w-20 text-right shrink-0">{s.label}</span>
-          <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
+          <span className="text-[10px] text-slate-400 w-16 text-right shrink-0 font-mono">{s.label}</span>
+          <div className="flex-1 h-2 bg-slate-700/60 rounded-full overflow-hidden">
             <div
-              className="h-full rounded-full transition-all duration-700"
+              className="h-full rounded-full transition-all duration-1000 relative overflow-hidden"
               style={{
                 width: visible ? `${s.pct}%` : "0%",
                 backgroundColor: s.color,
-                transitionDelay: `${i * 0.12}s`,
+                transitionDelay: `${i * 0.18}s`,
               }}
-            />
+            >
+              {/* 흐르는 하이라이트 */}
+              {s.active && (
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-shimmer" />
+              )}
+            </div>
           </div>
-          <span className="text-[10px] text-gray-600 w-8 shrink-0">{s.pct}%</span>
+          <span className="text-[10px] font-bold w-8 shrink-0" style={{ color: s.color }}>{s.pct}%</span>
         </div>
       ))}
+    </div>
+  );
+}
+
+// ── 히어로 미니 플레이어 (Remotion 샘플 느낌) ────────────────────────────────
+const REMOTION_SAMPLES = [
+  {
+    title: "제품 소개 영상",
+    duration: "0:42",
+    tag: "Product",
+    gradient: "from-violet-600 via-indigo-500 to-blue-500",
+    // Remotion 공개 데모 - Big Buck Bunny (CC) 15초 클립 대체
+    src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+  },
+  {
+    title: "스타트업 피치덱",
+    duration: "1:15",
+    tag: "Pitch",
+    gradient: "from-fuchsia-600 via-pink-500 to-rose-500",
+    src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+  },
+  {
+    title: "SNS 하이라이트",
+    duration: "0:28",
+    tag: "Social",
+    gradient: "from-emerald-500 via-teal-500 to-cyan-500",
+    src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+  },
+];
+
+function MiniPlayer({ visible }: { visible: boolean }) {
+  const [active, setActive] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const sample = REMOTION_SAMPLES[active];
+
+  const togglePlay = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (v.paused) { v.play(); setPlaying(true); }
+    else { v.pause(); setPlaying(false); }
+  };
+
+  // 탭 전환 시 재생 중지
+  useEffect(() => {
+    const v = videoRef.current;
+    if (v) { v.pause(); v.currentTime = 0; setPlaying(false); }
+  }, [active]);
+
+  if (!visible) return null;
+
+  return (
+    <div className="rounded-xl overflow-hidden"
+      style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.08)" }}>
+      {/* 탭 선택 */}
+      <div className="flex gap-1 p-2 border-b border-white/[0.06]">
+        {REMOTION_SAMPLES.map((s, i) => (
+          <button
+            key={i}
+            onClick={() => setActive(i)}
+            className="flex-1 text-[9px] font-bold py-1.5 rounded-lg transition-all"
+            style={{
+              color: active === i ? "#fff" : "#64748b",
+              background: active === i ? `rgba(99,102,241,0.25)` : "transparent",
+              border: active === i ? "1px solid rgba(99,102,241,0.4)" : "1px solid transparent",
+            }}
+          >
+            {s.tag}
+          </button>
+        ))}
+      </div>
+
+      {/* 비디오 영역 */}
+      <div className="relative aspect-video bg-black cursor-pointer" onClick={togglePlay}>
+        <video
+          ref={videoRef}
+          src={sample.src}
+          className="w-full h-full object-cover"
+          loop
+          muted
+          playsInline
+          preload="metadata"
+        />
+        {/* 그라디언트 오버레이 */}
+        <div className={`absolute inset-0 bg-gradient-to-br ${sample.gradient} opacity-20 pointer-events-none`} />
+
+        {/* 재생/일시정지 버튼 */}
+        <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${playing ? "opacity-0 hover:opacity-100" : "opacity-100"}`}>
+          <div className="w-10 h-10 rounded-full flex items-center justify-center"
+            style={{ background: "rgba(0,0,0,0.6)", border: "1.5px solid rgba(255,255,255,0.3)", backdropFilter: "blur(8px)" }}>
+            {playing
+              ? <div className="flex gap-1"><div className="w-1 h-4 bg-white rounded-sm" /><div className="w-1 h-4 bg-white rounded-sm" /></div>
+              : <Play className="w-4 h-4 text-white fill-white ml-0.5" />
+            }
+          </div>
+        </div>
+
+        {/* 상단 뱃지 */}
+        <div className="absolute top-2 left-2 flex items-center gap-1.5 px-2 py-0.5 rounded-full"
+          style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.15)" }}>
+          <div className="w-1.5 h-1.5 rounded-full bg-violet-400" />
+          <span className="text-[9px] font-bold text-white">Remotion</span>
+        </div>
+
+        {/* 하단 정보 */}
+        <div className="absolute bottom-0 left-0 right-0 p-2"
+          style={{ background: "linear-gradient(to top, rgba(0,0,0,0.8), transparent)" }}>
+          <p className="text-[10px] font-bold text-white">{sample.title}</p>
+          <p className="text-[9px] text-white/50 font-mono">{sample.duration}</p>
+        </div>
+      </div>
     </div>
   );
 }
@@ -85,42 +222,62 @@ function PipelineBar({ steps, visible }: { steps: { label: string; pct: number; 
 function StudioMockup() {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+  const [tick, setTick] = useState(0);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) { setVisible(true); observer.unobserve(el); }
-    }, { threshold: 0.3 });
+    }, { threshold: 0.2 });
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
 
-  const pipelineSteps = [
-    { label: "PDF 분석", pct: 100, color: "#a855f7" },
-    { label: "스크립트", pct: 95, color: "#8b5cf6" },
-    { label: "TTS 생성", pct: 88, color: "#6366f1" },
-    { label: "영상 렌더", pct: 72, color: "#3b82f6" },
-  ];
+  // "생성 중" 작업 진행률 실시간 업데이트
+  useEffect(() => {
+    if (!visible) return;
+    const id = setInterval(() => setTick((t) => t + 1), 800);
+    return () => clearInterval(id);
+  }, [visible]);
+
+  const pipelineSteps = useMemo(() => [
+    { label: "PDF 분석", pct: 100, color: "#a855f7", active: false },
+    { label: "스크립트", pct: 100, color: "#8b5cf6", active: false },
+    { label: "TTS 생성", pct: Math.min(100, 88 + (tick % 3)), color: "#6366f1", active: true },
+    { label: "영상 렌더", pct: Math.min(98, 64 + (tick % 5) * 2), color: "#3b82f6", active: true },
+  ], [tick]);
 
   return (
     <div ref={ref} className="relative">
-      {/* Glow */}
-      <div className="absolute -inset-6 bg-brand-primary-500/10 rounded-3xl blur-3xl pointer-events-none" />
+      {/* 강한 외곽 글로우 — 배경과 확실히 분리 */}
+      <div className="absolute -inset-4 rounded-3xl pointer-events-none"
+        style={{ background: "radial-gradient(ellipse at center, rgba(99,102,241,0.35) 0%, rgba(168,85,247,0.15) 50%, transparent 75%)", filter: "blur(20px)" }} />
+      <div className="absolute -inset-1 rounded-2xl pointer-events-none border border-indigo-500/30"
+        style={{ boxShadow: "0 0 40px rgba(99,102,241,0.25), 0 0 80px rgba(168,85,247,0.1)" }} />
 
-      {/* Browser Chrome */}
-      <div className="relative bg-[#0d0d10] border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+      {/* Browser Chrome — 밝은 딥 네이비로 배경과 대비 */}
+      <div className="relative rounded-2xl overflow-hidden"
+        style={{ background: "linear-gradient(160deg, #1e2035 0%, #161829 60%, #111327 100%)", border: "1px solid rgba(255,255,255,0.12)" }}>
+
+        {/* 내부 상단 하이라이트 */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
+
         {/* Title bar */}
-        <div className="bg-[#111116] px-4 py-3 flex items-center gap-3 border-b border-white/5">
+        <div className="px-4 py-3 flex items-center gap-3 border-b border-white/[0.07]"
+          style={{ background: "rgba(255,255,255,0.03)" }}>
           <div className="flex gap-1.5">
-            <div className="w-3 h-3 rounded-full bg-red-500/60" />
-            <div className="w-3 h-3 rounded-full bg-amber-500/60" />
-            <div className="w-3 h-3 rounded-full bg-emerald-500/60" />
+            <div className="w-3 h-3 rounded-full bg-red-500/70 shadow-[0_0_6px_rgba(239,68,68,0.5)]" />
+            <div className="w-3 h-3 rounded-full bg-amber-400/70 shadow-[0_0_6px_rgba(251,191,36,0.5)]" />
+            <div className="w-3 h-3 rounded-full bg-emerald-400/70 shadow-[0_0_6px_rgba(52,211,153,0.5)]" />
           </div>
-          <div className="flex-1 bg-white/5 rounded-md h-5 text-[10px] text-gray-600 flex items-center px-3 font-mono">
+          <div className="flex-1 bg-white/[0.07] rounded-md h-5 text-[10px] text-slate-400 flex items-center px-3 font-mono">
             omnivibepro.com/studio
           </div>
-          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]" />
+          <div className="flex items-center gap-1.5">
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
+            <span className="text-[9px] text-emerald-400 font-bold font-mono">LIVE</span>
+          </div>
         </div>
 
         {/* Dashboard content */}
@@ -128,45 +285,59 @@ function StudioMockup() {
           {/* KPI row */}
           <div className="grid grid-cols-3 gap-2">
             {[
-              { label: "생성된 영상", value: "1,240", color: "text-brand-primary-400" },
-              { label: "Zero-Fault율", value: "99%", color: "text-emerald-400" },
-              { label: "평균 생성", value: "4분", color: "text-blue-400" },
-            ].map(({ label, value, color }) => (
-              <div key={label} className="bg-white/[0.03] border border-white/5 rounded-xl p-3">
-                <p className="text-[9px] text-gray-600 mb-1">{label}</p>
-                <p className={`text-lg font-black font-mono ${color}`}>{value}</p>
+              { label: "생성된 영상", value: 1240, suffix: "", color: "#a78bfa", glow: "rgba(167,139,250,0.2)" },
+              { label: "Zero-Fault율", value: 99, suffix: "%", color: "#34d399", glow: "rgba(52,211,153,0.2)" },
+              { label: "평균 생성", value: 4, suffix: "분", color: "#60a5fa", glow: "rgba(96,165,250,0.2)" },
+            ].map(({ label, value, suffix, color, glow }) => (
+              <div key={label} className="rounded-xl p-3 relative overflow-hidden"
+                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", boxShadow: `inset 0 1px 0 rgba(255,255,255,0.06)` }}>
+                <div className="absolute inset-0 rounded-xl pointer-events-none" style={{ background: `radial-gradient(ellipse at top left, ${glow} 0%, transparent 70%)` }} />
+                <p className="text-[9px] text-slate-400 mb-1 relative">{label}</p>
+                <p className="text-xl font-black font-mono relative" style={{ color }}>
+                  <CountUp target={value} suffix={suffix} visible={visible} />
+                </p>
               </div>
             ))}
           </div>
 
           {/* Pipeline progress */}
-          <div className="bg-white/[0.02] border border-white/5 rounded-xl p-4">
+          <div className="rounded-xl p-4"
+            style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)" }}>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">AI Pipeline</p>
-              <span className="text-[9px] text-brand-primary-400 bg-brand-primary-500/10 px-2 py-0.5 rounded-full">처리 중</span>
+              <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">AI Pipeline</p>
+              <span className="text-[9px] font-bold px-2.5 py-1 rounded-full animate-pulse"
+                style={{ color: "#a78bfa", background: "rgba(167,139,250,0.15)", border: "1px solid rgba(167,139,250,0.3)" }}>
+                ⚡ 처리 중
+              </span>
             </div>
             <PipelineBar steps={pipelineSteps} visible={visible} />
           </div>
 
           {/* Recent jobs */}
-          <div className="bg-white/[0.02] border border-white/5 rounded-xl p-3">
-            <p className="text-[9px] text-gray-600 uppercase tracking-widest mb-2 font-black">최근 작업</p>
-            <div className="space-y-1.5">
+          <div className="rounded-xl p-3"
+            style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)" }}>
+            <p className="text-[9px] text-slate-400 uppercase tracking-widest mb-2.5 font-black">최근 작업</p>
+            <div className="space-y-2">
               {[
-                { name: "Q1_전략_브리핑.pdf", status: "완료", color: "text-emerald-400 bg-emerald-500/10" },
-                { name: "제품소개_2026.pdf", status: "생성 중", color: "text-brand-primary-400 bg-brand-primary-500/10" },
-                { name: "채용공고_개발자.pdf", status: "대기", color: "text-gray-500 bg-white/5" },
-              ].map(({ name, status, color }) => (
-                <div key={name} className="flex items-center justify-between text-xs">
+                { name: "Q1_전략_브리핑.pdf", status: "완료", statusColor: "#34d399", bg: "rgba(52,211,153,0.1)", dot: "#34d399" },
+                { name: "제품소개_2026.pdf", status: "생성 중", statusColor: "#a78bfa", bg: "rgba(167,139,250,0.1)", dot: "#a78bfa", pulse: true },
+                { name: "채용공고_개발자.pdf", status: "대기", statusColor: "#64748b", bg: "rgba(100,116,139,0.1)", dot: "#64748b" },
+              ].map(({ name, status, statusColor, bg, dot, pulse }) => (
+                <div key={name} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Film className="w-3 h-3 text-gray-600" />
-                    <span className="text-gray-400 font-mono text-[10px]">{name}</span>
+                    <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: dot, boxShadow: pulse ? `0 0 6px ${dot}` : "none" }} />
+                    <span className="text-slate-300 font-mono text-[10px]">{name}</span>
                   </div>
-                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${color}`}>{status}</span>
+                  <span className="text-[9px] font-bold px-2 py-0.5 rounded-full" style={{ color: statusColor, background: bg }}>
+                    {status}
+                  </span>
                 </div>
               ))}
             </div>
           </div>
+
+          {/* 하단 — 미니 Remotion 샘플 플레이어 */}
+          <MiniPlayer visible={visible} />
         </div>
       </div>
     </div>
