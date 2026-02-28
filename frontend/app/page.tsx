@@ -142,14 +142,30 @@ function MiniPlayer({ visible }: { visible: boolean }) {
   const togglePlay = () => {
     const v = videoRef.current;
     if (!v) return;
-    if (v.paused) { v.play(); setPlaying(true); }
+    if (v.paused) { v.play().catch(() => {}); setPlaying(true); }
     else { v.pause(); setPlaying(false); }
   };
 
-  // 탭 전환 시 재생 중지
+  // visible 되면 자동재생
   useEffect(() => {
     const v = videoRef.current;
-    if (v) { v.pause(); v.currentTime = 0; setPlaying(false); }
+    if (visible && v) {
+      v.play().then(() => setPlaying(true)).catch(() => {});
+    }
+  }, [visible]);
+
+  // 탭 전환 시 새 영상 자동재생
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.pause(); v.currentTime = 0; setPlaying(false);
+    if (visible) {
+      // src 변경 후 약간 딜레이 뒤 재생 (src 로딩 시간)
+      const id = setTimeout(() => {
+        v.play().then(() => setPlaying(true)).catch(() => {});
+      }, 150);
+      return () => clearTimeout(id);
+    }
   }, [active]);
 
   if (!visible) return null;
@@ -183,8 +199,9 @@ function MiniPlayer({ visible }: { visible: boolean }) {
           className="w-full h-full object-cover"
           loop
           muted
+          autoPlay
           playsInline
-          preload="metadata"
+          preload="auto"
         />
         {/* 그라디언트 오버레이 */}
         <div className={`absolute inset-0 bg-gradient-to-br ${sample.gradient} opacity-20 pointer-events-none`} />
@@ -432,7 +449,7 @@ export default function Home() {
       {/* ════════════════════════════════════════════════
           Hero — Option A: 좌측 카피 + 우측 Product Mockup
       ════════════════════════════════════════════════ */}
-      <section className="relative min-h-screen flex items-center pt-20 pb-12 overflow-hidden">
+      <section className="relative flex items-start pt-20 pb-10 overflow-hidden">
         {/* 좌측 그라디언트 페이드 */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#050505]/80 via-transparent to-transparent pointer-events-none" />
 
