@@ -26,6 +26,7 @@ export interface Template {
   liveUrl?: string
   authorName?: string
   isReal?: boolean
+  remotionProof?: 'official' | 'github' | 'story'
 }
 
 interface TemplateCardProps {
@@ -106,7 +107,7 @@ export default function TemplateCard({ template }: TemplateCardProps) {
           </div>
         )}
 
-        {/* Real / YouTube Badge */}
+        {/* YouTube Badge */}
         {template.youtubeId && !template.isPremium && (
           <div className="absolute top-2 right-2 bg-red-600/90 text-white text-[9px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
             <Play className="w-2.5 h-2.5 fill-white" />
@@ -116,6 +117,23 @@ export default function TemplateCard({ template }: TemplateCardProps) {
         {template.isReal && !template.youtubeId && !template.isPremium && (
           <div className="absolute top-2 right-2 bg-black/60 text-white text-[9px] font-bold px-2 py-0.5 rounded-full border border-white/20">
             실 사례
+          </div>
+        )}
+
+        {/* Remotion 증거 뱃지 */}
+        {template.remotionProof === 'official' && (
+          <div className="absolute top-2 left-2 bg-[#0b0b0f]/90 text-white text-[9px] font-bold px-2 py-0.5 rounded-full border border-white/20 flex items-center gap-1">
+            ✦ Remotion 공식
+          </div>
+        )}
+        {template.remotionProof === 'github' && (
+          <div className="absolute top-2 left-2 bg-[#24292f]/90 text-white text-[9px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+            ⌥ 소스 확인
+          </div>
+        )}
+        {template.remotionProof === 'story' && (
+          <div className="absolute top-2 left-2 bg-violet-700/80 text-white text-[9px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+            ★ 성공사례
           </div>
         )}
       </div>

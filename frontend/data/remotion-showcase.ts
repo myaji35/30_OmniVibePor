@@ -18,6 +18,8 @@ export interface RemotionShowcaseItem {
   liveUrl?: string
   authorName?: string
   isReal: true
+  // Remotion 사용 증거 신뢰도: 'official' | 'github' | 'story'
+  remotionProof: 'official' | 'github' | 'story'
 }
 
 export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
@@ -26,7 +28,7 @@ export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
     id: 'github-unwrapped',
     name: 'GitHub Unwrapped',
     description:
-      'Your coding year in review - Spotify Wrapped style personalized video for GitHub users. Served personalized videos to 10,000+ developers using Remotion + AWS Lambda + MongoDB.',
+      'Spotify Wrapped처럼 한 해 코딩 기록을 영상으로 정리해주는 서비스. Remotion + AWS Lambda + MongoDB로 10,000명 이상의 개발자에게 개인 맞춤 영상을 제공했습니다.',
     category: 'developer',
     platform: ['web'],
     tone: ['dynamic', 'emotional'],
@@ -41,12 +43,13 @@ export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
     liveUrl: 'https://www.githubunwrapped.com',
     authorName: 'Jonny Burger / Remotion',
     isReal: true,
+    remotionProof: 'official',
   },
   {
     id: 'remotion-trailer',
-    name: 'Remotion Trailer',
+    name: 'Remotion 공식 트레일러',
     description:
-      'The official promo video for Remotion, entirely written in React. Demonstrates the core capabilities of the framework with stunning motion graphics.',
+      'Remotion 프레임워크 자체를 소개하는 공식 프로모 영상. 전체가 React 코드로 작성되었으며, 화려한 모션 그래픽으로 Remotion의 핵심 기능을 시연합니다.',
     category: 'developer',
     platform: ['youtube', 'web'],
     tone: ['professional', 'dynamic'],
@@ -62,12 +65,13 @@ export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
     githubUrl: 'https://github.com/remotion-dev/trailer',
     authorName: 'Jonny Burger',
     isReal: true,
+    remotionProof: 'official',
   },
   {
     id: 'react-video-editor',
     name: 'React Video Editor',
     description:
-      'Online react video editor using Remotion. A full-featured Capcut and Canva clone with timeline, layers, effects, and export capabilities.',
+      'Remotion 기반의 오픈소스 웹 영상 편집기. CapCut·Canva 수준의 타임라인, 레이어, 이펙트, 내보내기 기능을 브라우저에서 구현했습니다.',
     category: 'saas',
     platform: ['web'],
     tone: ['professional', 'minimal'],
@@ -81,12 +85,13 @@ export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
     githubUrl: 'https://github.com/designcombo/react-video-editor',
     authorName: 'DesignCombo',
     isReal: true,
+    remotionProof: 'github',
   },
   {
     id: 'short-video-maker',
     name: 'Short Video Maker',
     description:
-      'Creates short videos for TikTok, Instagram Reels, and YouTube Shorts using MCP and REST API. Combines TTS (Kokoro), Whisper captions, Pexels backgrounds, and Remotion rendering.',
+      'TikTok·Instagram Reels·YouTube Shorts용 자동 영상 생성기. TTS(Kokoro), Whisper 자막, Pexels 배경 이미지를 조합해 Remotion으로 렌더링합니다. MCP·REST API 제공.',
     category: 'social',
     platform: ['tiktok', 'instagram', 'youtube'],
     tone: ['trendy', 'dynamic'],
@@ -102,12 +107,13 @@ export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
     githubUrl: 'https://github.com/gyoridavid/short-video-maker',
     authorName: 'David Gyori',
     isReal: true,
+    remotionProof: 'github',
   },
   {
     id: 'brainrot-js',
     name: 'Brainrot.js',
     description:
-      'Text to video generator in the brainrot form. Learn about any topic from your favorite personalities. Combines Speechify TTS, OpenAI content generation, and Remotion rendering.',
+      '유명 인물 목소리로 어떤 주제든 설명해주는 "브레인롯" 스타일 영상 생성기. Speechify TTS + OpenAI 콘텐츠 생성 + Remotion 렌더링으로 완전 자동화된 쇼츠 영상을 만듭니다.',
     category: 'entertainment',
     platform: ['youtube', 'tiktok'],
     tone: ['trendy', 'dynamic'],
@@ -122,12 +128,13 @@ export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
     liveUrl: 'https://brainrotjs.com',
     authorName: 'Noah Solomon',
     isReal: true,
+    remotionProof: 'github',
   },
   {
     id: 'podcast-maker',
     name: 'Podcast Maker',
     description:
-      'Fully automated video maker using motion graphics and text-to-speech synthesis to turn newsletters into daily YouTube videos. Complete pipeline from text to published video.',
+      '뉴스레터를 매일 YouTube 영상으로 자동 변환하는 파이프라인. 모션 그래픽 + TTS 합성으로 텍스트에서 완성 영상까지 전 과정을 자동화합니다.',
     category: 'marketing',
     platform: ['youtube'],
     tone: ['professional', 'minimal'],
@@ -141,12 +148,13 @@ export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
     githubUrl: 'https://github.com/FelippeChemello/podcast-maker',
     authorName: 'Felippe Chemello',
     isReal: true,
+    remotionProof: 'github',
   },
   {
     id: 'mockoops',
     name: 'Mockoops',
     description:
-      'Create beautiful animations from boring screen recordings within seconds. Features serverless rendering, real-time preview, responsive templates, and light/dark mode.',
+      '평범한 화면 녹화를 수초 만에 아름다운 애니메이션으로 변환. 서버리스 렌더링, 실시간 미리보기, 라이트/다크 모드 지원 템플릿을 제공합니다.',
     category: 'developer',
     platform: ['web'],
     tone: ['professional', 'minimal'],
@@ -163,12 +171,13 @@ export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
     liveUrl: 'https://mockoops.mohitya.dev',
     authorName: 'Mohit',
     isReal: true,
+    remotionProof: 'github',
   },
   {
     id: 'clip-js',
     name: 'Clip.js',
     description:
-      'Online video editor built with Next.js, Remotion and FFmpeg (WebAssembly port) for rendering. Full-featured browser-based video editing experience.',
+      'Next.js + Remotion + FFmpeg(WebAssembly)로 구축한 브라우저 기반 영상 편집기. 서버 없이 브라우저 안에서 완전한 영상 편집 경험을 제공합니다.',
     category: 'saas',
     platform: ['web'],
     tone: ['professional', 'minimal'],
@@ -182,12 +191,13 @@ export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
     githubUrl: 'https://github.com/mohyware/clip-js',
     authorName: 'Mohyware',
     isReal: true,
+    remotionProof: 'github',
   },
   {
     id: 'kimu-videoeditor',
     name: 'Kimu Video Editor',
     description:
-      'Your Creative Copilot for Video Editing. AI-powered video editor built with Remotion offering intelligent editing assistance and automated workflows.',
+      'AI가 편집을 도와주는 크리에이티브 코파일럿. Remotion 기반으로 지능형 편집 어시스턴트와 자동화 워크플로우를 제공하는 AI 영상 편집기입니다.',
     category: 'saas',
     platform: ['web'],
     tone: ['professional', 'dynamic'],
@@ -201,12 +211,13 @@ export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
     githubUrl: 'https://github.com/trykimu/videoeditor',
     authorName: 'Kimu',
     isReal: true,
+    remotionProof: 'github',
   },
   {
     id: 'stargazer',
     name: 'Stargazer',
     description:
-      'Celebrate your GitHub repo stars with a video! Generates animated videos showcasing repository stargazers. Supports local rendering and GitHub Actions automation.',
+      'GitHub 레포지토리의 스타 증가 과정을 축하 영상으로 만들어주는 툴. GitHub Actions와 연동해 자동으로 애니메이션 영상을 생성합니다.',
     category: 'developer',
     platform: ['web'],
     tone: ['dynamic', 'emotional'],
@@ -220,12 +231,13 @@ export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
     githubUrl: 'https://github.com/pomber/stargazer',
     authorName: 'Rodrigo Pombo',
     isReal: true,
+    remotionProof: 'github',
   },
   {
     id: 'spotify-wrapped-remotion',
     name: 'Remotion Wrapped',
     description:
-      'Spotify Wrapped recreated in Remotion. A faithful recreation of the popular year-end music summary video format, demonstrating Remotion animation capabilities.',
+      'Spotify Wrapped 포맷을 Remotion으로 그대로 재현한 프로젝트. 연말 음악 요약 영상 스타일의 애니메이션을 React 코드로 구현했습니다.',
     category: 'entertainment',
     platform: ['web'],
     tone: ['dynamic', 'emotional', 'trendy'],
@@ -239,12 +251,13 @@ export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
     githubUrl: 'https://github.com/JonnyBurger/remotion-wrapped',
     authorName: 'Jonny Burger',
     isReal: true,
+    remotionProof: 'official',
   },
   {
     id: 'shortvid-io',
     name: 'Shortvid.io',
     description:
-      'Open-source event communication video generator. Creates meetup trailers for Twitter, Reddit, Slack to announce speakers, talks, and sponsors. Used by DevFest Nantes and GDG Nantes.',
+      '컨퍼런스·밋업 홍보 영상을 자동 생성하는 오픈소스 툴. 트위터·레딧·슬랙용 이벤트 예고 영상을 만들며 DevFest Nantes, GDG Nantes에서 실제 사용되었습니다.',
     category: 'marketing',
     platform: ['web'],
     tone: ['professional', 'dynamic'],
@@ -258,6 +271,7 @@ export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
     githubUrl: 'https://github.com/lyonjs/shortvid.io',
     authorName: 'Mickael Alves & Antoine Caron',
     isReal: true,
+    remotionProof: 'github',
   },
 
   // ===== SaaS Success Stories (Commercial) =====
@@ -265,7 +279,7 @@ export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
     id: 'typeframes',
     name: 'Typeframes',
     description:
-      'Create stunning product intro videos for your SaaS product by converting text to video. Uses Remotion Player for real-time preview and Remotion Lambda for serverless rendering.',
+      'SaaS 제품 소개 영상을 텍스트 입력만으로 만드는 서비스. Remotion Player로 실시간 미리보기, Remotion Lambda로 서버리스 렌더링을 구현해 수만 명이 사용 중입니다.',
     category: 'saas',
     platform: ['web', 'youtube'],
     tone: ['professional', 'minimal'],
@@ -279,12 +293,13 @@ export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
     liveUrl: 'https://www.typeframes.com',
     authorName: 'Thibault Louis-Lucas',
     isReal: true,
+    remotionProof: 'story',
   },
   {
     id: 'submagic',
     name: 'Submagic',
     description:
-      'AI shorts tool that reached $1M ARR within 3 months of launch. Over 3 million users. One of the fastest-growing Remotion-based SaaS products.',
+      'AI 자막 쇼츠 도구로 출시 3개월 만에 ARR $100만 달성. 300만 명 이상의 사용자를 보유한 Remotion 기반 SaaS 중 가장 빠르게 성장한 사례입니다.',
     category: 'saas',
     platform: ['youtube', 'tiktok', 'instagram'],
     tone: ['trendy', 'dynamic'],
@@ -298,12 +313,13 @@ export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
     liveUrl: 'https://www.submagic.co',
     authorName: 'Submagic Team',
     isReal: true,
+    remotionProof: 'story',
   },
   {
     id: 'crayo-ai',
     name: 'Crayo.ai',
     description:
-      'Video stories generator with $6M+ annual revenue and $500K+ monthly revenue. Over 2 million users creating short-form video content at scale.',
+      '쇼츠 영상 스토리 생성기로 연 매출 $600만, 월 매출 $50만 이상 달성. 200만 명 이상의 사용자가 Remotion 기반으로 대규모 숏폼 영상을 제작 중입니다.',
     category: 'saas',
     platform: ['youtube', 'tiktok', 'instagram'],
     tone: ['trendy', 'dynamic'],
@@ -317,14 +333,15 @@ export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
     liveUrl: 'https://crayo.ai',
     authorName: 'Musa Mustafa & Aleem Rehmtulla',
     isReal: true,
+    remotionProof: 'story',
   },
 
   // ===== Official Templates =====
   {
     id: 'template-tiktok',
-    name: 'TikTok Captions Template',
+    name: 'TikTok 자막 템플릿',
     description:
-      'Generate TikTok-style animated word-by-word captions with Whisper.cpp. Official Remotion template for creating captioned short-form video content.',
+      'Whisper.cpp로 단어별 애니메이션 자막을 자동 생성하는 공식 템플릿. TikTok·Reels·Shorts용 자막 쇼츠 영상을 빠르게 만들 수 있습니다.',
     category: 'template',
     platform: ['tiktok', 'instagram', 'youtube'],
     tone: ['trendy', 'dynamic'],
@@ -338,12 +355,13 @@ export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
     githubUrl: 'https://github.com/remotion-dev/template-tiktok',
     authorName: 'Remotion',
     isReal: true,
+    remotionProof: 'official',
   },
   {
     id: 'template-code-hike',
-    name: 'Code Hike Template',
+    name: 'Code Hike 코드 애니메이션 템플릿',
     description:
-      'Beautiful code snippet animations for developer content. Create polished code walkthroughs and tutorial videos with syntax highlighting and smooth transitions.',
+      '개발자 콘텐츠를 위한 코드 스니펫 애니메이션 공식 템플릿. 신택스 하이라이팅과 부드러운 전환 효과로 코드 튜토리얼 영상을 전문적으로 제작할 수 있습니다.',
     category: 'template',
     platform: ['youtube', 'web'],
     tone: ['professional', 'minimal'],
@@ -357,12 +375,13 @@ export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
     githubUrl: 'https://github.com/remotion-dev/template-code-hike',
     authorName: 'Remotion',
     isReal: true,
+    remotionProof: 'official',
   },
   {
     id: 'template-audiogram',
-    name: 'Audiogram Template',
+    name: '오디오그램 팟캐스트 템플릿',
     description:
-      'Text and waveform visualization for podcasts. Official Remotion template for creating podcast video clips with audio waveform animations.',
+      '팟캐스트 클립을 위한 텍스트 + 파형 시각화 공식 템플릿. 오디오 파형 애니메이션이 포함된 팟캐스트 영상 클립을 손쉽게 만들 수 있습니다.',
     category: 'template',
     platform: ['youtube', 'web'],
     tone: ['minimal', 'professional'],
@@ -376,12 +395,13 @@ export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
     githubUrl: 'https://github.com/remotion-dev/template-audiogram',
     authorName: 'Remotion',
     isReal: true,
+    remotionProof: 'official',
   },
   {
     id: 'template-three',
-    name: '3D Template (React Three Fiber)',
+    name: '3D 템플릿 (React Three Fiber)',
     description:
-      'Minimal boilerplate for Remotion + React Three Fiber. Create 3D animated videos with WebGL and Three.js integrated into the Remotion rendering pipeline.',
+      'Remotion + React Three Fiber 최소 보일러플레이트. WebGL과 Three.js를 Remotion 렌더링 파이프라인에 통합해 3D 애니메이션 영상을 제작하는 공식 출발점입니다.',
     category: 'template',
     platform: ['web', 'youtube'],
     tone: ['dynamic', 'professional'],
@@ -395,6 +415,7 @@ export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
     githubUrl: 'https://github.com/remotion-dev/template-three',
     authorName: 'Remotion',
     isReal: true,
+    remotionProof: 'official',
   },
 
   // ===== Libraries & Components =====
@@ -402,7 +423,7 @@ export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
     id: 'remotion-bits',
     name: 'Remotion Bits',
     description:
-      'Ready-made building blocks for your Remotion videos. A collection of reusable components and effects for rapid video production.',
+      'Remotion 영상 제작을 위한 재사용 가능한 빌딩 블록 모음. 다양한 컴포넌트와 이펙트를 조합해 빠르게 영상을 제작할 수 있는 컴포넌트 라이브러리입니다.',
     category: 'developer',
     platform: ['web'],
     tone: ['minimal', 'professional'],
@@ -417,12 +438,13 @@ export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
     liveUrl: 'https://remotion-bits.dev',
     authorName: 'av',
     isReal: true,
+    remotionProof: 'github',
   },
   {
     id: 'remotion-animated',
     name: 'Remotion Animated',
     description:
-      'A delightful way to animate objects in Remotion. Animation library providing declarative, composable animations for Remotion video compositions.',
+      'Remotion에서 오브젝트를 우아하게 애니메이션하는 라이브러리. 선언적·조합 가능한 방식으로 Remotion 컴포지션에 복잡한 애니메이션을 쉽게 추가할 수 있습니다.',
     category: 'developer',
     platform: ['web'],
     tone: ['dynamic', 'minimal'],
@@ -437,12 +459,13 @@ export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
     liveUrl: 'https://remotion-animated.dev',
     authorName: 'Stefan Wittwer',
     isReal: true,
+    remotionProof: 'github',
   },
   {
     id: 'claude-code-video-toolkit',
-    name: 'Claude Code Video Toolkit',
+    name: 'Claude Code 영상 툴킷',
     description:
-      'AI-native video production toolkit for Claude Code. Enables AI-driven video creation workflows combining Claude AI capabilities with Remotion rendering.',
+      'Claude Code를 위한 AI 네이티브 영상 제작 툴킷. Claude AI 기능과 Remotion 렌더링을 결합해 AI 주도 영상 제작 워크플로우를 구현합니다.',
     category: 'developer',
     platform: ['web'],
     tone: ['professional', 'minimal'],
@@ -456,14 +479,15 @@ export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
     githubUrl: 'https://github.com/digitalsamba/claude-code-video-toolkit',
     authorName: 'Digital Samba',
     isReal: true,
+    remotionProof: 'github',
   },
 
   // ===== Niche Applications =====
   {
     id: 'yarx-marathon',
-    name: 'YARX Marathon Videos',
+    name: 'YARX 마라톤 영상',
     description:
-      'Personalized marathon finisher videos rendered at scale. Switzerland-based YARX generates custom event videos for marathon and ski competition attendees using Remotion + C# backend.',
+      '스위스 YARX가 마라톤·스키 대회 참가자에게 개인 맞춤 완주 기념 영상을 제공하는 서비스. Remotion + C# 백엔드로 대규모 개인화 영상을 실시간 생성합니다.',
     category: 'marketing',
     platform: ['web'],
     tone: ['emotional', 'dynamic'],
@@ -476,12 +500,13 @@ export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
     sourceUrl: 'https://www.remotion.dev/success-stories/yarx',
     authorName: 'Raphael Bollinger & Andreas (YARX)',
     isReal: true,
+    remotionProof: 'story',
   },
   {
     id: 'makestories',
     name: 'MakeStories',
     description:
-      'Web-based tool for creating Google Web Stories with drag-and-drop interface. Uses Remotion for MP4 export rendering for social media distribution.',
+      'Google Web Stories를 드래그앤드롭으로 만드는 웹 서비스. SNS 배포를 위한 MP4 내보내기에 Remotion 렌더링을 사용하며, 10,000명 이상이 사용 중입니다.',
     category: 'saas',
     platform: ['web', 'instagram'],
     tone: ['professional', 'minimal'],
@@ -495,12 +520,13 @@ export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
     liveUrl: 'https://makestories.io',
     authorName: 'Pratik Ghela',
     isReal: true,
+    remotionProof: 'story',
   },
   {
     id: 'free-react-video-editor',
-    name: 'Free React Video Editor',
+    name: 'Free React 영상 편집기',
     description:
-      'Free open source React video editor built with Remotion. Provides a complete video editing interface with timeline, layers, and effects for browser-based editing.',
+      'Remotion으로 만든 무료 오픈소스 React 영상 편집기. 타임라인, 레이어, 이펙트를 갖춘 완전한 편집 인터페이스를 브라우저에서 무료로 사용할 수 있습니다.',
     category: 'developer',
     platform: ['web'],
     tone: ['professional', 'minimal'],
@@ -514,5 +540,6 @@ export const REMOTION_SHOWCASE: RemotionShowcaseItem[] = [
     githubUrl: 'https://github.com/reactvideoeditor/free-react-video-editor',
     authorName: 'React Video Editor',
     isReal: true,
+    remotionProof: 'github',
   },
 ]
