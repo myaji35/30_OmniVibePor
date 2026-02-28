@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Play, Eye, Users } from 'lucide-react'
+import TemplatePreviewModal from './TemplatePreviewModal'
 
 export interface Template {
   id: string
@@ -39,6 +40,7 @@ const toneLabels: Record<string, string> = {
 
 export default function TemplateCard({ template }: TemplateCardProps) {
   const [isHovered, setIsHovered] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
   const router = useRouter()
 
   const handleUseTemplate = () => {
@@ -79,6 +81,7 @@ export default function TemplateCard({ template }: TemplateCardProps) {
               className="flex items-center gap-2 px-4 py-2 bg-white/90 text-[#16325C] rounded-md text-sm font-semibold hover:bg-white transition-colors"
               onClick={(e) => {
                 e.stopPropagation()
+                setShowPreview(true)
               }}
             >
               <Eye className="w-4 h-4" />
@@ -130,15 +133,32 @@ export default function TemplateCard({ template }: TemplateCardProps) {
             <Users className="w-3 h-3" />
             {template.usageCount.toLocaleString()}회 사용
           </span>
-          <button
-            onClick={handleUseTemplate}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#00A1E0] text-white text-xs font-semibold rounded hover:bg-[#0090c7] transition-colors"
-          >
-            <Play className="w-3 h-3" />
-            이 템플릿 사용
-          </button>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setShowPreview(true)}
+              className="flex items-center gap-1 px-2.5 py-1.5 border border-[#DDDBDA] text-[#706E6B] text-xs font-semibold rounded hover:bg-[#F3F2F2] transition-colors"
+            >
+              <Eye className="w-3 h-3" />
+              미리보기
+            </button>
+            <button
+              onClick={handleUseTemplate}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#00A1E0] text-white text-xs font-semibold rounded hover:bg-[#0090c7] transition-colors"
+            >
+              <Play className="w-3 h-3" />
+              사용
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Preview Modal */}
+      {showPreview && (
+        <TemplatePreviewModal
+          template={template}
+          onClose={() => setShowPreview(false)}
+        />
+      )}
     </div>
   )
 }

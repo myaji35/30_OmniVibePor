@@ -17,7 +17,8 @@ import {
   Share2,
   Sparkles,
   ShieldCheck,
-  Cpu
+  Cpu,
+  LayoutGrid
 } from "lucide-react";
 import { useAuth } from "../lib/contexts/AuthContext";
 import AuthModal from "../components/AuthModal";
@@ -204,6 +205,7 @@ export default function Home() {
                     { href: "/audio", title: "오디오", desc: "Zero-Fault 보이스", icon: Mic2, color: "border-blue-500/30" },
                     { href: "/production", title: "디렉터", desc: "비주얼 씬 어셈블리", icon: Layout, color: "border-red-500/30" },
                     { href: "/presentation", title: "덱 엔진", desc: "PDF 인텔리전트 변환", icon: BookOpen, color: "border-orange-500/30" },
+                    { href: "/gallery", title: "템플릿 갤러리", desc: "20개 영상 템플릿", icon: LayoutGrid, color: "border-emerald-500/30" },
                     { href: "http://localhost:8000/docs", title: "API 문서", desc: "뉴럴 API 명세서", icon: BookOpen, color: "border-white/20", external: true },
                   ].map((node, i) => (
                     <a
