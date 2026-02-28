@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Play, Download, DollarSign, Film, Music } from 'lucide-react'
+import AppShell from '@/components/AppShell'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
@@ -92,15 +93,11 @@ export default function DirectorPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white p-8">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">🎬 Director Agent</h1>
-          <p className="text-gray-400">
-            Zero-Fault Audio Loop & AI Video Generation
-          </p>
-        </div>
+    <AppShell
+      title="Director Agent"
+      subtitle="Zero-Fault Audio Loop & AI Video Generation"
+    >
+      <div>
 
         {/* Tabs */}
         <div className="flex gap-2 mb-6">
@@ -304,6 +301,6 @@ export default function DirectorPage() {
           </div>
         </div>
       </div>
-    </main>
+    </AppShell>
   )
 }

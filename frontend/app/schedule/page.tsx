@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import AppShell from '@/components/AppShell'
 
 interface ContentSchedule {
   id: number
@@ -341,13 +342,11 @@ export default function SchedulePage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">📅 콘텐츠 스케줄 관리</h1>
-          <p className="text-gray-300">SQLite 기반 스케줄 CRUD + Pagination + Filter</p>
-        </div>
+    <AppShell
+      title="콘텐츠 스케줄"
+      subtitle="SQLite 기반 스케줄 CRUD · 페이지네이션 · 필터"
+    >
+      <div>
 
         {/* Toast Notification */}
         {toast && (
@@ -771,16 +770,7 @@ export default function SchedulePage() {
           </div>
         )}
 
-        {/* Back to Home */}
-        <div className="text-center mt-8">
-          <a
-            href="/"
-            className="inline-block px-6 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-lg rounded-lg border border-white/20 transition-all"
-          >
-            ← 홈으로 돌아가기
-          </a>
-        </div>
       </div>
-    </main>
+    </AppShell>
   )
 }

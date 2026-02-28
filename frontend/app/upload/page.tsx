@@ -16,6 +16,7 @@ import {
     Zap,
 } from "lucide-react";
 import Link from "next/link";
+import AppShell from "@/components/AppShell";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -216,59 +217,30 @@ export default function UploadPage() {
     // ─── 렌더 ──────────────────────────────────────────────────────────────
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white">
-            {/* 헤더 */}
-            <header className="border-b border-white/5 px-8 py-5 flex items-center justify-between backdrop-blur-xl bg-black/30 sticky top-0 z-50">
-                <div className="flex items-center gap-4">
-                    <Link href="/studio" className="flex items-center gap-3 group">
-                        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-primary-500 to-brand-secondary-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                            <Zap className="w-5 h-5 text-white fill-white/20" />
-                        </div>
-                        <span className="text-sm font-black font-outfit premium-gradient-text tracking-tighter uppercase">OmniVibe</span>
-                    </Link>
-                    <span className="text-white/20">/</span>
-                    <span className="text-sm font-bold text-white/60">미디어 업로드</span>
-                </div>
+        <AppShell
+            title="미디어 업로드"
+            subtitle="목소리 샘플과 PDF를 업로드하면 AI가 영상을 자동 완성합니다"
+            actions={bothReady ? (
+                <button
+                    onClick={goToStudio}
+                    className="flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all active:scale-95"
+                    style={{ background: 'linear-gradient(135deg, #a855f7, #6366f1)', boxShadow: '0 0 16px rgba(168,85,247,0.3)' }}
+                >
+                    영상 만들기
+                    <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+            ) : undefined}
+        >
+            {/* 파이프라인 설명 */}
+            <div className="flex items-center gap-2 flex-wrap mb-8">
+                {["목소리 샘플 등록", "→", "PDF 슬라이드 등록", "→", "AI 스크립트 생성", "→", "영상 완성"].map((step, i) => (
+                    <span key={i} className={step === "→" ? "text-white/15 text-xs" : "px-3 py-1.5 rounded-full text-xs font-bold text-white/50"} style={step !== "→" ? { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' } : {}}>
+                        {step}
+                    </span>
+                ))}
+            </div>
 
-                {bothReady && (
-                    <button
-                        onClick={goToStudio}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-brand-primary-600 to-brand-secondary-600 rounded-xl font-bold text-sm shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 active:scale-95 transition-all"
-                    >
-                        영상 만들기
-                        <ArrowRight className="w-4 h-4" />
-                    </button>
-                )}
-            </header>
-
-            <main className="max-w-5xl mx-auto px-6 py-12">
-                {/* 타이틀 */}
-                <div className="text-center mb-14">
-                    <h1 className="text-4xl font-black font-outfit premium-gradient-text tracking-tighter mb-3">
-                        나만의 영상 재료 등록
-                    </h1>
-                    <p className="text-white/40 text-sm tracking-wide">
-                        목소리 샘플과 PDF를 업로드하면 AI가 자동으로 영상을 완성합니다
-                    </p>
-
-                    {/* 파이프라인 설명 */}
-                    <div className="mt-8 flex items-center justify-center gap-2 flex-wrap">
-                        {["목소리 샘플 등록", "→", "PDF 슬라이드 등록", "→", "AI 스크립트 생성", "→", "영상 완성"].map((step, i) => (
-                            <span
-                                key={i}
-                                className={
-                                    step === "→"
-                                        ? "text-white/20 text-xs"
-                                        : "px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-xs font-bold text-white/70"
-                                }
-                            >
-                                {step}
-                            </span>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="max-w-4xl grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* ─── VOICE SECTION ─── */}
                     <section className="relative">
                         <div className="absolute -top-2 -left-2 w-32 h-32 bg-brand-primary-500/10 rounded-full blur-[60px] pointer-events-none" />
@@ -585,7 +557,6 @@ export default function UploadPage() {
                         </div>
                     ))}
                 </div>
-            </main>
-        </div>
+        </AppShell>
     );
 }

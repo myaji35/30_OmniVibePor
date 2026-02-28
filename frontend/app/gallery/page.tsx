@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { LayoutGrid, Bookmark, ChevronLeft, ChevronRight } from 'lucide-react'
+import AppShell from '@/components/AppShell'
 import TemplateCard, { type Template } from '@/components/gallery/TemplateCard'
 import TemplateFilter, { type FilterState } from '@/components/gallery/TemplateFilter'
 import AIPlannerButton from '@/components/gallery/AIPlannerButton'
@@ -386,33 +387,23 @@ export default function GalleryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F3F2F2]">
-      {/* Header */}
-      <header className="bg-white border-b border-[#DDDBDA] sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <LayoutGrid className="w-6 h-6 text-[#00A1E0]" />
-            <h1 className="text-xl font-bold text-[#16325C]">Remotion Showcase</h1>
-            <span className="text-xs text-[#706E6B] bg-[#F3F2F2] px-2 py-0.5 rounded-full">
-              실 사례 {filteredTemplates.length}개
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <AIPlannerButton />
-            <button
-              onClick={() => router.push('/studio')}
-              className="flex items-center gap-2 px-4 py-2.5 border border-[#DDDBDA] bg-white text-[#16325C] text-sm font-semibold rounded-lg hover:bg-[#F3F2F2] transition-colors"
-            >
-              <Bookmark className="w-4 h-4" />
-              내 컬렉션
-            </button>
-          </div>
+    <AppShell
+      title="Remotion Showcase"
+      subtitle={`실제 제작된 Remotion 영상 템플릿 · ${filteredTemplates.length}개`}
+      actions={
+        <div className="flex items-center gap-2">
+          <AIPlannerButton />
+          <button
+            onClick={() => router.push('/studio')}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white/60 hover:text-white/90 transition-colors border border-white/10 hover:border-white/20"
+          >
+            <Bookmark className="w-3.5 h-3.5" />
+            내 컬렉션
+          </button>
         </div>
-      </header>
-
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 py-6 flex gap-6">
+      }
+    >
+      <div className="flex gap-6">
         {/* Filter Sidebar */}
         <TemplateFilter filters={filters} onFiltersChange={handleFiltersChange} />
 
@@ -420,26 +411,26 @@ export default function GalleryPage() {
         <div className="flex-1">
           {/* Sort Bar */}
           <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-[#706E6B]">
+            <p className="text-sm text-white/40 font-mono">
               {filteredTemplates.length}개의 템플릿
             </p>
             <div className="flex items-center gap-1">
               <button
                 onClick={() => setSortBy('popularity')}
-                className={`px-3 py-1.5 text-xs font-medium rounded transition-colors ${
+                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
                   sortBy === 'popularity'
-                    ? 'bg-[#16325C] text-white'
-                    : 'bg-white text-[#706E6B] border border-[#DDDBDA] hover:bg-[#F3F2F2]'
+                    ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                    : 'text-white/40 hover:text-white/70 border border-white/10 hover:border-white/20'
                 }`}
               >
                 인기순
               </button>
               <button
                 onClick={() => setSortBy('latest')}
-                className={`px-3 py-1.5 text-xs font-medium rounded transition-colors ${
+                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
                   sortBy === 'latest'
-                    ? 'bg-[#16325C] text-white'
-                    : 'bg-white text-[#706E6B] border border-[#DDDBDA] hover:bg-[#F3F2F2]'
+                    ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                    : 'text-white/40 hover:text-white/70 border border-white/10 hover:border-white/20'
                 }`}
               >
                 최신순
@@ -456,11 +447,11 @@ export default function GalleryPage() {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-              <LayoutGrid className="w-12 h-12 text-[#DDDBDA] mb-4" />
-              <p className="text-sm font-semibold text-[#16325C] mb-1">
+              <LayoutGrid className="w-12 h-12 text-white/10 mb-4" />
+              <p className="text-sm font-semibold text-white/50 mb-1">
                 조건에 맞는 템플릿이 없습니다
               </p>
-              <p className="text-xs text-[#706E6B]">필터를 조정하거나 초기화해 보세요.</p>
+              <p className="text-xs text-white/25">필터를 조정하거나 초기화해 보세요.</p>
             </div>
           )}
 
@@ -470,10 +461,10 @@ export default function GalleryPage() {
               <button
                 onClick={() => setCurrentPage(Math.max(1, safeCurrentPage - 1))}
                 disabled={safeCurrentPage === 1}
-                className={`p-2 rounded transition-colors ${
+                className={`p-2 rounded-lg transition-colors ${
                   safeCurrentPage === 1
-                    ? 'text-[#DDDBDA] cursor-not-allowed'
-                    : 'text-[#706E6B] hover:bg-white hover:text-[#16325C]'
+                    ? 'text-white/15 cursor-not-allowed'
+                    : 'text-white/40 hover:text-white/70 hover:bg-white/5'
                 }`}
               >
                 <ChevronLeft className="w-4 h-4" />
@@ -483,10 +474,10 @@ export default function GalleryPage() {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`w-8 h-8 text-xs font-medium rounded transition-colors ${
+                  className={`w-8 h-8 text-xs font-medium rounded-lg transition-colors ${
                     page === safeCurrentPage
-                      ? 'bg-[#00A1E0] text-white'
-                      : 'text-[#706E6B] hover:bg-white hover:text-[#16325C]'
+                      ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                      : 'text-white/40 hover:text-white/70 hover:bg-white/5'
                   }`}
                 >
                   {page}
@@ -496,10 +487,10 @@ export default function GalleryPage() {
               <button
                 onClick={() => setCurrentPage(Math.min(totalPages, safeCurrentPage + 1))}
                 disabled={safeCurrentPage === totalPages}
-                className={`p-2 rounded transition-colors ${
+                className={`p-2 rounded-lg transition-colors ${
                   safeCurrentPage === totalPages
-                    ? 'text-[#DDDBDA] cursor-not-allowed'
-                    : 'text-[#706E6B] hover:bg-white hover:text-[#16325C]'
+                    ? 'text-white/15 cursor-not-allowed'
+                    : 'text-white/40 hover:text-white/70 hover:bg-white/5'
                 }`}
               >
                 <ChevronRight className="w-4 h-4" />
@@ -508,6 +499,6 @@ export default function GalleryPage() {
           )}
         </div>
       </div>
-    </div>
+    </AppShell>
   )
 }

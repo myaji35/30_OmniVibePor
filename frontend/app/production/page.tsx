@@ -15,7 +15,7 @@ import ProductionDashboard from '@/components/ProductionDashboard';
 export default function ProductionPage() {
   return (
     <ProductionProvider>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-[#050505]">
         <ProductionDashboard />
       </div>
     </ProductionProvider>

@@ -63,13 +63,14 @@ export default function TemplateFilter({ filters, onFiltersChange }: TemplateFil
     filters.platforms.length > 0 || filters.tones.length > 0 || filters.duration !== null
 
   return (
-    <div className="w-60 shrink-0 bg-white border border-[#DDDBDA] rounded-lg p-4 h-fit sticky top-4">
+    <div className="w-52 shrink-0 rounded-2xl p-4 h-fit sticky top-24"
+      style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-bold text-[#16325C]">필터</h3>
+        <h3 className="text-[10px] font-black text-white/30 uppercase tracking-widest">필터</h3>
         {hasActiveFilters && (
           <button
             onClick={resetFilters}
-            className="flex items-center gap-1 text-[11px] text-[#00A1E0] hover:text-[#0090c7] transition-colors"
+            className="flex items-center gap-1 text-[11px] text-purple-400 hover:text-purple-300 transition-colors"
           >
             <RotateCcw className="w-3 h-3" />
             초기화
@@ -79,10 +80,10 @@ export default function TemplateFilter({ filters, onFiltersChange }: TemplateFil
 
       {/* Platform Section */}
       <div className="mb-5">
-        <h4 className="text-xs font-semibold text-[#706E6B] uppercase tracking-wider mb-2">
+        <h4 className="text-[10px] font-black text-white/25 uppercase tracking-widest mb-2.5">
           플랫폼
         </h4>
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           {PLATFORM_OPTIONS.map((option) => (
             <label
               key={option.value}
@@ -92,9 +93,9 @@ export default function TemplateFilter({ filters, onFiltersChange }: TemplateFil
                 type="checkbox"
                 checked={filters.platforms.includes(option.value)}
                 onChange={() => togglePlatform(option.value)}
-                className="w-3.5 h-3.5 rounded border-[#DDDBDA] text-[#00A1E0] focus:ring-[#00A1E0] focus:ring-offset-0"
+                className="w-3.5 h-3.5 rounded accent-purple-500"
               />
-              <span className="text-sm text-[#3E3E3C] group-hover:text-[#16325C] transition-colors">
+              <span className="text-xs text-white/50 group-hover:text-white/80 transition-colors">
                 {option.label}
               </span>
             </label>
@@ -104,10 +105,10 @@ export default function TemplateFilter({ filters, onFiltersChange }: TemplateFil
 
       {/* Tone Section */}
       <div className="mb-5">
-        <h4 className="text-xs font-semibold text-[#706E6B] uppercase tracking-wider mb-2">
+        <h4 className="text-[10px] font-black text-white/25 uppercase tracking-widest mb-2.5">
           분위기
         </h4>
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           {TONE_OPTIONS.map((option) => (
             <label
               key={option.value}
@@ -117,9 +118,9 @@ export default function TemplateFilter({ filters, onFiltersChange }: TemplateFil
                 type="checkbox"
                 checked={filters.tones.includes(option.value)}
                 onChange={() => toggleTone(option.value)}
-                className="w-3.5 h-3.5 rounded border-[#DDDBDA] text-[#00A1E0] focus:ring-[#00A1E0] focus:ring-offset-0"
+                className="w-3.5 h-3.5 rounded accent-purple-500"
               />
-              <span className="text-sm text-[#3E3E3C] group-hover:text-[#16325C] transition-colors">
+              <span className="text-xs text-white/50 group-hover:text-white/80 transition-colors">
                 {option.label}
               </span>
             </label>
@@ -129,10 +130,10 @@ export default function TemplateFilter({ filters, onFiltersChange }: TemplateFil
 
       {/* Duration Section */}
       <div>
-        <h4 className="text-xs font-semibold text-[#706E6B] uppercase tracking-wider mb-2">
+        <h4 className="text-[10px] font-black text-white/25 uppercase tracking-widest mb-2.5">
           길이
         </h4>
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           {DURATION_OPTIONS.map((option) => (
             <label
               key={option.value}
@@ -143,9 +144,9 @@ export default function TemplateFilter({ filters, onFiltersChange }: TemplateFil
                 name="duration"
                 checked={filters.duration === option.value}
                 onChange={() => setDuration(option.value)}
-                className="w-3.5 h-3.5 border-[#DDDBDA] text-[#00A1E0] focus:ring-[#00A1E0] focus:ring-offset-0"
+                className="w-3.5 h-3.5 accent-purple-500"
               />
-              <span className="text-sm text-[#3E3E3C] group-hover:text-[#16325C] transition-colors">
+              <span className="text-xs text-white/50 group-hover:text-white/80 transition-colors">
                 {option.label}
               </span>
             </label>
