@@ -107,28 +107,28 @@ function PipelineBar({ steps, visible }: { steps: { label: string; pct: number; 
 }
 
 // ── 히어로 미니 플레이어 (Remotion 샘플 느낌) ────────────────────────────────
+// Remotion 공식 사이트 실제 데모 영상 (remotion.dev/img/)
 const REMOTION_SAMPLES = [
   {
-    title: "제품 소개 영상",
-    duration: "0:42",
-    tag: "Product",
+    title: "React → 영상 합성",
+    duration: "데모",
+    tag: "Compose",
     gradient: "from-violet-600 via-indigo-500 to-blue-500",
-    // Remotion 공개 데모 - Big Buck Bunny (CC) 15초 클립 대체
-    src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+    src: "https://www.remotion.dev/img/compose.webm",
   },
   {
-    title: "스타트업 피치덱",
-    duration: "1:15",
-    tag: "Pitch",
+    title: "동적 편집 파이프라인",
+    duration: "데모",
+    tag: "Edit",
     gradient: "from-fuchsia-600 via-pink-500 to-rose-500",
-    src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+    src: "https://www.remotion.dev/img/editing-vp9-chrome.webm",
   },
   {
-    title: "SNS 하이라이트",
-    duration: "0:28",
-    tag: "Social",
+    title: "렌더링 진행 현황",
+    duration: "데모",
+    tag: "Render",
     gradient: "from-emerald-500 via-teal-500 to-cyan-500",
-    src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+    src: "https://www.remotion.dev/img/render-progress.webm",
   },
 ];
 
