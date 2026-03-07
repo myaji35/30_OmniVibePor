@@ -55,6 +55,8 @@ import {
 } from "@/lib/blocks/utils";
 import { Button } from "@/components/ui/Button";
 import ABTestManager from "@/components/ABTestManager";
+import TemplateBanner from "@/components/studio/TemplateBanner";
+import { loadTemplatePreset, generateTemplateBlocks, type TemplatePreset } from "@/lib/template-loader";
 
 interface Campaign {
   id: number;
@@ -126,6 +128,26 @@ function StudioPageContent() {
       setWorkflowStep("upload_ready");
       if (presentationIdParam) {
         setCurrentContentId(null); // 기존 content 연결 초기화
+      }
+    }
+
+    // ✅ 템플릿으로 시작 (contentId 없을 때만 적용)
+    const templateParam = searchParams.get("template");
+    if (templateParam && !contentIdParam) {
+      const preset = loadTemplatePreset(templateParam);
+      if (preset) {
+        setSelectedCampaign({
+          id: -1,
+          name: preset.name,
+          client_id: 0,
+          status: "active",
+          concept_tone: preset.tone[0] || "",
+          target_duration: preset.duration,
+        });
+        setDuration(preset.duration);
+        setBlocks(generateTemplateBlocks(preset));
+        setTemplateBannerData(preset);
+        setWorkflowStep("template_ready");
       }
     }
   }, [searchParams]);
@@ -312,6 +334,9 @@ function StudioPageContent() {
   const [renderProgress, setRenderProgress] = useState<number>(0);
   const [renderStatus, setRenderStatus] = useState<string>("");
   const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
+
+  // 템플릿 배너 상태
+  const [templateBannerData, setTemplateBannerData] = useState<TemplatePreset | null>(null);
 
   // A/B 테스트 모달 상태
   // A/B 테스트 모달 상태
@@ -1415,6 +1440,17 @@ function StudioPageContent() {
           onABTestClick={() => setShowABTestModal(true)}
           onExport={() => console.log("Export triggered")}
         />
+
+        {/* ✅ 템플릿 배너 */}
+        {templateBannerData && (
+          <TemplateBanner
+            templateName={templateBannerData.name}
+            githubUrl={templateBannerData.githubUrl}
+            liveUrl={templateBannerData.liveUrl}
+            authorName={templateBannerData.authorName}
+            onClose={() => setTemplateBannerData(null)}
+          />
+        )}
 
         <main className="flex-1 flex flex-col overflow-hidden relative">
           {/* ✅ 업로드 재료 준비 완료 배너 */}
