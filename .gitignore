@@ -21,3 +21,11 @@ yarn-error.log*
 .LSOverride
 ._*
 .DS_Store
+
+# VIDEOGEN workspace (생성된 코드 및 렌더링 결과)
+videogen/workspace/node_modules/
+videogen/workspace/src/
+videogen/output/
+videogen/workspace/remotion.config.ts
+videogen/workspace/package.json
+videogen/workspace/package-lock.json
