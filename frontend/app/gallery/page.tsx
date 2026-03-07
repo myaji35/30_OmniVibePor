@@ -411,7 +411,7 @@ export default function GalleryPage() {
         <div className="flex-1">
           {/* Sort Bar */}
           <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-white/40 font-mono">
+            <p className="text-sm text-white/60 font-mono">
               {filteredTemplates.length}개의 템플릿
             </p>
             <div className="flex items-center gap-1">

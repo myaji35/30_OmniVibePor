@@ -8,25 +8,42 @@
 @import '../styles/slds-tokens.css';
 
 :root {
-  --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 10, 10, 12;
-  --background-end-rgb: 5, 5, 5;
-  
+  --foreground-rgb: 240, 240, 245;
+  --background-start-rgb: 15, 17, 23;
+  --background-end-rgb: 11, 13, 18;
+
   --brand-primary: #a855f7;
   --brand-secondary: #ec4899;
   --brand-accent: #3b82f6;
-  
-  --glass-bg: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(255, 255, 255, 0.08);
+
+  /* 밝기 올린 글래스모피즘 */
+  --glass-bg: rgba(255, 255, 255, 0.055);
+  --glass-border: rgba(255, 255, 255, 0.12);
   --glass-blur: blur(12px);
-  
-  --card-bg: #1a1a1c;
-  --card-border: #2a2a2e;
+
+  /* 카드: 배경 대비 확보 */
+  --card-bg: #1c1f2e;
+  --card-border: #2e3347;
+
+  /* 페이지 배경 계층 */
+  --bg-base:    #0f1117;   /* 전체 페이지 배경 */
+  --bg-surface: #161923;   /* 카드/패널 1레벨 */
+  --bg-raised:  #1e2333;   /* 카드/패널 2레벨 (hover 등) */
+  --bg-overlay: #252a3a;   /* 모달/드롭다운 */
+
+  /* 텍스트 계층 */
+  --text-primary:   rgba(240,240,248, 0.95);
+  --text-secondary: rgba(180,185,210, 0.80);
+  --text-muted:     rgba(140,148,175, 0.65);
+
+  /* 구분선 */
+  --border-subtle: rgba(255,255,255,0.08);
+  --border-normal: rgba(255,255,255,0.13);
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: #050505;
+  background: var(--bg-base);
   font-family: 'Inter', -apple-system, sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
@@ -38,9 +55,16 @@ body {
 
 /* Glassmorphism Classes */
 .glass-panel {
-  background: var(--glass-bg);
+  background: rgba(22, 25, 35, 0.85);
   backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-border);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+/* Surface 카드 */
+.surface-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
 }
 
 .premium-gradient-text {
@@ -52,13 +76,15 @@ body {
 .premium-card {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255,255,255,0.05) inset;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .premium-card:hover {
-  border-color: rgba(168, 85, 247, 0.4);
+  border-color: rgba(168, 85, 247, 0.45);
+  background: var(--bg-raised);
   transform: translateY(-2px);
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(168,85,247,0.15);
 }
 
 /* Custom Scrollbar */

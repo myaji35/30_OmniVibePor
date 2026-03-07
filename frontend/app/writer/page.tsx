@@ -41,7 +41,7 @@ const INPUT_CLS = 'w-full px-4 py-3 rounded-xl text-sm text-white placeholder-wh
 const INPUT_S = { background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }
 
 function Label({ children }: { children: React.ReactNode }) {
-  return <p className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-2">{children}</p>
+  return <p className="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2">{children}</p>
 }
 
 export default function WriterPage() {
@@ -177,7 +177,7 @@ export default function WriterPage() {
                 '25살 → 스물다섯살',
                 '010-1234-5678 → 공일공 일이삼사 오육칠팔',
               ].map((ex) => (
-                <p key={ex} className="text-[11px] text-white/20 font-mono">{ex}</p>
+                <p key={ex} className="text-[11px] text-white/45 font-mono">{ex}</p>
               ))}
             </div>
             <button
@@ -215,7 +215,7 @@ export default function WriterPage() {
                   </div>
                 )}
                 <div className="p-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.04)' }}>
-                  <p className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Script</p>
+                  <p className="text-[10px] text-white/50 uppercase tracking-widest mb-1">Script</p>
                   <p className="text-sm text-white/70 leading-relaxed whitespace-pre-line">{generatedScript.script}</p>
                 </div>
                 {generatedScript.cta && (
@@ -249,7 +249,7 @@ export default function WriterPage() {
 
               <div className="space-y-2">
                 <div className="p-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.04)' }}>
-                  <p className="text-[10px] text-white/30 uppercase tracking-widest mb-1">원본</p>
+                  <p className="text-[10px] text-white/50 uppercase tracking-widest mb-1">원본</p>
                   <p className="text-sm text-white/60">{normalizeResult.original}</p>
                 </div>
                 <div className="p-3 rounded-xl" style={{ background: 'rgba(52,211,153,0.08)' }}>
@@ -259,7 +259,7 @@ export default function WriterPage() {
 
                 {Object.keys(normalizeResult.mappings).length > 0 && (
                   <div className="p-3 rounded-xl space-y-1" style={{ background: 'rgba(255,255,255,0.03)' }}>
-                    <p className="text-[10px] text-white/30 uppercase tracking-widest mb-2">변환 매핑</p>
+                    <p className="text-[10px] text-white/50 uppercase tracking-widest mb-2">변환 매핑</p>
                     {Object.entries(normalizeResult.mappings).map(([orig, conv]) => (
                       <div key={orig} className="flex items-center gap-2 text-xs">
                         <span className="text-red-400 font-mono">{orig}</span>
@@ -288,7 +288,7 @@ export default function WriterPage() {
                     <span className="text-[10px] font-black font-mono text-purple-400/70 shrink-0 mt-0.5">{n}</span>
                     <div>
                       <p className="text-xs font-bold text-white/70">{title}</p>
-                      <p className="text-[11px] text-white/30 mt-0.5">{desc}</p>
+                      <p className="text-[11px] text-white/50 mt-0.5">{desc}</p>
                     </div>
                   </div>
                 ))}

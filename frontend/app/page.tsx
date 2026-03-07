@@ -377,13 +377,13 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-[#050505] text-white selection:bg-brand-primary-500/30 overflow-x-hidden font-inter">
+    <main className="min-h-screen bg-[#0f1117] text-white selection:bg-brand-primary-500/30 overflow-x-hidden font-inter">
       {/* Ambient Background */}
       <div className="fixed -top-24 -left-24 w-[800px] h-[800px] bg-brand-primary-500/8 rounded-full blur-[150px] pointer-events-none" />
       <div className="fixed top-1/2 -right-24 w-[600px] h-[600px] bg-brand-secondary-500/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* ── Sticky Nav ── */}
-      <nav className={`fixed top-0 inset-x-0 h-20 z-50 px-10 flex items-center justify-between transition-all duration-300 ${scrolled ? "bg-[#050505]/90 backdrop-blur-xl border-b border-white/5" : ""}`}>
+      <nav className={`fixed top-0 inset-x-0 h-20 z-50 px-10 flex items-center justify-between transition-all duration-300 ${scrolled ? "bg-[#0f1117]/90 backdrop-blur-xl border-b border-white/5" : ""}`}>
         <div className="flex items-center gap-4 group cursor-pointer">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-primary-500 to-brand-secondary-600 flex items-center justify-center shadow-[0_8px_24px_-4px_rgba(168,85,247,0.5)] group-hover:scale-110 transition-all duration-300">
             <Zap className="w-5 h-5 text-white fill-white/20" />
@@ -394,10 +394,10 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="hidden md:flex items-center gap-8 text-[11px] font-semibold text-white/40 uppercase tracking-widest">
-          <a href="#features" className="hover:text-white/80 transition-colors">기능</a>
-          <a href="#studio" className="hover:text-white/80 transition-colors">스튜디오</a>
-          <a href="/gallery" className="hover:text-white/80 transition-colors">템플릿</a>
+        <div className="hidden md:flex items-center gap-8 text-[11px] font-semibold text-white/60 uppercase tracking-widest">
+          <a href="#features" className="hover:text-white/90 transition-colors">기능</a>
+          <a href="#studio" className="hover:text-white/90 transition-colors">스튜디오</a>
+          <a href="/gallery" className="hover:text-white/90 transition-colors">템플릿</a>
         </div>
 
         <div className="flex items-center gap-3">
@@ -428,7 +428,7 @@ export default function Home() {
       ════════════════════════════════════════════════ */}
       <section className="relative flex items-start pt-20 pb-10 overflow-hidden">
         {/* 좌측 그라디언트 페이드 */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#050505]/80 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0f1117]/80 via-transparent to-transparent pointer-events-none" />
 
         <div className="container mx-auto px-10 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">

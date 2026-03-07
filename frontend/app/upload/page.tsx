@@ -253,7 +253,7 @@ export default function UploadPage() {
                                 </div>
                                 <div>
                                     <h2 className="font-black text-white text-sm">목소리 샘플 등록</h2>
-                                    <p className="text-white/30 text-[10px] mt-0.5">MP3 · WAV · M4A · FLAC · OGG</p>
+                                    <p className="text-white/50 text-[10px] mt-0.5">MP3 · WAV · M4A · FLAC · OGG</p>
                                 </div>
                                 {voiceState.done && (
                                     <CheckCircle className="w-5 h-5 text-green-400 ml-auto" />
@@ -278,7 +278,7 @@ export default function UploadPage() {
                                         <Upload className="w-7 h-7 text-white/30" />
                                     </div>
                                     <p className="text-white/50 text-sm font-bold mb-1">파일을 드래그하거나 클릭</p>
-                                    <p className="text-white/20 text-xs">최소 1분 · 권장 3-5분</p>
+                                    <p className="text-white/45 text-xs">최소 1분 · 권장 3-5분</p>
                                     <input
                                         ref={voiceDrop.inputRef}
                                         type="file"
@@ -319,7 +319,7 @@ export default function UploadPage() {
                             {voiceState.file && !voiceState.done && (
                                 <div className="space-y-3 mt-4">
                                     <div>
-                                        <label className="text-[10px] font-black text-white/30 uppercase tracking-widest block mb-1.5">
+                                        <label className="text-[10px] font-black text-white/50 uppercase tracking-widest block mb-1.5">
                                             목소리 이름 *
                                         </label>
                                         <input
@@ -330,7 +330,7 @@ export default function UploadPage() {
                                         />
                                     </div>
                                     <div>
-                                        <label className="text-[10px] font-black text-white/30 uppercase tracking-widest block mb-1.5">
+                                        <label className="text-[10px] font-black text-white/50 uppercase tracking-widest block mb-1.5">
                                             설명 (선택)
                                         </label>
                                         <input
@@ -376,7 +376,7 @@ export default function UploadPage() {
                                         <span className="text-green-400 font-bold text-sm">목소리 등록 완료</span>
                                     </div>
                                     <p className="text-white/50 text-xs">이름: {voiceResult.voice_name}</p>
-                                    <p className="text-white/30 text-[10px] font-mono mt-1 truncate">
+                                    <p className="text-white/50 text-[10px] font-mono mt-1 truncate">
                                         ID: {voiceResult.voice_id}
                                     </p>
                                 </div>
@@ -396,7 +396,7 @@ export default function UploadPage() {
                                 </div>
                                 <div>
                                     <h2 className="font-black text-white text-sm">PDF 슬라이드 등록</h2>
-                                    <p className="text-white/30 text-[10px] mt-0.5">NotebookLM · PowerPoint 내보내기</p>
+                                    <p className="text-white/50 text-[10px] mt-0.5">NotebookLM · PowerPoint 내보내기</p>
                                 </div>
                                 {pdfState.done && (
                                     <CheckCircle className="w-5 h-5 text-green-400 ml-auto" />
@@ -421,7 +421,7 @@ export default function UploadPage() {
                                         <FileText className="w-7 h-7 text-white/30" />
                                     </div>
                                     <p className="text-white/50 text-sm font-bold mb-1">PDF를 드래그하거나 클릭</p>
-                                    <p className="text-white/20 text-xs">NotebookLM 슬라이드 PDF 권장</p>
+                                    <p className="text-white/45 text-xs">NotebookLM 슬라이드 PDF 권장</p>
                                     <input
                                         ref={pdfDrop.inputRef}
                                         type="file"
@@ -494,7 +494,7 @@ export default function UploadPage() {
                                             ? `슬라이드 ${pdfResult.slide_count}장 추출됨`
                                             : pdfResult.message}
                                     </p>
-                                    <p className="text-white/30 text-[10px] font-mono mt-1 truncate">
+                                    <p className="text-white/50 text-[10px] font-mono mt-1 truncate">
                                         ID: {pdfResult.presentation_id}
                                     </p>
                                 </div>
@@ -553,7 +553,7 @@ export default function UploadPage() {
                         <div key={step} className="bg-white/[0.02] border border-white/5 rounded-2xl p-5">
                             <div className={`text-${color}-500 text-xs font-black tracking-widest mb-3`}>{step}</div>
                             <h4 className="font-bold text-white text-sm mb-2">{title}</h4>
-                            <p className="text-white/30 text-xs leading-relaxed">{desc}</p>
+                            <p className="text-white/50 text-xs leading-relaxed">{desc}</p>
                         </div>
                     ))}
                 </div>

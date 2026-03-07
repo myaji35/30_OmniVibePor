@@ -66,7 +66,7 @@ export default function StudioPreview({
     // Show Remotion Player if blocks exist
     if (hasBlocks) {
         return (
-            <div className="h-full flex flex-col items-center justify-center relative bg-[#050505] p-6">
+            <div className="h-full flex flex-col items-center justify-center relative bg-[#0f1117] p-6">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-brand-primary-500/5 rounded-full blur-[120px] pointer-events-none" />
 
                 <div className="relative w-full max-w-5xl">
@@ -102,7 +102,7 @@ export default function StudioPreview({
 
     // Fallback: original Neural Rendering UI when no blocks
     return (
-        <div className="h-full flex flex-col p-12 items-center justify-center relative bg-[#050505]">
+        <div className="h-full flex flex-col p-12 items-center justify-center relative bg-[#0f1117]">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-brand-primary-500/5 rounded-full blur-[120px] pointer-events-none" />
 
             <div className="relative w-full max-w-6xl aspect-video premium-card rounded-[3rem] overflow-hidden shadow-[0_50px_120px_-30px_rgba(0,0,0,0.9)] flex items-center justify-center p-0 group border border-white/10 group">
@@ -124,7 +124,7 @@ export default function StudioPreview({
                 </div>
 
                 {/* Video Engine Canvas */}
-                <div className="absolute inset-0 bg-[#0a0a0c] flex flex-col items-center justify-center">
+                <div className="absolute inset-0 bg-[#0d1018] flex flex-col items-center justify-center">
                     {workflowStep === "video_ready" && videoUrl ? (
                         <video className="w-full h-full object-contain" src={videoUrl} controls={false} autoPlay muted loop />
                     ) : (

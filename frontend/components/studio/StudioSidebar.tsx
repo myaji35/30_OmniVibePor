@@ -41,7 +41,7 @@ export default function StudioSidebar({
                     className="w-full relative group overflow-hidden p-0.5 rounded-2xl transition-all duration-500 hover:scale-[1.02] active:scale-95"
                 >
                     <div className="absolute inset-0 bg-gradient-to-r from-brand-primary-500 via-brand-secondary-500 to-brand-primary-500 animate-gradient-x opacity-30 group-hover:opacity-100 transition-opacity" />
-                    <div className="relative py-4 bg-[#0a0a0c] rounded-[calc(1rem-2px)] flex items-center justify-center gap-3 border border-white/5 group-hover:border-transparent transition-colors">
+                    <div className="relative py-4 bg-[#161923] rounded-[calc(1rem-2px)] flex items-center justify-center gap-3 border border-white/[0.08] group-hover:border-transparent transition-colors">
                         <Database className="w-5 h-5 text-brand-primary-400 group-hover:scale-110 transition-transform" />
                         <span className="text-xs font-black tracking-widest uppercase text-gray-300 group-hover:text-white transition-colors">에셋 라이브러리</span>
                     </div>
@@ -52,7 +52,7 @@ export default function StudioSidebar({
                     className="mt-4 w-full relative group overflow-hidden p-0.5 rounded-2xl transition-all duration-500 hover:scale-[1.02] active:scale-95 block"
                 >
                     <div className="absolute inset-0 bg-gradient-to-r from-brand-secondary-500 via-brand-primary-500 to-brand-secondary-500 animate-gradient-x opacity-20 group-hover:opacity-100 transition-opacity" />
-                    <div className="relative py-4 bg-[#0a0a0c] rounded-[calc(1rem-2px)] flex items-center justify-center gap-3 border border-white/5 group-hover:border-transparent transition-colors">
+                    <div className="relative py-4 bg-[#161923] rounded-[calc(1rem-2px)] flex items-center justify-center gap-3 border border-white/[0.08] group-hover:border-transparent transition-colors">
                         <LayoutGrid className="w-5 h-5 text-brand-secondary-400 group-hover:scale-110 transition-transform" />
                         <span className="text-xs font-black tracking-widest uppercase text-gray-300 group-hover:text-white transition-colors">템플릿 갤러리</span>
                     </div>
@@ -61,7 +61,7 @@ export default function StudioSidebar({
 
             <div className="flex-1 overflow-y-auto px-8 space-y-4 pb-8 custom-scrollbar">
                 <div className="flex items-center justify-between px-2 mb-6">
-                    <h3 className="text-[10px] font-black text-gray-600 uppercase tracking-[0.35em] flex items-center gap-2">
+                    <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.35em] flex items-center gap-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-brand-primary-500/50 shadow-[0_0_8px_rgba(168,85,247,0.5)]" />
                         캠페인 오케스트레이터
                     </h3>
@@ -87,7 +87,7 @@ export default function StudioSidebar({
                         <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(168,85,247,0.3)] transition-all">
                             <Upload className="w-6 h-6 text-gray-500 group-hover:text-brand-primary-400 group-hover:animate-bounce transition-colors" />
                         </div>
-                        <span className="text-[10px] font-black text-gray-600 group-hover:text-white tracking-[0.2em] uppercase transition-colors">목소리 · PDF 업로드</span>
+                        <span className="text-[10px] font-black text-white/40 group-hover:text-white tracking-[0.2em] uppercase transition-colors">목소리 · PDF 업로드</span>
                     </div>
                 </Link>
             </div>

@@ -37,16 +37,16 @@ export default function AppShell({ children, title, subtitle, actions }: AppShel
   }, [handleScroll])
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white overflow-x-hidden font-inter">
+    <div className="min-h-screen bg-[#0f1117] text-white overflow-x-hidden font-inter">
       {/* Ambient background glow */}
       <div className="fixed -top-24 -left-24 w-[700px] h-[700px] rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse, rgba(168,85,247,0.06) 0%, transparent 70%)' }} />
+        style={{ background: 'radial-gradient(ellipse, rgba(168,85,247,0.10) 0%, transparent 70%)' }} />
       <div className="fixed bottom-0 right-0 w-[500px] h-[500px] rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse, rgba(99,102,241,0.04) 0%, transparent 70%)' }} />
+        style={{ background: 'radial-gradient(ellipse, rgba(99,102,241,0.07) 0%, transparent 70%)' }} />
 
       {/* ── Sticky Nav ── */}
       <nav className={`fixed top-0 inset-x-0 h-16 z-50 px-6 md:px-10 flex items-center justify-between transition-all duration-300 ${
-        scrolled ? 'bg-[#050505]/90 backdrop-blur-xl border-b border-white/[0.06]' : ''
+        scrolled ? 'bg-[#0f1117]/95 backdrop-blur-xl border-b border-white/[0.10]' : ''
       }`}>
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group">
@@ -71,7 +71,7 @@ export default function AppShell({ children, title, subtitle, actions }: AppShel
                 className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold uppercase tracking-widest transition-all ${
                   isActive
                     ? 'bg-purple-500/15 text-purple-300 border border-purple-500/25'
-                    : 'text-white/40 hover:text-white/70 hover:bg-white/5'
+                    : 'text-white/55 hover:text-white/85 hover:bg-white/[0.07]'
                 }`}
               >
                 {label}
@@ -84,9 +84,9 @@ export default function AppShell({ children, title, subtitle, actions }: AppShel
         <div className="flex items-center gap-2">
           {isAuthenticated ? (
             <>
-              <div className="hidden md:flex items-center gap-2 px-4 py-1.5 bg-white/[0.03] border border-white/[0.06] rounded-lg">
+              <div className="hidden md:flex items-center gap-2 px-4 py-1.5 bg-white/[0.06] border border-white/[0.10] rounded-lg">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-[10px] font-black text-white/50 uppercase tracking-widest">{user?.name}</span>
+                <span className="text-[10px] font-black text-white/70 uppercase tracking-widest">{user?.name}</span>
               </div>
               <button onClick={logout}
                 className="hidden md:block px-4 py-1.5 bg-white/5 hover:bg-red-500/15 border border-white/10 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">
@@ -137,7 +137,7 @@ export default function AppShell({ children, title, subtitle, actions }: AppShel
         style={{ background: 'linear-gradient(to bottom, rgba(168,85,247,0.04) 0%, transparent 100%)' }}>
         <div className="max-w-7xl mx-auto">
           {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-[11px] text-white/30 mb-3 font-mono uppercase tracking-widest">
+          <div className="flex items-center gap-2 text-[11px] text-white/50 mb-3 font-mono uppercase tracking-widest">
             <Link href="/" className="hover:text-white/60 transition-colors">Home</Link>
             <ChevronRight className="w-3 h-3" />
             <span className="text-purple-400">{title}</span>
@@ -146,7 +146,7 @@ export default function AppShell({ children, title, subtitle, actions }: AppShel
           <div className="flex items-start justify-between gap-4">
             <div>
               <h1 className="text-2xl font-black tracking-tight text-white">{title}</h1>
-              {subtitle && <p className="text-sm text-white/40 mt-1">{subtitle}</p>}
+              {subtitle && <p className="text-sm text-white/60 mt-1">{subtitle}</p>}
             </div>
             {actions && <div className="flex items-center gap-2 shrink-0">{actions}</div>}
           </div>

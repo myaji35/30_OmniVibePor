@@ -69,10 +69,10 @@ interface Stats {
 }
 
 const CARD = 'rounded-2xl border'
-const CARD_S = { background: 'rgba(255,255,255,0.03)', borderColor: 'rgba(255,255,255,0.07)' }
+const CARD_S = { background: 'rgba(22,25,35,0.9)', borderColor: 'rgba(255,255,255,0.10)' }
 
 function SLabel({ children }: { children: React.ReactNode }) {
-  return <p className="text-[10px] font-black text-white/25 uppercase tracking-widest mb-3">{children}</p>
+  return <p className="text-[10px] font-black text-white/45 uppercase tracking-widest mb-3">{children}</p>
 }
 
 export default function DashboardPage() {
@@ -136,9 +136,9 @@ export default function DashboardPage() {
                   style={{ background: `radial-gradient(ellipse at top left, ${glow} 0%, transparent 65%)` }} />
                 <div className="relative flex items-start justify-between">
                   <div>
-                    <p className="text-xs text-white/35 mb-2">{label}</p>
+                    <p className="text-xs text-white/55 mb-2">{label}</p>
                     <p className="text-3xl font-black font-mono" style={{ color }}>{value}</p>
-                    <p className="text-[11px] text-white/30 mt-1.5">{sub}</p>
+                    <p className="text-[11px] text-white/50 mt-1.5">{sub}</p>
                   </div>
                   <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
                     style={{ background: `${glow}`, border: `1px solid ${color}25` }}>
@@ -184,7 +184,7 @@ export default function DashboardPage() {
 
                 {campaigns.length === 0 ? (
                   <div className="py-10 text-center">
-                    <p className="text-sm text-white/25 mb-4">캠페인이 없습니다.</p>
+                    <p className="text-sm text-white/45 mb-4">캠페인이 없습니다.</p>
                     <Link href="/studio"
                       className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all"
                       style={{ background: 'rgba(168,85,247,0.15)', border: '1px solid rgba(168,85,247,0.3)', color: '#c084fc' }}>
@@ -200,14 +200,14 @@ export default function DashboardPage() {
                       const isDone = c.status === 'completed'
                       return (
                         <div key={c.id} className="flex items-center gap-4 p-3 rounded-xl transition-all hover:bg-white/[0.03]"
-                          style={{ border: '1px solid rgba(255,255,255,0.05)' }}>
+                          style={{ border: '1px solid rgba(255,255,255,0.09)' }}>
                           <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
                             style={{ background: 'rgba(168,85,247,0.12)', border: '1px solid rgba(168,85,247,0.2)' }}>
                             <Folder className="w-4 h-4 text-purple-400" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-white/80 truncate">{c.name}</p>
-                            <p className="text-[11px] text-white/30">{c.content_count || 0}/10 videos · {c.platform || 'Multi'}</p>
+                            <p className="text-sm font-semibold text-white/85 truncate">{c.name}</p>
+                            <p className="text-[11px] text-white/50">{c.content_count || 0}/10 videos · {c.platform || 'Multi'}</p>
                           </div>
                           <div className="flex items-center gap-3 shrink-0">
                             <div className="w-20">
@@ -215,7 +215,7 @@ export default function DashboardPage() {
                                 <div className="h-full rounded-full transition-all"
                                   style={{ width: `${pct}%`, background: isDone ? '#34d399' : isActive ? '#a855f7' : '#475569' }} />
                               </div>
-                              <p className="text-[10px] text-white/25 mt-1 text-right font-mono">{pct}%</p>
+                              <p className="text-[10px] text-white/45 mt-1 text-right font-mono">{pct}%</p>
                             </div>
                             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
                               style={{
@@ -253,8 +253,8 @@ export default function DashboardPage() {
                         style={{ background: `${color}18`, border: `1px solid ${color}25` }}>
                         <Icon className="w-3.5 h-3.5" style={{ color }} />
                       </div>
-                      <span className="text-xs font-semibold text-white/60">{label}</span>
-                      <ArrowRight className="w-3.5 h-3.5 text-white/20 ml-auto" />
+                      <span className="text-xs font-semibold text-white/75">{label}</span>
+                      <ArrowRight className="w-3.5 h-3.5 text-white/40 ml-auto" />
                     </Link>
                   ))}
                 </div>
@@ -264,16 +264,16 @@ export default function DashboardPage() {
               <div className={`${CARD} p-5`} style={CARD_S}>
                 <SLabel>최근 활동</SLabel>
                 {campaigns.length === 0 ? (
-                  <p className="text-xs text-white/25 text-center py-4">활동 내역이 없습니다</p>
+                  <p className="text-xs text-white/45 text-center py-4">활동 내역이 없습니다</p>
                 ) : (
                   <div className="space-y-3">
                     {campaigns.slice(0, 4).map((c) => (
                       <div key={c.id} className="flex items-start gap-2.5">
                         <div className="w-1.5 h-1.5 rounded-full bg-purple-500/60 mt-1.5 shrink-0" />
                         <div>
-                          <p className="text-xs text-white/60">{c.status === 'completed' ? '캠페인 완료' : c.status === 'active' ? '캠페인 진행 중' : '캠페인 생성'}</p>
-                          <p className="text-[11px] text-white/25 mt-0.5 truncate">{c.name}</p>
-                          {c.created_at && <p className="text-[10px] text-white/20 mt-0.5">{new Date(c.created_at).toLocaleDateString('ko')}</p>}
+                          <p className="text-xs text-white/75">{c.status === 'completed' ? '캠페인 완료' : c.status === 'active' ? '캠페인 진행 중' : '캠페인 생성'}</p>
+                          <p className="text-[11px] text-white/45 mt-0.5 truncate">{c.name}</p>
+                          {c.created_at && <p className="text-[10px] text-white/40 mt-0.5">{new Date(c.created_at).toLocaleDateString('ko')}</p>}
                         </div>
                       </div>
                     ))}

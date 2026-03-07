@@ -105,7 +105,7 @@ export default function ContentEditPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0f1117] flex items-center justify-center">
         <div className="flex flex-col items-center gap-6">
           <div className="w-16 h-16 border-4 border-brand-primary-500/20 border-t-brand-primary-500 rounded-full animate-spin shadow-[0_0_20px_rgba(168,85,247,0.3)]"></div>
           <span className="text-[10px] font-black text-white/30 tracking-[0.4em] uppercase">Initialising AI Core</span>
@@ -116,7 +116,7 @@ export default function ContentEditPage() {
 
   if (!content) {
     return (
-      <div className="min-h-screen bg-[#050505] flex items-center justify-center p-10">
+      <div className="min-h-screen bg-[#0f1117] flex items-center justify-center p-10">
         <div className="max-w-md w-full glass-panel rounded-[3rem] p-12 text-center border-red-500/20">
           <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-8">
             <AlertCircle className="w-10 h-10 text-red-500" />
@@ -138,7 +138,7 @@ export default function ContentEditPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white overflow-x-hidden font-inter selection:bg-purple-500/30">
+    <div className="min-h-screen bg-[#0f1117] text-white overflow-x-hidden font-inter selection:bg-purple-500/30">
       {/* Background Aesthetic Blur */}
       <div className="fixed -top-24 -left-24 w-[600px] h-[600px] bg-brand-primary-500/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="fixed bottom-0 -right-24 w-[500px] h-[500px] bg-brand-secondary-500/5 rounded-full blur-[100px] pointer-events-none" />

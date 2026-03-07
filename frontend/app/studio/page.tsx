@@ -1424,7 +1424,7 @@ function StudioPageContent() {
   };
 
   return (
-    <div className="flex h-screen bg-[#050505] text-white overflow-hidden font-inter selection:bg-purple-500/30">
+    <div className="flex h-screen bg-[#0f1117] text-white overflow-hidden font-inter selection:bg-purple-500/30">
       <StudioSidebar
         selectedCampaignName={selectedCampaign?.name || null}
         onCampaignSelect={handleCampaignSelect}
@@ -1605,7 +1605,7 @@ function StudioPageContent() {
 export default function StudioPage() {
   return (
     <Suspense fallback={
-      <div className="flex h-screen bg-[#050505] text-white items-center justify-center">
+      <div className="flex h-screen bg-[#0f1117] text-white items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="w-16 h-16 border-4 border-brand-primary-500 border-t-transparent rounded-full animate-spin"></div>
           <p className="text-gray-400 font-medium">Loading Studio...</p>

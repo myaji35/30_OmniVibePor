@@ -46,7 +46,7 @@ const INPUT_STYLE = {
 }
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
-  return <p className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-2">{children}</p>
+  return <p className="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2">{children}</p>
 }
 
 export default function AudioPage() {
@@ -121,7 +121,7 @@ export default function AudioPage() {
               className={INPUT_CLS}
               style={{ ...INPUT_STYLE, resize: 'none' }}
             />
-            <p className="text-[11px] text-white/25 mt-2 font-mono">{text.length} / 5000</p>
+            <p className="text-[11px] text-white/45 mt-2 font-mono">{text.length} / 5000</p>
 
             <SectionLabel>샘플 텍스트</SectionLabel>
             <div className="grid grid-cols-1 gap-1.5">
@@ -280,7 +280,7 @@ export default function AudioPage() {
                   { label: 'STT 변환 결과', value: taskStatus.result.transcribed_text, color: 'text-blue-400' },
                 ].filter(Boolean).map((item) => item && (
                   <div key={item.label} className="p-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.04)' }}>
-                    <p className="text-[10px] text-white/30 uppercase tracking-widest mb-1">{item.label}</p>
+                    <p className="text-[10px] text-white/50 uppercase tracking-widest mb-1">{item.label}</p>
                     <p className={`text-sm ${item.color}`}>{item.value}</p>
                   </div>
                 ))}
@@ -303,7 +303,7 @@ export default function AudioPage() {
                     <span className="text-[10px] font-black font-mono shrink-0 mt-0.5" style={{ color }}>{step}</span>
                     <div>
                       <p className="text-xs font-bold text-white/80">{label}</p>
-                      <p className="text-[11px] text-white/30 mt-0.5">{desc}</p>
+                      <p className="text-[11px] text-white/50 mt-0.5">{desc}</p>
                     </div>
                   </div>
                 ))}
