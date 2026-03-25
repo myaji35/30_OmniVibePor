@@ -1,0 +1,144 @@
+version: '3.8'
+
+# OmniVibe Pro — Vultr 배포용 (158.247.235.31)
+# URL: omnivibepro.158.247.235.31.nip.io
+# Backend: 8020, Frontend: 3020
+# 기존 서비스(Coolify, InsureGraph, TurnFlow 등)와 포트 충돌 방지
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.production
+    container_name: omnivibe-backend
+    restart: unless-stopped
+    ports:
+      - "8020:8000"
+    environment:
+      - DATABASE_URL=sqlite:///omni_db.sqlite
+      - REDIS_URL=redis://omnivibe-redis:6379/0
+      - CELERY_BROKER_URL=redis://omnivibe-redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://omnivibe-redis:6379/0
+      - NEO4J_URI=bolt://omnivibe-neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD:-omnivibe2026}
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME:-}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY:-}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET:-}
+      - DEBUG=false
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+    volumes:
+      - omnivibe-backend-data:/app/outputs
+      - omnivibe-sqlite:/app/omni_db.sqlite
+    depends_on:
+      omnivibe-redis:
+        condition: service_healthy
+    networks:
+      - omnivibe-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  celery-worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.production
+    container_name: omnivibe-celery
+    restart: unless-stopped
+    command: celery -A app.tasks.celery_app worker --loglevel=info --concurrency=2
+    environment:
+      - REDIS_URL=redis://omnivibe-redis:6379/0
+      - CELERY_BROKER_URL=redis://omnivibe-redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://omnivibe-redis:6379/0
+      - NEO4J_URI=bolt://omnivibe-neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD:-omnivibe2026}
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME:-}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY:-}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET:-}
+    volumes:
+      - omnivibe-backend-data:/app/outputs
+    depends_on:
+      omnivibe-redis:
+        condition: service_healthy
+    networks:
+      - omnivibe-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.production
+    container_name: omnivibe-frontend
+    restart: unless-stopped
+    ports:
+      - "3020:3020"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://158.247.235.31:8020
+      - NODE_ENV=production
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - omnivibe-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  omnivibe-redis:
+    image: redis:7-alpine
+    container_name: omnivibe-redis
+    restart: unless-stopped
+    # 포트 바인딩 없음 (내부 통신만, 서버의 6379와 충돌 방지)
+    volumes:
+      - omnivibe-redis-data:/data
+    networks:
+      - omnivibe-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  omnivibe-neo4j:
+    image: neo4j:5.16-community
+    container_name: omnivibe-neo4j
+    restart: unless-stopped
+    # 포트 바인딩 없음 (내부 통신만, turnflow의 7474/7687과 충돌 방지)
+    environment:
+      - NEO4J_AUTH=neo4j/${NEO4J_PASSWORD:-omnivibe2026}
+      - NEO4J_PLUGINS=["apoc"]
+      - NEO4J_server_memory_heap_max__size=512m
+      - NEO4J_server_memory_pagecache_size=256m
+    volumes:
+      - omnivibe-neo4j-data:/data
+    networks:
+      - omnivibe-network
+    healthcheck:
+      test: ["CMD", "cypher-shell", "-u", "neo4j", "-p", "${NEO4J_PASSWORD:-omnivibe2026}", "RETURN 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  omnivibe-backend-data:
+  omnivibe-sqlite:
+  omnivibe-redis-data:
+  omnivibe-neo4j-data:
+
+networks:
+  omnivibe-network:
+    driver: bridge
