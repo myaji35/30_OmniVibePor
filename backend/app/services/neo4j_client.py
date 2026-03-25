@@ -654,6 +654,178 @@ class Neo4jClient:
             self.logger.error(f"❌ Script save failed: {e}")
             return False
 
+    # ==================== Content Similarity (SIMILAR_TO) ====================
+
+    async def create_similar_to_relationship(
+        self,
+        content_id_1: int,
+        content_id_2: int,
+        similarity_score: float
+    ) -> Dict:
+        """
+        두 Content 노드 간 SIMILAR_TO 관계 생성
+
+        Args:
+            content_id_1: 소스 콘텐츠 ID
+            content_id_2: 타겟 콘텐츠 ID
+            similarity_score: 유사도 점수 (0.0 ~ 1.0)
+
+        Returns:
+            생성된 관계 정보
+        """
+        try:
+            query = """
+            MATCH (c1:Content {id: $content_id_1})
+            MATCH (c2:Content {id: $content_id_2})
+            MERGE (c1)-[r:SIMILAR_TO]->(c2)
+            SET r.score = $similarity_score,
+                r.updated_at = datetime()
+            RETURN c1.id AS source_id,
+                   c2.id AS target_id,
+                   r.score AS score
+            """
+
+            result = self.query(query, {
+                "content_id_1": content_id_1,
+                "content_id_2": content_id_2,
+                "similarity_score": similarity_score
+            })
+
+            self.logger.info(
+                f"SIMILAR_TO relationship created: {content_id_1} -> {content_id_2} "
+                f"(score: {similarity_score:.2f})"
+            )
+            return result[0] if result else {}
+
+        except Exception as e:
+            self.logger.error(f"Failed to create SIMILAR_TO relationship: {e}")
+            return {}
+
+    async def get_similar_content(
+        self,
+        content_id: int,
+        limit: int = 5
+    ) -> list:
+        """
+        주어진 콘텐츠와 유사한 콘텐츠 조회 (score DESC 정렬)
+
+        Args:
+            content_id: 콘텐츠 ID
+            limit: 반환할 최대 개수
+
+        Returns:
+            유사 콘텐츠 리스트 [{id, score, title}, ...]
+        """
+        try:
+            query = """
+            MATCH (c:Content {id: $content_id})-[r:SIMILAR_TO]->(similar:Content)
+            RETURN similar.id AS id,
+                   r.score AS score,
+                   similar.title AS title
+            ORDER BY r.score DESC
+            LIMIT $limit
+            """
+
+            results = self.query(query, {
+                "content_id": content_id,
+                "limit": limit
+            })
+
+            self.logger.info(
+                f"Found {len(results)} similar contents for content_id={content_id}"
+            )
+            return results
+
+        except Exception as e:
+            self.logger.error(f"Failed to get similar content: {e}")
+            return []
+
+    async def build_similarity_pipeline(self, content_id: int) -> Dict:
+        """
+        태그/플랫폼 기반 유사도 파이프라인 실행
+
+        주어진 콘텐츠의 tags/platform을 다른 모든 Content 노드와 비교하여
+        score > 0.3인 경우 SIMILAR_TO 관계를 자동 생성합니다.
+
+        유사도 계산: matching_tags / total_unique_tags
+
+        Args:
+            content_id: 기준 콘텐츠 ID
+
+        Returns:
+            파이프라인 실행 결과 {relationships_created, content_id}
+        """
+        try:
+            # 1. 기준 콘텐츠의 태그와 플랫폼 조회
+            source_query = """
+            MATCH (c:Content {id: $content_id})
+            RETURN c.id AS id,
+                   c.tags AS tags,
+                   c.platform AS platform,
+                   c.title AS title
+            """
+            source_results = self.query(source_query, {"content_id": content_id})
+
+            if not source_results:
+                self.logger.warning(f"Content not found: {content_id}")
+                return {"relationships_created": 0, "content_id": content_id}
+
+            source = source_results[0]
+            source_tags = set(source.get("tags") or [])
+            source_platform = source.get("platform", "")
+
+            # 2. 다른 모든 Content 노드 조회
+            others_query = """
+            MATCH (c:Content)
+            WHERE c.id <> $content_id
+            RETURN c.id AS id,
+                   c.tags AS tags,
+                   c.platform AS platform,
+                   c.title AS title
+            """
+            others = self.query(others_query, {"content_id": content_id})
+
+            # 3. 유사도 계산 및 관계 생성
+            relationships_created = 0
+            for other in others:
+                other_tags = set(other.get("tags") or [])
+                other_platform = other.get("platform", "")
+
+                # 태그 기반 유사도 계산
+                all_tags = source_tags | other_tags
+                if not all_tags:
+                    # 태그가 없으면 플랫폼만 비교
+                    score = 0.5 if source_platform and source_platform == other_platform else 0.0
+                else:
+                    matching_tags = source_tags & other_tags
+                    score = len(matching_tags) / len(all_tags)
+
+                    # 같은 플랫폼이면 보너스 점수
+                    if source_platform and source_platform == other_platform:
+                        score = min(1.0, score + 0.1)
+
+                # score > 0.3 이면 관계 생성
+                if score > 0.3:
+                    await self.create_similar_to_relationship(
+                        content_id_1=content_id,
+                        content_id_2=other["id"],
+                        similarity_score=round(score, 4)
+                    )
+                    relationships_created += 1
+
+            self.logger.info(
+                f"Similarity pipeline completed for content_id={content_id}: "
+                f"{relationships_created} relationships created"
+            )
+            return {
+                "relationships_created": relationships_created,
+                "content_id": content_id
+            }
+
+        except Exception as e:
+            self.logger.error(f"Similarity pipeline failed for content_id={content_id}: {e}")
+            return {"relationships_created": 0, "content_id": content_id}
+
 
 # 싱글톤 인스턴스
 _neo4j_client_instance = None

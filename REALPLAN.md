@@ -11,8 +11,8 @@
 ## Status
 - [x] Phase 1: 기반 정비 + 경로B 완성
 - [x] Phase 2: 네비게이션 + 데이터 모델
-- [ ] Phase 3: 경로A 착수 + GTM
-- [ ] Phase 4: 통합 테스트 + 런칭 준비
+- [x] Phase 3: 경로A 착수 + GTM
+- [x] Phase 4: 통합 테스트 + 런칭 준비
 
 ---
 
