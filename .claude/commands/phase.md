@@ -14,6 +14,21 @@ REALPLAN.md의 특정 Phase를 자율적으로 실행합니다.
 2. 각 태스크의 의존성(dependency) 분석
 3. 병렬 실행 가능한 그룹 식별
 
+### Step 1.5: Skills Pipeline 확인
+
+REALPLAN.md에서 요청된 Phase의 Skills Pipeline을 확인합니다.
+
+1. REALPLAN.md 파싱 → 해당 Phase의 Skills Pipeline 섹션 읽기
+2. **brainstorming 스킵** (이미 계획된 Phase를 실행하므로)
+3. writing-plans부터 시작하여 다음 순서로 진행:
+   - writing-plans → executing-plans + TDD → verification → code-review → ship
+4. 스킵 조건은 `/auto`의 "7-Step 스킬 체인" 테이블과 동일 적용
+5. Fallback 정책도 `/auto`와 동일
+
+**`/auto`와의 차이점**:
+- `/auto`: brainstorming 포함, 다중 Phase 가능
+- `/phase`: brainstorming 스킵, 단일 Phase만 실행
+
 ### Step 2: 실행 계획 생성
 ```
 Phase {number} 실행 계획:
@@ -31,7 +46,10 @@ Phase {number} 실행 계획:
 - Task F (requires all previous)
 ```
 
-### Step 3: 자율 실행
+### Step 3: 자율 실행 (Superpowers Enhanced)
+Skills Pipeline에 따라 writing-plans → executing-plans+TDD → verification → code-review → ship 순서로 실행합니다.
+Phase 완료 시 REALPLAN.md Status 섹션을 업데이트하고 `.claude/superpowers_log.json`에 결과를 기록합니다.
+
 - **TodoWrite 도구 사용**: 모든 태스크를 todo list에 추가
 - **Task 도구 사용**: 병렬 그룹은 단일 메시지에서 여러 Task 도구 호출
 - **자동 검증**: 각 그룹 완료 후 결과 검증
