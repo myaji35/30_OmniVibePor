@@ -10,7 +10,7 @@
 
 ## Status
 - [x] Phase 1: 기반 정비 + 경로B 완성
-- [ ] Phase 2: 네비게이션 + 데이터 모델
+- [x] Phase 2: 네비게이션 + 데이터 모델
 - [ ] Phase 3: 경로A 착수 + GTM
 - [ ] Phase 4: 통합 테스트 + 런칭 준비
 
@@ -36,7 +36,7 @@
 | 1.1 | 코드 위생 정리: ._* 삭제, 테스트/문서 파일 정리, 중복 코드 통합 | [1.1, 1.3, 1.5] 병렬 | - | completed |
 | 1.2 | 글로벌 에러 핸들러: error_handler.py, ElevenLabs 크레딧 체크, Cloudinary fallback | - | 1.1 | completed |
 | 1.3 | VIDEOGEN 누락 레이아웃 3종: TextImage, GraphFocus, SplitScreen | [1.1, 1.3, 1.5] 병렬 | - | completed |
-| 1.4 | VIDEOGEN E2E 실 테스트: MP3+SRT → MP4 전체 파이프라인 | - | 1.3 | pending |
+| 1.4 | VIDEOGEN E2E 실 테스트: MP3+SRT → MP4 전체 파이프라인 | - | 1.3 | completed |
 | 1.5 | Docker healthcheck + 백업 스크립트 | [1.1, 1.3, 1.5] 병렬 | - | completed |
 
 ### Dependencies
@@ -75,11 +75,11 @@
 
 | Task | 내용 | 병렬 | 의존 | 상태 |
 |------|------|------|------|------|
-| 2.1 | 3-Tier 사이드바 + ProductionStepper (대시보드/프로덕션/리소스/설정) | [2.1, 2.3, 2.5] 병렬 | - | pending |
-| 2.2 | 프로젝트 컨텍스트: /project/[id]/ 라우트 + ProjectContextProvider + 브레드크럼 (template-start 잔여 작업 흡수) | - | 2.1 | pending |
-| 2.3 | 데이터 모델 정규화: Project, Template, TemplateScene, Subtitle 모델 | [2.1, 2.3, 2.5] 병렬 | - | pending |
-| 2.4 | 운영 알림 연동: Celery Slack 알림, API P95 경고, ErrorBoundary UI | - | 2.3 | pending |
-| 2.5 | Remotion Design 문서 역추적 작성 (remotion-integration.design.md) | [2.1, 2.3, 2.5] 병렬 | - | pending |
+| 2.1 | 3-Tier 사이드바 + ProductionStepper (대시보드/프로덕션/리소스/설정) | [2.1, 2.3, 2.5] 병렬 | - | completed |
+| 2.2 | 프로젝트 컨텍스트: /project/[id]/ 라우트 + ProjectContextProvider + 브레드크럼 (template-start 잔여 작업 흡수) | - | 2.1 | completed |
+| 2.3 | 데이터 모델 정규화: Project, Template, TemplateScene, Subtitle 모델 | [2.1, 2.3, 2.5] 병렬 | - | completed |
+| 2.4 | 운영 알림 연동: Celery Slack 알림, API P95 경고, ErrorBoundary UI | - | 2.3 | completed |
+| 2.5 | Remotion Design 문서 역추적 작성 (remotion-integration.design.md) | [2.1, 2.3, 2.5] 병렬 | - | completed |
 
 ### Dependencies
 - [2.1, 2.3, 2.5] 병렬 실행 가능
