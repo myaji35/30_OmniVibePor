@@ -23,6 +23,7 @@ from .presets import router as presets_router
 from .presentation import router as presentation_router
 from .campaigns import router as campaigns_router
 from .clients import router as clients_router
+from .templates import router as templates_router
 from .content_schedule import router as content_schedule_router
 from .storyboard import router as storyboard_router
 # ⚠️ Backgrounds 임시 비활성화 (UTF-8 인코딩 문제)
@@ -59,6 +60,7 @@ router.include_router(websocket_router, prefix="/ws", tags=["WebSocket"])
 router.include_router(presentation_router, prefix="/presentations", tags=["Presentations"])
 router.include_router(campaigns_router, tags=["Campaigns"])
 router.include_router(clients_router, tags=["Client Management"])
+router.include_router(templates_router, tags=["Templates"])
 router.include_router(content_schedule_router, tags=["Content Schedule"])
 router.include_router(storyboard_router, tags=["Storyboard"])
 # ⚠️ Backgrounds 임시 비활성화
