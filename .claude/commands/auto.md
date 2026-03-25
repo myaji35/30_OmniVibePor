@@ -46,12 +46,60 @@
 **수정 예상 파일**: 약 8개
 ```
 
-### Step 3: 자율 실행
+### Superpowers Skills Pipeline (v1.1)
+
+`/auto`는 REALPLAN.md의 각 Phase에 대해 7-Step 스킬 체인을 실행합니다.
+기존 자율 실행 로직(TodoWrite, Task 도구, 병렬 그룹)은 보존되며,
+7-Step 체인의 Step 3(IMPLEMENT) 단계에서 내부적으로 호출됩니다.
+
+#### 7-Step 스킬 체인
+
+| Step | 이름 | 스킬 | 스킵 조건 |
+|------|------|------|-----------|
+| 0 | PRE | /health (경량) | 없음 (항상 실행) |
+| 1 | PLAN | superpowers:brainstorming | Plan/Design 문서 존재 시 |
+| 2 | DESIGN | superpowers:writing-plans | 없음 |
+| 3 | IMPLEMENT | superpowers:executing-plans + superpowers:test-driven-development | TDD: 코드 정리/인프라 태스크 시 |
+| 4 | VERIFY | superpowers:verification-before-completion | 없음 |
+| 5 | REVIEW | superpowers:requesting-code-review | 문서 작업 시 |
+| 6 | POST | /health (전체) → /ship or git commit+push | 없음 |
+
+#### Fallback 정책
+스킬 사용 불가 시:
+- brainstorming → Plan 문서 수동 확인
+- writing-plans → TodoWrite 수동 생성
+- executing-plans → 직접 코딩
+- TDD → 구현 후 테스트
+- verification → 수동 체크리스트
+- code-review → git diff 수동 검토
+- /ship → git commit + push 수동
+
+#### 대표님 개입 포인트
+- 새 설계 필요 시 → 설계안 제시 후 승인 대기
+- 파괴적 작업(DB 스키마 변경, API 삭제) → 알림 후 명시적 확인 대기
+- 3회 실패 → systematic-debugging 후에도 미해결 시 에스컬레이션
+- Phase 완료 시 → 보고서 출력 (응답 불필요)
+
+#### 실행 결과 로깅
+스킬 체인 실행 결과를 `.claude/superpowers_log.json`에 기록:
+```json
+{"phase": 1, "timestamp": "2026-03-25T14:30:00Z", "result": "success", "duration_min": 38}
+```
+
+### Step 3: 자율 실행 (Superpowers Enhanced)
 - **다중 Phase 오케스트레이션**: `/phase` 커맨드를 내부적으로 순차/병렬 실행
 - **TodoWrite 도구 사용**: 전체 목표를 todo list로 관리
 - **실시간 모니터링**: 각 Phase 진행 상황 추적
 - **자동 검증**: Phase 완료 후 결과 검증
 - **자동 복구**: 실패 시 분석 후 재시도 또는 계획 수정
+
+**REALPLAN.md 연동**:
+1. REALPLAN.md에서 요청된 Phase의 `Skills Pipeline` 섹션을 읽는다
+2. 위 "7-Step 스킬 체인"에 따라 각 Step을 순차 실행한다
+3. Step 3(IMPLEMENT)에서 기존 자율 실행 로직(TodoWrite, Task 도구, 병렬 그룹)을 호출한다
+4. 다중 Phase 실행 시 각 Phase마다 7-Step 체인을 순환한다
+5. Phase 완료 시 REALPLAN.md Status 섹션을 업데이트한다: `- [ ]` → `- [x]`
+6. 실행 결과를 `.claude/superpowers_log.json`에 기록한다
 
 **실행 중 출력 예시**:
 ```
