@@ -15,6 +15,7 @@ OmniVibe Pro 시스템의 전체 상태를 점검하고, 발견된 문제를 자
 2. Dependencies (의존성)
 3. Configuration (설정)
 4. Code Quality (코드 품질)
+5. Superpowers Pipeline (스킬 체인)
 
 ### Step 2: 병렬 점검 실행
 각 카테고리 내에서는 병렬로 점검을 수행합니다.
@@ -139,6 +140,29 @@ OmniVibe Pro 시스템의 전체 상태를 점검하고, 발견된 문제를 자
 - 자동 수정: 의존성 문제라면 재설치 시도
 - 에스컬레이션: 코드 문제라면 사용자에게 보고
 
+#### Superpowers Pipeline 점검
+
+**REALPLAN.md 존재 확인**
+- 탐지: 프로젝트 루트에 `REALPLAN.md` 존재 여부
+- 자동 수정: 없음
+- 에스컬레이션: 파일 부재 시 "REALPLAN.md가 없습니다. `/auto` 실행 전 생성이 필요합니다" 알림
+
+**Phase 상태 확인**
+- 탐지: REALPLAN.md의 Status 섹션 파싱
+  - `- [x]` → completed
+  - `- [~]` → in_progress
+  - `- [ ]` → pending
+- 출력: 각 Phase 상태 표시
+
+**마지막 스킬 체인 실행 결과**
+- 탐지: `.claude/superpowers_log.json` 읽기
+- 출력: 마지막 실행 Phase, 시각, 결과, 소요시간
+- 파일 없으면: "스킬 체인 실행 기록 없음" 표시
+
+**미완료 Phase 알림**
+- 탐지: pending 상태인 Phase 중 다음 실행 가능한 것 식별
+- 출력: "Next: Phase N 실행 가능 (`/auto "Phase N 완료"`)"
+
 ### Step 4: 헬스 리포트 생성
 
 모든 점검 완료 후 다음 형식으로 보고합니다:
@@ -203,6 +227,12 @@ OmniVibe Pro 시스템의 전체 상태를 점검하고, 발견된 문제를 자
   ✅ Build: Successful
     - backend Docker image: ✅ built
     - frontend bundle: ✅ built (2.3 MB)
+
+✅ Superpowers Pipeline (4/4)
+  ✅ REALPLAN.md: Valid (4 phases defined)
+  ✅ Phase status: Phase 1 completed, Phase 2-4 pending
+  ✅ Last skill chain: 2026-03-25 14:30 → Phase 1 성공 (38분)
+  ✅ Next action: Phase 2 실행 가능 (/auto "Phase 2 완료")
 
 🎉 전체 상태: 양호 (16/17 checks passed)
 ⏱️ 점검 시간: 1분 23초
