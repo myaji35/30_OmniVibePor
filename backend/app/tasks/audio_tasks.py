@@ -12,6 +12,9 @@ from app.tasks.celery_app import celery_app
 from app.services.audio_correction_loop import get_audio_correction_loop
 from app.tasks.progress_tracker import ProgressTracker, BatchProgressTracker
 from app.utils.progress_mapper import ProgressMapper
+from app.core.config import get_settings
+
+_settings = get_settings()
 
 
 logger = logging.getLogger(__name__)
@@ -515,7 +518,7 @@ def remove_fillers_task(
 
         # 3. Whisper STT with word-level timestamps
         from openai import OpenAI
-        client = OpenAI()
+        client = OpenAI(api_key=_settings.OPENAI_API_KEY)
 
         tracker.update(30, "processing", "Whisper STT 실행 중...")
 

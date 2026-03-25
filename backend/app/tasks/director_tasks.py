@@ -13,7 +13,7 @@ from typing import Optional, Dict, List
 from datetime import datetime
 
 from app.tasks.celery_app import celery_app
-from app.services.director_agent import get_video_director_agent
+from app.services.video_orchestrator_agent import get_video_director_agent
 from app.services.cost_tracker import get_cost_tracker
 from app.tasks.progress_tracker import ProgressTracker, BatchProgressTracker
 from app.utils.progress_mapper import ProgressMapper

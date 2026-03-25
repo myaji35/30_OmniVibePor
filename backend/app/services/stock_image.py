@@ -1,3 +1,5 @@
+from app.core.config import get_settings
+_settings = get_settings()
 """
 Unsplash 스톡 이미지 검색 서비스
 무료 고품질 스톡 이미지 검색 및 다운로드
@@ -12,11 +14,11 @@ from tenacity import retry, stop_after_attempt, wait_exponential
 
 logger = logging.getLogger(__name__)
 
-# Cloudinary 초기화
+# Cloudinary 초기화 — settings 패턴 사용
 cloudinary.config(
-    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
-    api_key=os.getenv("CLOUDINARY_API_KEY"),
-    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+    cloud_name=_settings.CLOUDINARY_CLOUD_NAME,
+    api_key=_settings.CLOUDINARY_API_KEY,
+    api_secret=_settings.CLOUDINARY_API_SECRET,
     secure=True
 )
 

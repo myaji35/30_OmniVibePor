@@ -7,7 +7,7 @@ import logging
 from pathlib import Path
 
 from app.services.audio_director_agent import get_director_agent as get_audio_director_agent
-from app.services.director_agent import get_video_director_agent
+from app.services.video_orchestrator_agent import get_video_director_agent
 from app.tasks.director_tasks import (
     generate_video_from_script_task,
     estimate_video_cost_task,

@@ -10,6 +10,7 @@ import time
 import json
 import logging
 import hashlib
+import urllib.request as _urllib_req
 from typing import Callable, Optional
 from contextlib import nullcontext
 
@@ -35,6 +36,28 @@ from app.core.config import get_settings
 
 settings = get_settings()
 logger = logging.getLogger(__name__)
+
+
+def _send_slack_perf_alert(method: str, path: str, elapsed: float, threshold: float) -> None:
+    """API 응답 지연 Slack 알림 (fail-safe)"""
+    webhook_url = settings.SLACK_WEBHOOK_URL
+    if not webhook_url:
+        return
+    try:
+        payload = json.dumps({
+            "text": (
+                f":warning: *API 응답 지연*\n"
+                f">`{method} {path}` — {elapsed*1000:.0f}ms "
+                f"(임계값: {threshold*1000:.0f}ms)"
+            )
+        }).encode()
+        req = _urllib_req.Request(
+            webhook_url, data=payload,
+            headers={"Content-Type": "application/json"}, method="POST"
+        )
+        _urllib_req.urlopen(req, timeout=3)
+    except Exception as e:
+        logger.warning(f"Slack 성능 알림 발송 실패 (무시): {e}")
 
 
 class CacheMiddleware(BaseHTTPMiddleware):
@@ -198,12 +221,15 @@ class TimingMiddleware(BaseHTTPMiddleware):
         # Add header
         response.headers["X-Response-Time"] = f"{process_time:.4f}s"
 
-        # Log slow requests (> 2 seconds)
-        if process_time > 2.0:
+        # Log slow requests — 임계값(ALERT_API_P95_MS)을 settings에서 읽음
+        threshold_s = settings.ALERT_API_P95_MS / 1000
+        if process_time > threshold_s:
             logger.warning(
-                f"Slow request detected: {request.method} {request.url.path} "
-                f"took {process_time:.2f}s"
+                f"⚠️ Slow request: {request.method} {request.url.path} "
+                f"took {process_time:.2f}s (threshold: {threshold_s}s)"
             )
+            # Slack 알림 (SLACK_WEBHOOK_URL이 설정된 경우에만)
+            _send_slack_perf_alert(request.method, request.url.path, process_time, threshold_s)
 
         # Log to Logfire
         if LOGFIRE_AVAILABLE:

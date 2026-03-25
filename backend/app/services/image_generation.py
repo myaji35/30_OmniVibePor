@@ -2,21 +2,22 @@
 DALL-E 3 이미지 생성 서비스
 배경 이미지 자동 생성 및 Cloudinary 업로드
 """
-import os
 import logging
 from typing import Optional
-from openai import OpenAI
+from openai import OpenAI  # noqa: E402
 import cloudinary
 import cloudinary.uploader
 from tenacity import retry, stop_after_attempt, wait_exponential
+from app.core.config import get_settings
 
 logger = logging.getLogger(__name__)
+_settings = get_settings()
 
-# Cloudinary 초기화
+# Cloudinary 초기화 — settings 패턴 사용
 cloudinary.config(
-    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
-    api_key=os.getenv("CLOUDINARY_API_KEY"),
-    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+    cloud_name=_settings.CLOUDINARY_CLOUD_NAME,
+    api_key=_settings.CLOUDINARY_API_KEY,
+    api_secret=_settings.CLOUDINARY_API_SECRET,
     secure=True
 )
 
@@ -27,9 +28,9 @@ class ImageGenerationService:
     def __init__(self, api_key: Optional[str] = None):
         """
         Args:
-            api_key: OpenAI API Key (없으면 환경변수에서 로드)
+            api_key: OpenAI API Key (미전달 시 settings에서 로드)
         """
-        self.client = OpenAI(api_key=api_key or os.getenv("OPENAI_API_KEY"))
+        self.client = OpenAI(api_key=api_key or _settings.OPENAI_API_KEY)
 
     @retry(
         stop=stop_after_attempt(3),

@@ -56,6 +56,8 @@ export function useWebSocket({
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const pingIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  // 재연결 시 마지막 진행률 복원용
+  const lastProgressRef = useRef<{ progress: number; message: string } | null>(null)
 
   // WebSocket 연결
   const connect = useCallback(() => {
@@ -74,11 +76,17 @@ export function useWebSocket({
         setReconnectAttempts(0)
         setIsFallback(false)
 
+        // 재연결 시 마지막 진행률 복원
+        if (lastProgressRef.current) {
+          const { progress, message } = lastProgressRef.current
+          console.log(`[WebSocket] 재연결 후 상태 복원: progress=${progress}%`)
+          onProgress?.(progress, message)
+        }
+
         // Keep-alive ping (30초마다)
         pingIntervalRef.current = setInterval(() => {
           if (ws.readyState === WebSocket.OPEN) {
             ws.send('ping')
-            console.log('[WebSocket] Ping sent')
           }
         }, 30000)
       }
@@ -92,6 +100,8 @@ export function useWebSocket({
           onMessage?.(message)
 
           if (message.type === 'progress' && message.progress !== undefined) {
+            // 재연결 대비 마지막 진행률 저장
+            lastProgressRef.current = { progress: message.progress, message: message.message || '' }
             onProgress?.(message.progress, message.message || '')
           }
 
@@ -100,6 +110,7 @@ export function useWebSocket({
           }
 
           if (message.type === 'completed') {
+            lastProgressRef.current = null  // 완료 시 저장 상태 초기화
             onCompleted?.(message.result)
           }
         } catch (parseError) {

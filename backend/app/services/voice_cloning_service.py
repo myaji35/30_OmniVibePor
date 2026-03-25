@@ -16,6 +16,7 @@ except ImportError:
     LOGFIRE_AVAILABLE = False
 
 from app.core.config import get_settings
+from app.services.elevenlabs_credit_check import check_elevenlabs_credits, get_estimated_chars
 
 settings = get_settings()
 
@@ -76,6 +77,9 @@ class VoiceCloningService:
             FileNotFoundError: 오디오 파일이 없을 때
             ValueError: 잘못된 파일 형식
         """
+        # 크레딧 사전 체크 (Voice Cloning은 약 5,000자 소모 가정)
+        await check_elevenlabs_credits(required_chars=5_000)
+
         with self.logger.span("elevenlabs.clone_voice") as span:
             # 파일 존재 확인
             audio_path = Path(audio_file_path)

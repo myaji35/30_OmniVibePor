@@ -96,6 +96,11 @@ class Settings(BaseSettings):
     # CORS (콤마 구분 다중 도메인 지원)
     CORS_ORIGINS: str = "http://localhost:3020,http://localhost:3000"
 
+    # 알림 설정 (선택) — 설정 시 Celery 실패/API 지연 경고 발송
+    SLACK_WEBHOOK_URL: str | None = None    # Slack Incoming Webhook URL
+    ALERT_API_P95_MS:  int        = 5000    # API P95 경고 임계값 (ms)
+    ALERT_TASK_FAIL_RATE: float   = 0.10    # Celery 실패율 경고 임계값 (10%)
+
     class Config:
         env_file = ".env"
         case_sensitive = True

@@ -273,3 +273,28 @@ def batch_generate_backgrounds_task(
     except Exception as e:
         logger.error(f"[Task] 배경 일괄 생성 실패: {e}")
         raise
+
+
+# ── Cloudinary fallback 재업로드 태스크 ──────────────────────────────
+@celery_app.task(name="app.tasks.background_tasks.retry_fallback_uploads")
+def retry_fallback_uploads():
+    """Cloudinary 업로드 실패 파일 재시도 (10분마다 beat 실행)"""
+    import asyncio
+    from app.services.cloudinary_fallback import retry_pending_uploads
+    result = asyncio.run(retry_pending_uploads())
+    logger.info(f"[Fallback retry] {result}")
+    return result
+
+
+# ── 디스크 사용량 모니터링 태스크 ─────────────────────────────────────
+@celery_app.task(name="app.tasks.background_tasks.monitor_disk_usage")
+def monitor_disk_usage():
+    """디스크 사용량 체크 + Slack 경고 (30분마다 beat 실행)"""
+    import subprocess, os
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+    script = os.path.join(project_root, "scripts", "monitor_disk.sh")
+    if os.path.exists(script):
+        result = subprocess.run([script], capture_output=True, text=True, timeout=30)
+        logger.info(f"[Disk monitor] {result.stdout.strip()}")
+        return {"stdout": result.stdout, "returncode": result.returncode}
+    return {"error": "monitor_disk.sh 없음"}

@@ -21,6 +21,7 @@ from app.api.v1 import router as api_v1_router
 from app.middleware.rate_limiter import RateLimitMiddleware
 from app.middleware.security import SecurityHeadersMiddleware
 from app.middleware.quota import QuotaMiddleware
+from app.middleware.error_handler import register_error_handlers
 
 # 로거 설정
 logging.basicConfig(level=logging.INFO)
@@ -158,7 +159,10 @@ app.add_middleware(RateLimitMiddleware)
 # Quota 관리 미들웨어 추가 (Week 5)
 app.add_middleware(QuotaMiddleware)
 
-logger.info("Security and Quota middleware initialized")
+# 글로벌 에러 핸들러 등록
+register_error_handlers(app)
+
+logger.info("Security, Quota middleware and global error handlers initialized")
 
 # API 라우터 등록
 app.include_router(api_v1_router, prefix="/api/v1")

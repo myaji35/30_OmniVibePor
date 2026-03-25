@@ -94,6 +94,16 @@ celery_app.conf.update(
             'task': 'quota.generate_usage_report',
             'schedule': crontab(day_of_month='28', hour='23', minute='0'),  # 매월 28일 23:00
         },
+        # Cloudinary fallback 재업로드 (10분마다)
+        'retry-fallback-uploads': {
+            'task': 'app.tasks.background_tasks.retry_fallback_uploads',
+            'schedule': 600.0,
+        },
+        # 디스크 모니터링 (30분마다)
+        'monitor-disk-usage': {
+            'task': 'app.tasks.background_tasks.monitor_disk_usage',
+            'schedule': 1800.0,
+        },
     },
 )
 
@@ -201,3 +211,33 @@ def get_task_priority(task_name: str) -> str:
         return 'low_priority'
     else:
         return 'default'
+
+
+# ── Slack 알림 유틸 ──────────────────────────────────────────────────
+def _send_slack_alert(message: str) -> None:
+    """SLACK_WEBHOOK_URL이 설정된 경우에만 발송 (fail-safe)"""
+    webhook_url = settings.SLACK_WEBHOOK_URL
+    if not webhook_url:
+        return
+    try:
+        import urllib.request, json as _json
+        payload = _json.dumps({"text": message}).encode()
+        req = urllib.request.Request(
+            webhook_url, data=payload,
+            headers={"Content-Type": "application/json"}, method="POST"
+        )
+        urllib.request.urlopen(req, timeout=3)
+    except Exception as e:
+        logger.warning(f"Slack 알림 발송 실패 (무시): {e}")
+
+
+@task_failure.connect
+def task_failure_alert(sender=None, task_id=None, exception=None, traceback=None, **kwargs):
+    """작업 실패 시 Slack 알림 (기존 로깅 핸들러와 별도)"""
+    task_name = getattr(sender, 'name', 'unknown')
+    short_id  = (task_id or '')[:8]
+    _send_slack_alert(
+        f":red_circle: *Celery Task 실패*\n"
+        f">Task: `{task_name}` (ID: `{short_id}...`)\n"
+        f">Error: `{exception}`"
+    )

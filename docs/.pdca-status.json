@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-03-01T00:00:00.000Z",
+  "lastUpdated": "2026-03-07T12:20:18.231Z",
   "activeFeatures": [
     "template-start",
     "generate",
@@ -30,7 +30,10 @@
     "upload",
     "production",
     "director",
-    "schedule"
+    "schedule",
+    "styles",
+    "videogen",
+    "vrew-videogen-pipeline Gap 분석"
   ],
   "primaryFeature": "template-start",
   "features": {
@@ -39,7 +42,12 @@
       "phaseNumber": 1,
       "matchRate": null,
       "iterationCount": 0,
-      "requirements": ["FR-01", "FR-02", "FR-03", "FR-04"],
+      "requirements": [
+        "FR-01",
+        "FR-02",
+        "FR-03",
+        "FR-04"
+      ],
       "documents": {
         "plan": "docs/01-plan/features/template-start.plan.md"
       },
@@ -96,9 +104,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-17T04:04:04.353Z",
-        "lastUpdated": "2026-02-28T14:29:42.817Z"
+        "lastUpdated": "2026-03-07T12:09:34.089Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/studio/page.tsx"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/components/studio/StudioPreview.tsx"
     },
     "slds": {
       "phase": "do",
@@ -122,7 +130,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-17T04:05:28.371Z",
-        "lastUpdated": "2026-02-28T20:19:49.224Z"
+        "lastUpdated": "2026-03-07T12:10:23.163Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/dashboard/page.tsx"
     },
@@ -135,9 +143,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-17T04:07:23.741Z",
-        "lastUpdated": "2026-02-28T20:20:45.496Z"
+        "lastUpdated": "2026-03-07T12:11:15.699Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/components/AppShell.tsx"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/page.tsx"
     },
     "content-schedule": {
       "phase": "do",
@@ -279,9 +287,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-28T13:52:02.548Z",
-        "lastUpdated": "2026-02-28T13:52:18.120Z"
+        "lastUpdated": "2026-03-07T11:38:51.891Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/remotion/templates/TikTokTemplate.tsx"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/.claude/skills/videogen/templates/FullVisual.tsx"
     },
     "remotion": {
       "phase": "do",
@@ -305,9 +313,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-28T13:52:31.905Z",
-        "lastUpdated": "2026-02-28T20:24:27.972Z"
+        "lastUpdated": "2026-03-07T12:10:28.113Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/components/gallery/AIPlannerButton.tsx"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/gallery/page.tsx"
     },
     "remotion-integration": {
       "phase": "act",
@@ -413,6 +421,46 @@
         "lastUpdated": "2026-02-28T20:25:33.116Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/schedule/page.tsx"
+    },
+    "styles": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-07T11:36:49.522Z",
+        "lastUpdated": "2026-03-07T11:36:49.522Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/.claude/skills/videogen/styles/monoDark.ts"
+    },
+    "videogen": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-07T11:37:22.334Z",
+        "lastUpdated": "2026-03-07T11:39:29.613Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/.claude/skills/videogen/remotion-codegen.ts"
+    },
+    "vrew-videogen-pipeline Gap 분석": {
+      "phase": "act",
+      "phaseNumber": 5,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-07T12:20:18.231Z",
+        "lastUpdated": "2026-03-07T12:20:18.231Z"
+      },
+      "previousPhase": "check",
+      "autoAdvanced": true
     }
   },
   "pipeline": {
@@ -423,7 +471,7 @@
   "session": {
     "startedAt": "2026-02-17T03:58:39.163Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-02-28T20:25:33.116Z"
+    "lastActivity": "2026-03-07T12:20:18.231Z"
   },
   "history": [
     {
@@ -1210,6 +1258,228 @@
       "timestamp": "2026-02-28T20:25:33.116Z",
       "feature": "schedule",
       "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T11:36:49.522Z",
+      "feature": "styles",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T11:37:22.334Z",
+      "feature": "videogen",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T11:37:43.544Z",
+      "feature": "videogen",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T11:38:08.423Z",
+      "feature": "templates",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T11:38:11.100Z",
+      "feature": "templates",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T11:38:30.150Z",
+      "feature": "templates",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T11:38:40.187Z",
+      "feature": "templates",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T11:38:51.891Z",
+      "feature": "templates",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T11:39:29.613Z",
+      "feature": "videogen",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T11:53:26.679Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T11:53:34.466Z",
+      "feature": "studio",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T11:54:00.301Z",
+      "feature": "studio",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T11:54:04.382Z",
+      "feature": "studio",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T11:54:12.562Z",
+      "feature": "studio",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T11:54:24.856Z",
+      "feature": "studio",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T12:06:00.627Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T12:09:07.980Z",
+      "feature": "studio",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T12:09:21.919Z",
+      "feature": "studio",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T12:09:25.500Z",
+      "feature": "studio",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T12:09:29.899Z",
+      "feature": "studio",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T12:09:34.089Z",
+      "feature": "studio",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T12:09:40.212Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T12:09:47.289Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T12:09:50.824Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T12:09:54.325Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T12:09:58.910Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T12:10:15.922Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T12:10:19.363Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T12:10:23.163Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T12:10:28.113Z",
+      "feature": "gallery",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T12:10:35.888Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T12:10:40.606Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T12:10:46.279Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T12:10:50.968Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T12:10:54.753Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T12:11:15.699Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-07T12:20:18.231Z",
+      "feature": "vrew-videogen-pipeline Gap 분석",
+      "phase": "act",
       "action": "updated"
     }
   ]

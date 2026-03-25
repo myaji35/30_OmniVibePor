@@ -1,173 +1,197 @@
 """
-Quota 관리 Middleware
+Quota 관리 Middleware — Tier별 한도 연동
+
+4개 플랜 Tier:
+  free       → 렌더 3/월,  오디오 10/월
+  creator    → 렌더 30/월, 오디오 100/월
+  pro        → 렌더 100/월, 오디오 무제한(-1)
+  enterprise → 모두 무제한(-1)
 """
 from fastapi import Request, HTTPException, status
+from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
-from app.models.user import UserCRUD
-from app.services.neo4j_client import get_neo4j_client
 from app.auth.jwt import verify_access_token
+import logging
+
+logger = logging.getLogger(__name__)
+
+# ── Tier별 한도 정의 ────────────────────────────────────────────────
+# -1 = 무제한
+PLAN_LIMITS: dict[str, dict[str, int]] = {
+    "free":       {"render": 3,   "audio": 10,  "voice_clone": 0},
+    "creator":    {"render": 30,  "audio": 100, "voice_clone": 1},
+    "pro":        {"render": 100, "audio": -1,  "voice_clone": 3},
+    "enterprise": {"render": -1,  "audio": -1,  "voice_clone": 10},
+}
+
+# 기본 플랜 (미설정 사용자)
+DEFAULT_PLAN = "free"
+
+# Quota 체크 경로 → 소모 유형 매핑
+QUOTA_PATH_MAP: dict[str, str] = {
+    "/api/v1/video/render":    "render",
+    "/api/v1/remotion/render": "render",
+    "/api/v1/audio/generate":  "audio",
+    "/api/v1/writer/generate": "audio",  # TTS 포함
+    "/api/v1/voice/clone":     "voice_clone",
+}
+
+
+def _get_quota_type(path: str) -> str | None:
+    for prefix, quota_type in QUOTA_PATH_MAP.items():
+        if path.startswith(prefix):
+            return quota_type
+    return None
+
+
+def _get_redis_client():
+    """Redis 클라이언트 (실패 시 None 반환 — fail-open)"""
+    try:
+        import redis
+        from app.core.config import get_settings
+        return redis.from_url(get_settings().REDIS_URL, decode_responses=True, socket_timeout=1)
+    except Exception:
+        return None
+
+
+def _get_usage_key(user_id: str, quota_type: str) -> str:
+    """Redis 키: 월별 리셋 포함"""
+    from datetime import datetime
+    ym = datetime.utcnow().strftime("%Y%m")
+    return f"quota:{user_id}:{quota_type}:{ym}"
+
+
+def get_current_usage(user_id: str, quota_type: str) -> int:
+    """현재 사용량 조회 (Redis)"""
+    rc = _get_redis_client()
+    if not rc:
+        return 0
+    try:
+        val = rc.get(_get_usage_key(user_id, quota_type))
+        return int(val) if val else 0
+    except Exception:
+        return 0
+
+
+def increment_usage(user_id: str, quota_type: str) -> int:
+    """사용량 1 증가 → 새 값 반환"""
+    rc = _get_redis_client()
+    if not rc:
+        return 0
+    try:
+        key = _get_usage_key(user_id, quota_type)
+        new_val = rc.incr(key)
+        # 이달 말까지 TTL 설정 (최대 32일)
+        if new_val == 1:
+            rc.expire(key, 32 * 24 * 3600)
+        return new_val
+    except Exception as e:
+        logger.warning(f"Quota increment 실패 (무시): {e}")
+        return 0
+
+
+def get_quota_status(user_id: str, plan: str) -> dict:
+    """사용자의 전체 Quota 현황"""
+    limits = PLAN_LIMITS.get(plan, PLAN_LIMITS[DEFAULT_PLAN])
+    result = {}
+    for qt, limit in limits.items():
+        used = get_current_usage(user_id, qt)
+        result[qt] = {
+            "used":      used,
+            "limit":     limit,
+            "remaining": -1 if limit == -1 else max(0, limit - used),
+            "exceeded":  False if limit == -1 else used >= limit,
+        }
+    return result
 
 
 class QuotaMiddleware(BaseHTTPMiddleware):
-    """
-    API 호출 시 사용자의 Quota를 확인하는 Middleware
-
-    영상 생성 관련 API에서만 Quota를 체크합니다.
-    """
-
-    # Quota 체크가 필요한 엔드포인트
-    QUOTA_REQUIRED_PATHS = [
-        "/api/v1/video/render",
-        "/api/v1/audio/generate",
-        "/api/v1/writer/generate",
-        "/api/v1/remotion/render"
-    ]
+    """Tier별 Quota 미들웨어"""
 
     async def dispatch(self, request: Request, call_next):
-        """요청 전처리: Quota 확인"""
-
-        # Quota 체크가 필요한 경로인지 확인
-        if not any(request.url.path.startswith(path) for path in self.QUOTA_REQUIRED_PATHS):
-            # Quota 체크 불필요, 다음으로 진행
+        # POST 요청 + 해당 경로만 체크
+        if request.method != "POST":
             return await call_next(request)
 
-        # Authorization 헤더에서 토큰 추출
-        auth_header = request.headers.get("authorization")
-        if not auth_header or not auth_header.startswith("Bearer "):
-            # 인증 없이는 Quota 체크 불가 (auth middleware에서 처리됨)
+        quota_type = _get_quota_type(request.url.path)
+        if not quota_type:
             return await call_next(request)
 
-        token = auth_header.replace("Bearer ", "")
+        # 토큰에서 user_id, plan 추출
+        auth_header = request.headers.get("authorization", "")
+        if not auth_header.startswith("Bearer "):
+            return await call_next(request)
 
-        # 토큰 검증 및 사용자 정보 추출
-        payload = verify_access_token(token)
+        payload = verify_access_token(auth_header[7:])
         if not payload:
             return await call_next(request)
 
-        user_id = payload.get("user_id")
+        user_id = payload.get("user_id") or payload.get("sub")
+        plan    = payload.get("plan", DEFAULT_PLAN)
+
         if not user_id:
             return await call_next(request)
 
-        # Neo4j에서 사용자 Quota 조회
-        neo4j_client = get_neo4j_client()
-        user_crud = UserCRUD(neo4j_client)
+        # 한도 확인
+        limit = PLAN_LIMITS.get(plan, PLAN_LIMITS[DEFAULT_PLAN]).get(quota_type, 0)
 
-        user = user_crud.get_user_by_id(user_id)
-        if not user:
+        if limit == -1:
+            # 무제한 플랜 — 사용량만 기록
+            increment_usage(user_id, quota_type)
             return await call_next(request)
 
-        quota_limit = user.get("quota_limit", 10)
-        quota_used = user.get("quota_used", 0)
-
-        # Quota 초과 체크
-        if quota_used >= quota_limit:
-            raise HTTPException(
+        used = get_current_usage(user_id, quota_type)
+        if used >= limit:
+            logger.warning(f"[QUOTA] 초과: user={user_id}, plan={plan}, type={quota_type}, {used}/{limit}")
+            return JSONResponse(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail={
-                    "error": "Quota exceeded",
-                    "message": f"You have reached your monthly limit of {quota_limit} videos.",
-                    "quota_limit": quota_limit,
-                    "quota_used": quota_used,
-                    "quota_remaining": 0,
-                    "upgrade_url": "/billing/plans"
-                }
+                content={
+                    "error_code":  "QUOTA_EXCEEDED",
+                    "message":     f"이번 달 {quota_type} 한도({limit}회)를 초과했습니다. 플랜을 업그레이드하세요.",
+                    "action":      "upgrade_plan",
+                    "quota_used":  used,
+                    "quota_limit": limit,
+                    "plan":        plan,
+                    "upgrade_url": "/settings/billing",
+                },
             )
 
-        # Quota 체크 통과, 요청 처리
+        # 통과 → 요청 실행
         response = await call_next(request)
 
-        # 성공적인 응답 (200번대)인 경우 quota_used 증가
+        # 성공 응답에만 사용량 증가
         if 200 <= response.status_code < 300:
-            # POST 요청만 Quota 소진 (조회는 제외)
-            if request.method == "POST":
-                user_crud.update_user(user_id, {
-                    "quota_used": quota_used + 1
-                })
+            increment_usage(user_id, quota_type)
 
         return response
 
 
 class QuotaChecker:
-    """
-    수동으로 Quota를 체크하는 헬퍼 클래스
-    """
+    """수동 Quota 체크 헬퍼 (서비스 레이어에서 직접 호출 시 사용)"""
 
     @staticmethod
-    async def check_and_increment(user_id: str) -> bool:
-        """
-        사용자의 Quota를 체크하고 1 증가
-
-        Args:
-            user_id: 사용자 ID
-
-        Returns:
-            bool: Quota 사용 가능 여부
-
-        Raises:
-            HTTPException: Quota 초과 시
-        """
-        neo4j_client = get_neo4j_client()
-        user_crud = UserCRUD(neo4j_client)
-
-        user = user_crud.get_user_by_id(user_id)
-        if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User not found"
-            )
-
-        quota_limit = user.get("quota_limit", 10)
-        quota_used = user.get("quota_used", 0)
-
-        if quota_used >= quota_limit:
+    def check(user_id: str, plan: str, quota_type: str) -> None:
+        """한도 초과 시 HTTPException 발생"""
+        limit = PLAN_LIMITS.get(plan, PLAN_LIMITS[DEFAULT_PLAN]).get(quota_type, 0)
+        if limit == -1:
+            return
+        used = get_current_usage(user_id, quota_type)
+        if used >= limit:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail={
-                    "error": "Quota exceeded",
-                    "message": f"You have reached your monthly limit of {quota_limit} videos.",
-                    "quota_limit": quota_limit,
-                    "quota_used": quota_used,
-                    "quota_remaining": 0,
-                    "upgrade_url": "/billing/plans"
-                }
+                    "error_code":  "QUOTA_EXCEEDED",
+                    "message":     f"이번 달 {quota_type} 한도({limit}회)를 초과했습니다.",
+                    "action":      "upgrade_plan",
+                    "quota_used":  used,
+                    "quota_limit": limit,
+                },
             )
-
-        # Quota 증가
-        user_crud.update_user(user_id, {
-            "quota_used": quota_used + 1
-        })
-
-        return True
 
     @staticmethod
-    async def get_quota_status(user_id: str) -> dict:
-        """
-        사용자의 Quota 상태 조회
+    def increment(user_id: str, quota_type: str) -> int:
+        return increment_usage(user_id, quota_type)
 
-        Args:
-            user_id: 사용자 ID
-
-        Returns:
-            dict: Quota 정보
-        """
-        neo4j_client = get_neo4j_client()
-        user_crud = UserCRUD(neo4j_client)
-
-        user = user_crud.get_user_by_id(user_id)
-        if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User not found"
-            )
-
-        quota_limit = user.get("quota_limit", 10)
-        quota_used = user.get("quota_used", 0)
-        quota_remaining = max(0, quota_limit - quota_used)
-
-        return {
-            "quota_limit": quota_limit,
-            "quota_used": quota_used,
-            "quota_remaining": quota_remaining,
-            "usage_percentage": (quota_used / quota_limit * 100) if quota_limit > 0 else 0,
-            "is_exceeded": quota_used >= quota_limit
-        }
+    @staticmethod
+    def status(user_id: str, plan: str) -> dict:
+        return get_quota_status(user_id, plan)
