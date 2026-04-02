@@ -6,6 +6,7 @@ import { TikTokTemplate } from './templates/TikTokTemplate';
 import { PromoVideo } from './promo/PromoVideo';
 import { ChopdPromo } from './promo/ChopdPromo';
 import { InsureGraphPromo } from './promo/InsureGraphPromo';
+import { BobotSafetyPromo } from './promo/BobotSafetyPromo';
 import { EN, KO } from './promo/i18n';
 import type { VideoTemplateProps } from './types';
 
@@ -94,6 +95,15 @@ export const RemotionRoot: React.FC = () => {
         id="insuregraph"
         component={InsureGraphPromo}
         durationInFrames={1500}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+      {/* 보봇 안전성 — "보봇은 왜 안전한가?" (1920x1080, 60s) */}
+      <Composition
+        id="bobot-safety"
+        component={BobotSafetyPromo}
+        durationInFrames={1800}
         fps={30}
         width={1920}
         height={1080}
