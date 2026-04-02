@@ -10,8 +10,8 @@
  * - 백엔드 API로 Whisper 타이밍 재요청
  */
 
-import { useState, useCallback } from 'react'
-import { Scissors, Merge, RefreshCw, ChevronDown } from 'lucide-react'
+import { useState, useCallback, useMemo } from 'react'
+import { Scissors, Merge, RefreshCw, ChevronDown, Plus } from 'lucide-react'
 import SubtitleTimeline, { SubtitleToken } from './SubtitleTimeline'
 
 export interface ScriptBlock {
@@ -39,6 +39,7 @@ interface ScriptSubtitleSyncProps {
   onSubtitlesChange: (blockId: string, tokens: SubtitleToken[]) => void
   onStyleChange:     (blockId: string, style: SubtitleStyle)    => void
   onRequestWhisper?: (blockId: string) => Promise<void>
+  onBlocksChange?:   (blocks: ScriptBlock[]) => void
 }
 
 export default function ScriptSubtitleSync({
@@ -48,6 +49,7 @@ export default function ScriptSubtitleSync({
   onSubtitlesChange,
   onStyleChange,
   onRequestWhisper,
+  onBlocksChange,
 }: ScriptSubtitleSyncProps) {
   const [expandedBlock, setExpandedBlock] = useState<string | null>(blocks[0]?.id ?? null)
   const [styleMap,      setStyleMap]      = useState<Record<string, SubtitleStyle>>({})
@@ -67,6 +69,79 @@ export default function ScriptSubtitleSync({
     setStyleMap(prev => ({ ...prev, [blockId]: style }))
     onStyleChange(blockId, style)
   }, [onStyleChange])
+
+  // 씬 분할: 현재 블록을 중간 지점에서 두 블록으로 나눔
+  const handleSplitBlock = useCallback((blockId: string) => {
+    if (!onBlocksChange) return
+    const idx = blocks.findIndex(b => b.id === blockId)
+    if (idx === -1) return
+
+    const block = blocks[idx]
+    const midMs = Math.round((block.startMs + block.endMs) / 2)
+    const midText = block.text.length > 1
+      ? Math.ceil(block.text.length / 2)
+      : block.text.length
+
+    const blockA: ScriptBlock = {
+      ...block,
+      id:    `${block.id}-a`,
+      text:  block.text.slice(0, midText),
+      endMs: midMs,
+    }
+    const blockB: ScriptBlock = {
+      ...block,
+      id:      `${block.id}-b`,
+      type:    block.type,
+      text:    block.text.slice(midText),
+      startMs: midMs,
+    }
+
+    const newBlocks = [...blocks]
+    newBlocks.splice(idx, 1, blockA, blockB)
+    onBlocksChange(newBlocks)
+
+    // 토큰도 분할
+    const tokens = subtitlesMap[blockId] ?? []
+    const tokensA = tokens.filter(t => t.endMs <= midMs).map((t, i) => ({ ...t, index: i }))
+    const tokensB = tokens.filter(t => t.startMs >= midMs).map((t, i) => ({ ...t, index: i }))
+    onSubtitlesChange(blockA.id, tokensA)
+    onSubtitlesChange(blockB.id, tokensB)
+
+    setExpandedBlock(blockA.id)
+  }, [blocks, subtitlesMap, onBlocksChange, onSubtitlesChange])
+
+  // 씬 병합: 현재 블록과 다음 블록을 하나로 합침
+  const handleMergeBlock = useCallback((blockId: string) => {
+    if (!onBlocksChange) return
+    const idx = blocks.findIndex(b => b.id === blockId)
+    if (idx === -1 || idx >= blocks.length - 1) return
+
+    const blockA = blocks[idx]
+    const blockB = blocks[idx + 1]
+
+    const merged: ScriptBlock = {
+      ...blockA,
+      text:  `${blockA.text} ${blockB.text}`.trim(),
+      endMs: blockB.endMs,
+    }
+
+    const newBlocks = [...blocks]
+    newBlocks.splice(idx, 2, merged)
+    onBlocksChange(newBlocks)
+
+    // 토큰 병합
+    const tokensA = subtitlesMap[blockA.id] ?? []
+    const tokensB = subtitlesMap[blockB.id] ?? []
+    const mergedTokens = [...tokensA, ...tokensB].map((t, i) => ({ ...t, index: i }))
+    onSubtitlesChange(merged.id, mergedTokens)
+
+    setExpandedBlock(merged.id)
+  }, [blocks, subtitlesMap, onBlocksChange, onSubtitlesChange])
+
+  const canMerge = useCallback((blockId: string) => {
+    const idx = blocks.findIndex(b => b.id === blockId)
+    return idx >= 0 && idx < blocks.length - 1
+  }, [blocks])
 
   const BLOCK_TYPE_COLORS: Record<string, string> = {
     hook:   'text-[#00FF88] border-[#00FF88]/30 bg-[#00FF88]/10',
@@ -134,12 +209,32 @@ export default function ScriptSubtitleSync({
                   </button>
 
                   {/* 씬 분할 */}
-                  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px]
-                    font-semibold bg-white/[0.05] border border-white/10 text-white/50
-                    hover:text-white/80 hover:bg-white/[0.08] transition-all">
+                  <button
+                    onClick={() => handleSplitBlock(block.id)}
+                    disabled={!onBlocksChange || tokens.length < 2}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px]
+                      font-semibold bg-white/[0.05] border border-white/10 text-white/50
+                      hover:text-white/80 hover:bg-white/[0.08] transition-all
+                      disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
                     <Scissors className="w-3 h-3" />
                     씬 분할
                   </button>
+
+                  {/* 씬 병합 (다음 블록과) */}
+                  {canMerge(block.id) && (
+                    <button
+                      onClick={() => handleMergeBlock(block.id)}
+                      disabled={!onBlocksChange}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px]
+                        font-semibold bg-white/[0.05] border border-white/10 text-white/50
+                        hover:text-white/80 hover:bg-white/[0.08] transition-all
+                        disabled:opacity-30 disabled:cursor-not-allowed"
+                    >
+                      <Merge className="w-3 h-3" />
+                      다음 씬과 병합
+                    </button>
+                  )}
 
                   {/* 스타일 프리셋 */}
                   <div className="ml-auto flex items-center gap-2">

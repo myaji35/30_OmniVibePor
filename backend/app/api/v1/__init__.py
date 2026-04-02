@@ -32,6 +32,7 @@ from .ab_tests import router as ab_tests_router
 from .remotion import router as remotion_router
 from .render import router as render_router
 from .cache import router as cache_router
+from .whisper_timing import router as whisper_timing_router
 from .auth import router as auth_router
 from .billing import router as billing_router
 from .webhooks import router as webhooks_router
@@ -68,6 +69,7 @@ router.include_router(storyboard_router, tags=["Storyboard"])
 router.include_router(ab_tests_router, tags=["A/B Tests"])
 router.include_router(remotion_router, tags=["Remotion Rendering"])
 router.include_router(render_router, tags=["Multi-format Render"])
+router.include_router(whisper_timing_router, prefix="/whisper", tags=["Whisper Timing"])
 router.include_router(cache_router, prefix="/cache", tags=["Cache Management"])
 router.include_router(billing_router, tags=["Billing & Subscription"])
 router.include_router(webhooks_router, tags=["Webhooks"])

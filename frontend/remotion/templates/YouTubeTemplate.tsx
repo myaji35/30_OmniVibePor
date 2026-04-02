@@ -7,6 +7,7 @@ import {
 } from 'remotion';
 import { VideoTemplateProps } from '../types';
 import { HookScene, IntroScene, BodyScene, CTAScene, OutroScene } from '../scenes';
+import { SubtitleOverlay } from '../components/SubtitleOverlay';
 
 export const YouTubeTemplate: React.FC<VideoTemplateProps> = ({
   blocks,
@@ -26,6 +27,14 @@ export const YouTubeTemplate: React.FC<VideoTemplateProps> = ({
           durationInFrames={block.duration * 30}
         >
           <SceneByType block={block} branding={branding} />
+          {/* Word-level 자막 오버레이 (wordTimestamps가 있을 때만) */}
+          {block.wordTimestamps && block.wordTimestamps.length > 0 && (
+            <SubtitleOverlay
+              words={block.wordTimestamps}
+              style={block.subtitleStyle || 'default'}
+              blockStartTime={block.startTime}
+            />
+          )}
         </Sequence>
       ))}
 

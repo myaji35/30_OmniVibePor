@@ -1,7 +1,104 @@
 {
   "version": "1.0.0",
   "created_at": "2026-04-03T07:01:45.749414",
-  "issues": [],
+  "architecture": "supervisor",
+  "scale_mode": "full",
+  "current_phase": "Phase 3",
+  "issues": [
+    {
+      "id": "ISS-001",
+      "title": "VREW SubtitleTimeline + ScriptSubtitleSync + Whisper 토큰 타이밍 API",
+      "type": "GENERATE_CODE",
+      "status": "DONE",
+      "priority": "P1",
+      "assign_to": "agent-harness",
+      "depth": 0,
+      "retry_count": 0,
+      "parent_id": null,
+      "depends_on": [],
+      "payload": {
+        "realplan_task": "3.1",
+        "scope": ["frontend/components/SubtitleTimeline.tsx", "frontend/components/ScriptSubtitleSync.tsx", "backend/app/api/v1/whisper_timing.py"],
+        "description": "SubtitleTimeline에서 자막 토큰 편집, Whisper 타이밍 오차 < 0.2초, ScriptSubtitleSync 연동",
+        "success_criteria": ["SubtitleTimeline에서 자막 토큰 편집 가능", "Whisper 타이밍 오차 < 0.2초"]
+      },
+      "result": {
+        "completed_at": "2026-04-03",
+        "files_created": [
+          "backend/app/api/v1/whisper_timing.py",
+          "frontend/remotion/components/SubtitleOverlay.tsx",
+          "frontend/app/api/whisper-timing/route.ts"
+        ],
+        "files_modified": [
+          "backend/app/api/v1/__init__.py",
+          "frontend/components/vrew/ScriptSubtitleSync.tsx",
+          "frontend/remotion/types.ts",
+          "frontend/remotion/templates/YouTubeTemplate.tsx"
+        ]
+      },
+      "spawn_rules": ["RUN_TESTS", "DOMAIN_ANALYZE", "UI_REVIEW"]
+    },
+    {
+      "id": "ISS-002",
+      "title": "Tier별 Quota: Subscription 테이블 + quota.py + 업그레이드 유도 UI",
+      "type": "GENERATE_CODE",
+      "status": "READY",
+      "priority": "P1",
+      "assign_to": "agent-harness",
+      "depth": 0,
+      "retry_count": 0,
+      "parent_id": null,
+      "depends_on": [],
+      "payload": {
+        "realplan_task": "3.2",
+        "scope": ["backend/app/models/subscription.py", "backend/app/services/quota.py", "backend/app/api/v1/subscription.py", "frontend/components/UpgradePrompt.tsx"],
+        "description": "4개 Tier (Free/Starter/Pro/Enterprise) Quota 테이블, 렌더 횟수 제한, 업그레이드 유도 UI",
+        "success_criteria": ["4개 Tier Quota 동작", "Free: 렌더 3회/월 제한"]
+      },
+      "result": null,
+      "spawn_rules": ["RUN_TESTS", "BIZ_VALIDATE", "DESIGN_REVIEW"]
+    },
+    {
+      "id": "ISS-003",
+      "title": "온보딩 플로우: OnboardingTour.tsx + 10분 내 첫 영상 목표",
+      "type": "GENERATE_CODE",
+      "status": "CREATED",
+      "priority": "P2",
+      "assign_to": "agent-harness",
+      "depth": 0,
+      "retry_count": 0,
+      "parent_id": null,
+      "depends_on": ["ISS-002"],
+      "payload": {
+        "realplan_task": "3.3",
+        "scope": ["frontend/components/OnboardingTour.tsx", "frontend/hooks/useOnboarding.ts"],
+        "description": "신규 사용자 온보딩 투어, 10분 내 첫 영상 완성 유도, 완주율 측정",
+        "success_criteria": ["온보딩 투어 완주율 측정 가능"]
+      },
+      "result": null,
+      "spawn_rules": ["RUN_TESTS", "SCENARIO_PLAY", "UX_FIX"]
+    },
+    {
+      "id": "ISS-004",
+      "title": "WebSocket 안정화: 재연결 시 진행률 동기화 + Redis 상태 캐싱",
+      "type": "FIX_BUG",
+      "status": "READY",
+      "priority": "P1",
+      "assign_to": "agent-harness",
+      "depth": 0,
+      "retry_count": 0,
+      "parent_id": null,
+      "depends_on": ["ISS-001"],
+      "payload": {
+        "realplan_task": "3.4",
+        "scope": ["frontend/hooks/useWebSocket.ts", "backend/app/api/v1/websocket.py", "backend/app/services/ws_state_cache.py"],
+        "description": "WebSocket 끊김 시 재연결 + Redis에 캐싱된 진행률 복원, 유실 제로",
+        "success_criteria": ["WebSocket 재연결 시 진행률 유실 없음"]
+      },
+      "result": null,
+      "spawn_rules": ["RUN_TESTS", "SCENARIO_PLAY"]
+    }
+  ],
   "hooks": {
     "on_create": [],
     "on_start": [],
@@ -10,13 +107,18 @@
     "on_learn": []
   },
   "knowledge": {
-    "success_patterns": [],
+    "success_patterns": [
+      "Phase 1-2 완료: SLDS 디자인 시스템, 3-Tier 네비게이션, Templates API, Remotion 통합"
+    ],
     "failure_patterns": [],
-    "meta_observations": []
+    "meta_observations": [
+      "프로젝트 복잡도 Complex → Supervisor 패턴 선택",
+      "Phase 3에서 과금 체계 도입 → biz-validator 필수"
+    ]
   },
   "stats": {
-    "total_issues": 0,
-    "completed": 0,
+    "total_issues": 4,
+    "completed": 1,
     "failed": 0,
     "evolved": 0
   }

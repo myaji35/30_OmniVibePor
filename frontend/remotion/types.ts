@@ -9,6 +9,8 @@ export interface ScriptBlock {
   fontSize?: number;
   textColor?: string;
   textAlign?: 'left' | 'center' | 'right';
+  wordTimestamps?: WordTimestamp[];
+  subtitleStyle?: 'default' | 'bold-center' | 'lower-third' | 'karaoke';
 }
 
 export interface BrandingConfig {
