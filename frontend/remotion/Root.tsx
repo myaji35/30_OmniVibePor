@@ -66,11 +66,11 @@ export const RemotionRoot: React.FC = () => {
         defaultProps={DEFAULT_PROPS}
         calculateMetadata={async ({ props }: { props: VideoTemplateProps }) => calculateDuration(props)}
       />
-      {/* OmniVibe Pro Promo Video (1920x1080, 60s) */}
+      {/* OmniVibe Pro — Remotion Feature Showcase (1920x1080, 45s) */}
       <Composition
         id="promo"
         component={PromoVideo}
-        durationInFrames={1800}
+        durationInFrames={1350}
         fps={30}
         width={1920}
         height={1080}
