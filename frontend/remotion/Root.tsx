@@ -4,6 +4,7 @@ import { YouTubeTemplate } from './templates/YouTubeTemplate';
 import { InstagramTemplate } from './templates/InstagramTemplate';
 import { TikTokTemplate } from './templates/TikTokTemplate';
 import { PromoVideo } from './promo/PromoVideo';
+import { EN, KO } from './promo/i18n';
 import type { VideoTemplateProps } from './types';
 
 const calculateDuration = (
@@ -66,7 +67,7 @@ export const RemotionRoot: React.FC = () => {
         defaultProps={DEFAULT_PROPS}
         calculateMetadata={async ({ props }: { props: VideoTemplateProps }) => calculateDuration(props)}
       />
-      {/* OmniVibe Pro — Remotion Feature Showcase (1920x1080, 45s) */}
+      {/* Promo — English (1920x1080, 45s) */}
       <Composition
         id="promo"
         component={PromoVideo}
@@ -74,6 +75,17 @@ export const RemotionRoot: React.FC = () => {
         fps={30}
         width={1920}
         height={1080}
+        defaultProps={{ texts: EN }}
+      />
+      {/* Promo — 한국어 (1920x1080, 45s) */}
+      <Composition
+        id="promo-ko"
+        component={PromoVideo}
+        durationInFrames={1350}
+        fps={30}
+        width={1920}
+        height={1080}
+        defaultProps={{ texts: KO }}
       />
     </>
   );

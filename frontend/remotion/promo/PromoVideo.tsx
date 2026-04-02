@@ -27,6 +27,12 @@ import {
   staticFile,
   Easing,
 } from 'remotion';
+import { PromoTexts, EN } from './i18n';
+
+// ── Props ───────────────────────────────────────
+export interface PromoVideoProps {
+  texts?: PromoTexts;
+}
 
 // ── Theme ───────────────────────────────────────
 const C = {
@@ -44,7 +50,7 @@ const C = {
 };
 
 // ── 1. SCENE: Particle Hook (0–4s) — Noise + spring ──────────
-const ParticleHookScene: React.FC = () => {
+const ParticleHookScene: React.FC<{ t: PromoTexts }> = ({ t }) => {
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
 
@@ -96,11 +102,11 @@ const ParticleHookScene: React.FC = () => {
         <div style={{ opacity: titleOpacity, transform: `scale(${titleScale})`, textAlign: 'center' }}>
           <div style={{ fontFamily: C.font, fontSize: 96, fontWeight: 900, color: C.text,
             textShadow: `0 0 80px ${C.accent}33` }}>
-            Remotion <span style={{ color: C.accent }}>Showcase</span>
+            {t.hookTitle} <span style={{ color: C.accent }}>{t.hookHighlight}</span>
           </div>
         </div>
         <div style={{ opacity: subOpacity, marginTop: 24, fontFamily: C.mono, fontSize: 22, color: C.dim }}>
-          Every feature. One video.
+          {t.hookSub}
         </div>
       </AbsoluteFill>
     </AbsoluteFill>
@@ -108,7 +114,7 @@ const ParticleHookScene: React.FC = () => {
 };
 
 // ── 2. SCENE: SVG Path Draw (4–9s) — stroke-dashoffset ──────
-const SVGPathScene: React.FC = () => {
+const SVGPathScene: React.FC<{ t: PromoTexts }> = ({ t }) => {
   const frame = useCurrentFrame();
 
   // Waveform path
@@ -133,7 +139,7 @@ const SVGPathScene: React.FC = () => {
         position: 'absolute', top: 80, left: 80,
         fontFamily: C.mono, fontSize: 14, color: C.accent, letterSpacing: 4,
       }}>
-        SVG PATH ANIMATION
+        {t.svgLabel}
       </div>
 
       {/* Animated waveform */}
@@ -152,14 +158,14 @@ const SVGPathScene: React.FC = () => {
         position: 'absolute', bottom: 120, opacity: labelOpacity, textAlign: 'center',
         fontFamily: C.font, fontSize: 36, fontWeight: 700, color: C.text,
       }}>
-        Programmatic SVG Animation
+        {t.svgTitle}
       </div>
     </AbsoluteFill>
   );
 };
 
 // ── 3. SCENE: 3D CSS Transform (9–14s) — perspective ────────
-const Transform3DScene: React.FC = () => {
+const Transform3DScene: React.FC<{ t: PromoTexts }> = ({ t }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
@@ -180,7 +186,7 @@ const Transform3DScene: React.FC = () => {
         position: 'absolute', top: 80, left: 80,
         fontFamily: C.mono, fontSize: 14, color: C.purple, letterSpacing: 4,
       }}>
-        3D CSS TRANSFORMS
+        {t.tdLabel}
       </div>
 
       <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center' }}>
@@ -204,14 +210,14 @@ const Transform3DScene: React.FC = () => {
         fontFamily: C.font, fontSize: 20, fontWeight: 700,
         transform: `translateY(${interpolate(frame, [60, 75], [20, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })}px)`,
       }}>
-        perspective: 1200px
+        {t.tdBadge}
       </div>
     </AbsoluteFill>
   );
 };
 
 // ── 4. SCENE: Ken Burns Image (14–20s) — zoom + pan ─────────
-const KenBurnsScene: React.FC = () => {
+const KenBurnsScene: React.FC<{ t: PromoTexts }> = ({ t }) => {
   const frame = useCurrentFrame();
 
   const scale = interpolate(frame, [0, 180], [1, 1.25], {
@@ -234,7 +240,7 @@ const KenBurnsScene: React.FC = () => {
         position: 'absolute', top: 80, left: 80, zIndex: 10,
         fontFamily: C.mono, fontSize: 14, color: C.amber, letterSpacing: 4,
       }}>
-        KEN BURNS EFFECT
+        {t.kbLabel}
       </div>
 
       {/* Image with Ken Burns */}
@@ -255,10 +261,10 @@ const KenBurnsScene: React.FC = () => {
         position: 'absolute', bottom: 100, left: 100, opacity: textOpacity,
       }}>
         <div style={{ fontFamily: C.font, fontSize: 56, fontWeight: 800, color: C.text, marginBottom: 12 }}>
-          Cinematic Image Panning
+          {t.kbTitle}
         </div>
         <div style={{ fontFamily: C.mono, fontSize: 20, color: C.dim }}>
-          scale() + translate() over 180 frames
+          {t.kbSub}
         </div>
       </div>
     </AbsoluteFill>
@@ -266,7 +272,7 @@ const KenBurnsScene: React.FC = () => {
 };
 
 // ── 5. SCENE: Clip-Path Wipe Transition (20–24s) ────────────
-const ClipPathWipeScene: React.FC = () => {
+const ClipPathWipeScene: React.FC<{ t: PromoTexts }> = ({ t }) => {
   const frame = useCurrentFrame();
 
   const wipeProgress = interpolate(frame, [0, 60], [0, 100], {
@@ -280,7 +286,7 @@ const ClipPathWipeScene: React.FC = () => {
         position: 'absolute', top: 80, left: 80, zIndex: 20,
         fontFamily: C.mono, fontSize: 14, color: C.accentAlt, letterSpacing: 4,
       }}>
-        CLIP-PATH WIPE TRANSITION
+        {t.cpLabel}
       </div>
 
       {/* Before image */}
@@ -314,31 +320,25 @@ const ClipPathWipeScene: React.FC = () => {
         fontFamily: C.font, fontSize: 20, fontWeight: 600, color: C.dim,
         opacity: wipeProgress < 50 ? 1 : 0,
       }}>
-        BEFORE
+        {t.cpBefore}
       </div>
       <div style={{
         position: 'absolute', bottom: 60, right: 60,
         fontFamily: C.font, fontSize: 20, fontWeight: 600, color: C.text,
         opacity: wipeProgress > 50 ? 1 : 0,
       }}>
-        AFTER
+        {t.cpAfter}
       </div>
     </AbsoluteFill>
   );
 };
 
 // ── 6. SCENE: Char-by-char Text Reveal (24–30s) ─────────────
-const CharRevealScene: React.FC = () => {
+const CharRevealScene: React.FC<{ t: PromoTexts }> = ({ t }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const line1 = 'const video = await renderVideo({';
-  const line2 = '  template: "youtube",';
-  const line3 = '  script: aiGeneratedScript,';
-  const line4 = '  voice: clonedVoice,';
-  const line5 = '});';
-
-  const lines = [line1, line2, line3, line4, line5];
+  const lines = t.crLines;
   const colors = [C.accentAlt, C.text, C.accent, C.purple, C.accentAlt];
 
   let globalCharIdx = 0;
@@ -349,7 +349,7 @@ const CharRevealScene: React.FC = () => {
         position: 'absolute', top: 80, left: 80,
         fontFamily: C.mono, fontSize: 14, color: C.red, letterSpacing: 4,
       }}>
-        CHARACTER-BY-CHARACTER REVEAL
+        {t.crLabel}
       </div>
 
       {/* Terminal window */}
@@ -406,17 +406,17 @@ const CharRevealScene: React.FC = () => {
 };
 
 // ── 7. SCENE: Data-Driven Bar Chart (30–36s) ────────────────
-const BarChartScene: React.FC = () => {
+const BarChartScene: React.FC<{ t: PromoTexts }> = ({ t }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const data = [
-    { label: 'Render', value: 95, color: C.accent },
-    { label: 'Audio', value: 82, color: C.accentAlt },
-    { label: 'Script', value: 70, color: C.purple },
-    { label: 'Upload', value: 60, color: C.amber },
-    { label: 'Deploy', value: 45, color: C.red },
-  ];
+  const barColors = [C.accent, C.accentAlt, C.purple, C.amber, C.red];
+  const barValues = [95, 82, 70, 60, 45];
+  const data = t.bcBars.map((label, i) => ({
+    label,
+    value: barValues[i] ?? 50,
+    color: barColors[i] ?? C.accent,
+  }));
 
   return (
     <AbsoluteFill style={{ background: C.bg, padding: 100 }}>
@@ -424,7 +424,7 @@ const BarChartScene: React.FC = () => {
         position: 'absolute', top: 80, left: 80,
         fontFamily: C.mono, fontSize: 14, color: C.accent, letterSpacing: 4,
       }}>
-        DATA-DRIVEN ANIMATION
+        {t.bcLabel}
       </div>
 
       <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center' }}>
@@ -465,7 +465,7 @@ const BarChartScene: React.FC = () => {
 };
 
 // ── 8. SCENE: Multi-Layer Compositing + CTA (36–45s) ────────
-const CTAScene: React.FC = () => {
+const CTAScene: React.FC<{ t: PromoTexts }> = ({ t }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
@@ -500,10 +500,10 @@ const CTAScene: React.FC = () => {
           opacity: interpolate(titleSpring, [0, 1], [0, 1]),
         }}>
           <div style={{ fontFamily: C.font, fontSize: 72, fontWeight: 900, color: C.text, marginBottom: 16 }}>
-            Built with <span style={{ color: C.accent }}>Remotion</span>
+            {t.ctaTitle} {t.ctaTitle && ' '}<span style={{ color: C.accent }}>{t.ctaHighlight}</span>
           </div>
           <div style={{ fontFamily: C.mono, fontSize: 24, color: C.dim, marginBottom: 50 }}>
-            spring() · interpolate() · Sequence · Img · SVG · 3D · clipPath
+            {t.ctaSub}
           </div>
 
           {/* CTA button */}
@@ -514,14 +514,14 @@ const CTAScene: React.FC = () => {
             transform: `scale(${pulse})`,
             boxShadow: `0 0 60px ${C.accent}44, 0 20px 60px rgba(0,0,0,0.5)`,
           }}>
-            OmniVibe Pro →
+            {t.ctaButton}
           </div>
 
           <div style={{
             marginTop: 30, fontFamily: C.mono, fontSize: 18, color: C.dim,
             opacity: interpolate(frame, [40, 55], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }),
           }}>
-            omnivibepro.com
+            {t.ctaUrl}
           </div>
         </div>
       </AbsoluteFill>
@@ -530,47 +530,34 @@ const CTAScene: React.FC = () => {
 };
 
 // ── MAIN COMPOSITION ─────────────────────────────
-export const PromoVideo: React.FC = () => {
+export const PromoVideo: React.FC<PromoVideoProps> = ({ texts }) => {
+  const t = texts ?? EN;
+
   return (
     <AbsoluteFill style={{ background: C.bg }}>
-      {/* 1. Particle Hook (0–4s = 0–120f) */}
       <Sequence from={0} durationInFrames={120}>
-        <ParticleHookScene />
+        <ParticleHookScene t={t} />
       </Sequence>
-
-      {/* 2. SVG Path Animation (4–9s = 120–270f) */}
       <Sequence from={120} durationInFrames={150}>
-        <SVGPathScene />
+        <SVGPathScene t={t} />
       </Sequence>
-
-      {/* 3. 3D CSS Transforms (9–14s = 270–420f) */}
       <Sequence from={270} durationInFrames={150}>
-        <Transform3DScene />
+        <Transform3DScene t={t} />
       </Sequence>
-
-      {/* 4. Ken Burns Image (14–20s = 420–600f) */}
       <Sequence from={420} durationInFrames={180}>
-        <KenBurnsScene />
+        <KenBurnsScene t={t} />
       </Sequence>
-
-      {/* 5. Clip-Path Wipe (20–24s = 600–720f) */}
       <Sequence from={600} durationInFrames={120}>
-        <ClipPathWipeScene />
+        <ClipPathWipeScene t={t} />
       </Sequence>
-
-      {/* 6. Char-by-Char Reveal (24–30s = 720–900f) */}
       <Sequence from={720} durationInFrames={180}>
-        <CharRevealScene />
+        <CharRevealScene t={t} />
       </Sequence>
-
-      {/* 7. Data Bar Chart (30–36s = 900–1080f) */}
       <Sequence from={900} durationInFrames={180}>
-        <BarChartScene />
+        <BarChartScene t={t} />
       </Sequence>
-
-      {/* 8. CTA + Multi-Layer (36–45s = 1080–1350f) */}
       <Sequence from={1080} durationInFrames={270}>
-        <CTAScene />
+        <CTAScene t={t} />
       </Sequence>
     </AbsoluteFill>
   );
