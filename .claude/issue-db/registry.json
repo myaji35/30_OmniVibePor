@@ -42,7 +42,7 @@
       "id": "ISS-002",
       "title": "Tier별 Quota: Subscription 테이블 + quota.py + 업그레이드 유도 UI",
       "type": "GENERATE_CODE",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P1",
       "assign_to": "agent-harness",
       "depth": 0,
@@ -55,14 +55,24 @@
         "description": "4개 Tier (Free/Starter/Pro/Enterprise) Quota 테이블, 렌더 횟수 제한, 업그레이드 유도 UI",
         "success_criteria": ["4개 Tier Quota 동작", "Free: 렌더 3회/월 제한"]
       },
-      "result": null,
+      "result": {
+        "completed_at": "2026-04-03",
+        "files_created": [
+          "frontend/components/quota/QuotaStatusBar.tsx",
+          "frontend/components/quota/UpgradePrompt.tsx",
+          "frontend/app/pricing/page.tsx"
+        ],
+        "files_modified": [
+          "backend/app/models/subscription.py"
+        ]
+      },
       "spawn_rules": ["RUN_TESTS", "BIZ_VALIDATE", "DESIGN_REVIEW"]
     },
     {
       "id": "ISS-003",
       "title": "온보딩 플로우: OnboardingTour.tsx + 10분 내 첫 영상 목표",
       "type": "GENERATE_CODE",
-      "status": "CREATED",
+      "status": "READY",
       "priority": "P2",
       "assign_to": "agent-harness",
       "depth": 0,
@@ -118,7 +128,7 @@
   },
   "stats": {
     "total_issues": 4,
-    "completed": 1,
+    "completed": 2,
     "failed": 0,
     "evolved": 0
   }

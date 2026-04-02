@@ -8,8 +8,9 @@ from enum import Enum
 
 
 class SubscriptionPlan(str, Enum):
-    """구독 플랜"""
+    """구독 플랜 (4-Tier)"""
     FREE = "free"
+    CREATOR = "creator"
     PRO = "pro"
     ENTERPRISE = "enterprise"
 
@@ -133,21 +134,33 @@ PRICING = {
         "quota_limit": 10,
         "name": "Free",
         "features": [
-            "10 videos per month",
-            "Basic templates",
-            "Community support"
+            "영상 렌더 3회/월",
+            "오디오 생성 10회/월",
+            "기본 템플릿",
+        ]
+    },
+    SubscriptionPlan.CREATOR: {
+        "amount": 19,
+        "quota_limit": 30,
+        "stripe_price_id": "price_creator_monthly",
+        "name": "Creator",
+        "features": [
+            "영상 렌더 30회/월",
+            "오디오 생성 100회/월",
+            "음성 클론 1개",
+            "모든 템플릿",
         ]
     },
     SubscriptionPlan.PRO: {
         "amount": 49,
         "quota_limit": 100,
-        "stripe_price_id": "price_pro_monthly",  # Stripe에서 생성한 Price ID
+        "stripe_price_id": "price_pro_monthly",
         "name": "Pro",
         "features": [
-            "100 videos per month",
-            "All templates",
-            "Voice cloning",
-            "Priority support"
+            "영상 렌더 100회/월",
+            "오디오 무제한",
+            "음성 클론 3개",
+            "우선 지원",
         ]
     },
     SubscriptionPlan.ENTERPRISE: {
@@ -156,11 +169,10 @@ PRICING = {
         "stripe_price_id": "price_enterprise_monthly",
         "name": "Enterprise",
         "features": [
-            "Unlimited videos",
-            "Custom templates",
-            "Dedicated support",
-            "API access",
-            "White-label"
+            "모든 기능 무제한",
+            "음성 클론 10개",
+            "전담 매니저",
+            "API 접근 + 화이트 라벨",
         ]
     }
 }
