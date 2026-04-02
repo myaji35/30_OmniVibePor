@@ -95,7 +95,7 @@
       "id": "ISS-004",
       "title": "WebSocket 안정화: 재연결 시 진행률 동기화 + Redis 상태 캐싱",
       "type": "FIX_BUG",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P1",
       "assign_to": "agent-harness",
       "depth": 0,
@@ -108,7 +108,13 @@
         "description": "WebSocket 끊김 시 재연결 + Redis에 캐싱된 진행률 복원, 유실 제로",
         "success_criteria": ["WebSocket 재연결 시 진행률 유실 없음"]
       },
-      "result": null,
+      "result": {
+        "completed_at": "2026-04-03",
+        "files_modified": [
+          "backend/app/services/websocket_manager.py",
+          "frontend/hooks/useWebSocket.ts"
+        ]
+      },
       "spawn_rules": ["RUN_TESTS", "SCENARIO_PLAY"]
     }
   ],
@@ -131,7 +137,7 @@
   },
   "stats": {
     "total_issues": 4,
-    "completed": 3,
+    "completed": 4,
     "failed": 0,
     "evolved": 0
   }

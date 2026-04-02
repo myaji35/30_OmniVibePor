@@ -4,7 +4,7 @@
 Celery 작업 진행 상태를 실시간으로 브로드캐스트합니다.
 """
 
-from typing import Dict, List, Set
+from typing import Dict, List, Set, Optional
 from fastapi import WebSocket
 import logging
 import json
@@ -14,8 +14,22 @@ from datetime import datetime
 logger = logging.getLogger(__name__)
 
 
+def _get_redis():
+    """Redis 클라이언트 (실패 시 None — fail-open)"""
+    try:
+        import redis
+        from app.core.config import get_settings
+        return redis.from_url(get_settings().REDIS_URL, decode_responses=True, socket_timeout=1)
+    except Exception:
+        return None
+
+
 class ConnectionManager:
-    """WebSocket 연결 관리자"""
+    """WebSocket 연결 관리자 + Redis 진행률 캐시"""
+
+    # Redis key prefix for progress cache
+    PROGRESS_KEY_PREFIX = "ws:progress:"
+    PROGRESS_TTL = 3600  # 1시간
 
     def __init__(self):
         # project_id: Set[WebSocket]
@@ -23,7 +37,7 @@ class ConnectionManager:
         self.logger = logging.getLogger(__name__)
 
     async def connect(self, websocket: WebSocket, project_id: str):
-        """클라이언트 연결"""
+        """클라이언트 연결 + Redis 캐시 상태 자동 복원"""
         await websocket.accept()
 
         if project_id not in self.active_connections:
@@ -34,6 +48,18 @@ class ConnectionManager:
             f"WebSocket connected: project={project_id}, "
             f"total={len(self.active_connections[project_id])}"
         )
+
+        # 재연결 시 Redis 캐시된 진행률 자동 전송
+        cached = self.get_cached_progress(project_id)
+        if cached:
+            try:
+                await websocket.send_json(cached)
+                self.logger.info(
+                    f"Restored cached progress for {project_id}: "
+                    f"{cached.get('progress', 0)*100:.0f}%"
+                )
+            except Exception as e:
+                self.logger.warning(f"Failed to send cached progress: {e}")
 
     def disconnect(self, websocket: WebSocket, project_id: str):
         """클라이언트 연결 해제"""
@@ -107,6 +133,9 @@ class ConnectionManager:
             "timestamp": datetime.now().isoformat()
         }
 
+        # Redis에 진행률 캐시 (재연결 복원용)
+        self._cache_progress(project_id, event)
+
         await self.send_to_project(project_id, event)
 
     async def broadcast_error(
@@ -175,6 +204,9 @@ class ConnectionManager:
             "timestamp": datetime.now().isoformat()
         }
 
+        # 완료 시 캐시 삭제
+        self._clear_progress_cache(project_id)
+
         await self.send_to_project(project_id, event)
 
     async def broadcast_status(
@@ -214,6 +246,44 @@ class ConnectionManager:
         }
 
         await self.send_to_project(project_id, event)
+
+    # ── Redis 진행률 캐시 ──────────────────────────────────
+
+    def _cache_progress(self, project_id: str, event: dict):
+        """진행률을 Redis에 캐시 (재연결 복원용)"""
+        r = _get_redis()
+        if not r:
+            return
+        try:
+            key = f"{self.PROGRESS_KEY_PREFIX}{project_id}"
+            r.set(key, json.dumps(event), ex=self.PROGRESS_TTL)
+        except Exception as e:
+            self.logger.warning(f"Redis cache write failed: {e}")
+
+    def get_cached_progress(self, project_id: str) -> Optional[dict]:
+        """Redis에서 캐시된 진행률 조회"""
+        r = _get_redis()
+        if not r:
+            return None
+        try:
+            key = f"{self.PROGRESS_KEY_PREFIX}{project_id}"
+            data = r.get(key)
+            if data:
+                return json.loads(data)
+        except Exception as e:
+            self.logger.warning(f"Redis cache read failed: {e}")
+        return None
+
+    def _clear_progress_cache(self, project_id: str):
+        """완료/에러 시 캐시 삭제"""
+        r = _get_redis()
+        if not r:
+            return
+        try:
+            key = f"{self.PROGRESS_KEY_PREFIX}{project_id}"
+            r.delete(key)
+        except Exception as e:
+            self.logger.warning(f"Redis cache delete failed: {e}")
 
     def get_connection_count(self, project_id: str) -> int:
         """특정 프로젝트의 활성 연결 수 반환"""

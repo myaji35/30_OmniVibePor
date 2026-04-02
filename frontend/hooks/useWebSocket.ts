@@ -10,7 +10,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 
 export interface WebSocketMessage {
-  type: 'connected' | 'progress' | 'error' | 'completed' | 'pong'
+  type: 'connected' | 'progress' | 'error' | 'completed' | 'pong' | 'status'
   project_id?: string
   task_name?: string
   progress?: number
@@ -76,11 +76,10 @@ export function useWebSocket({
         setReconnectAttempts(0)
         setIsFallback(false)
 
-        // 재연결 시 마지막 진행률 복원
+        // 서버가 Redis 캐시된 진행률을 자동 전송하므로
+        // 클라이언트 로컬 캐시는 fallback으로만 사용
         if (lastProgressRef.current) {
-          const { progress, message } = lastProgressRef.current
-          console.log(`[WebSocket] 재연결 후 상태 복원: progress=${progress}%`)
-          onProgress?.(progress, message)
+          console.log(`[WebSocket] Local cache available: ${lastProgressRef.current.progress}% (server will send authoritative state)`)
         }
 
         // Keep-alive ping (30초마다)
