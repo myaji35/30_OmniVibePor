@@ -405,8 +405,11 @@ const CTAScene: React.FC = () => {
 export const ChopdPromo: React.FC = () => {
   return (
     <AbsoluteFill style={{ background: C.bg }}>
-      {/* 배경 음악 */}
-      <Audio src={staticFile('chopd/bgm.wav')} volume={0.35} />
+      {/* 배경 음악 (볼륨 낮춤 — 나레이션과 공존) */}
+      <Audio src={staticFile('chopd/bgm.wav')} volume={0.15} />
+
+      {/* 나레이션 (씬별 edge-tts 한국어) */}
+      <Audio src={staticFile('chopd/narration_full.mp3')} volume={0.9} />
 
       {/* Scene 1: 타이틀 (0–6s = 0–180f) */}
       <Sequence from={0} durationInFrames={180}>

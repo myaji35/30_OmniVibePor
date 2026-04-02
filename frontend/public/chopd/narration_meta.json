@@ -1,0 +1,38 @@
+[
+  {
+    "id": "scene1",
+    "text": "AI가 당신의 브랜드를 관리합니다. 블로그, SNS, 쇼핑몰을 하나로. AI 콘텐츠를 자동 생성하고 예약 발행합니다.",
+    "mp3": "narr_scene1.mp3",
+    "vtt": "narr_scene1.vtt"
+  },
+  {
+    "id": "scene2",
+    "text": "AI 대시보드에서 모든 채널을 한눈에 관리하세요. 오백 명 이상의 사용자가 선택한 플랫폼입니다.",
+    "mp3": "narr_scene2.mp3",
+    "vtt": "narr_scene2.vtt"
+  },
+  {
+    "id": "scene3",
+    "text": "데스크톱과 모바일, 어디서든 완벽한 반응형 경험. 이동 중에도 브랜드를 관리하세요.",
+    "mp3": "narr_scene3.mp3",
+    "vtt": "narr_scene3.vtt"
+  },
+  {
+    "id": "scene4",
+    "text": "올인원 랜딩 페이지로 서비스 소개부터 고객 확보까지. 코딩 없이 5분이면 완성됩니다.",
+    "mp3": "narr_scene4.mp3",
+    "vtt": "narr_scene4.vtt"
+  },
+  {
+    "id": "scene5",
+    "text": "당신의 AI 파트너, 아임PD 하나면 충분합니다. 블로그, SNS, 쇼핑몰, 콘텐츠 자동 생성, 예약 발행까지.",
+    "mp3": "narr_scene5.mp3",
+    "vtt": "narr_scene5.vtt"
+  },
+  {
+    "id": "scene6",
+    "text": "지금 바로 무료로 시작하세요. 신용카드 없이, 삼분이면 시작할 수 있습니다. chopd 점 io.",
+    "mp3": "narr_scene6.mp3",
+    "vtt": "narr_scene6.vtt"
+  }
+]
