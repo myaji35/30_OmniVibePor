@@ -4,6 +4,7 @@ import { YouTubeTemplate } from './templates/YouTubeTemplate';
 import { InstagramTemplate } from './templates/InstagramTemplate';
 import { TikTokTemplate } from './templates/TikTokTemplate';
 import { PromoVideo } from './promo/PromoVideo';
+import { ChopdPromo } from './promo/ChopdPromo';
 import { EN, KO } from './promo/i18n';
 import type { VideoTemplateProps } from './types';
 
@@ -86,6 +87,15 @@ export const RemotionRoot: React.FC = () => {
         width={1920}
         height={1080}
         defaultProps={{ texts: KO }}
+      />
+      {/* chopd (imPD) — 한글 홍보 영상 + 사운드 (1920x1080, 45s) */}
+      <Composition
+        id="chopd"
+        component={ChopdPromo}
+        durationInFrames={1350}
+        fps={30}
+        width={1920}
+        height={1080}
       />
     </>
   );
