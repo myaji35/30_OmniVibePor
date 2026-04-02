@@ -90,29 +90,29 @@ export const RemotionRoot: React.FC = () => {
         height={1080}
         defaultProps={{ texts: KO }}
       />
-      {/* InsureGraph Pro — 남성 더빙 홍보 영상 (1920x1080, 50s) */}
+      {/* InsureGraph Pro — 나레이션 싱크 (78s) */}
       <Composition
         id="insuregraph"
         component={InsureGraphPromo}
-        durationInFrames={1500}
+        durationInFrames={Math.ceil(78 * 30)}
         fps={30}
         width={1920}
         height={1080}
       />
-      {/* 보봇 안전성 — "보봇은 왜 안전한가?" (1920x1080, 60s) */}
+      {/* 보봇 안전성 — 나레이션 싱크 (113s) */}
       <Composition
         id="bobot-safety"
         component={BobotSafetyPromo}
-        durationInFrames={1800}
+        durationInFrames={Math.ceil(113 * 30)}
         fps={30}
         width={1920}
         height={1080}
       />
-      {/* chopd (imPD) — 한글 홍보 영상 + 사운드 (1920x1080, 45s) */}
+      {/* chopd — 나레이션 싱크 (70s) */}
       <Composition
         id="chopd"
         component={ChopdPromo}
-        durationInFrames={1350}
+        durationInFrames={Math.ceil(70 * 30)}
         fps={30}
         width={1920}
         height={1080}

@@ -214,81 +214,69 @@ const CTAScene: React.FC = () => {
 };
 
 // ── MAIN COMPOSITION ─────────────────────────────
+// 나레이션 실측: bobot1=12.5s, bobot2=21.6s, bobot3=18.4s, bobot4=14.9s, bobot5=13.8s, bobot6=17.4s
+// 씬 duration = 나레이션 + 1초 버퍼, fps=30
+// 누적: 0, 13.5, 36.1, 55.5, 71.4, 86.2, 104.6 → 총 ~105초
+const B = { // frames (duration in seconds * 30fps, rounded)
+  s1: { from: 0,    dur: Math.ceil(13.5 * 30) },  // 0–13.5s  (narr 12.5s)
+  s2: { from: Math.ceil(13.5 * 30), dur: Math.ceil(22.6 * 30) },  // 13.5–36.1s (narr 21.6s)
+  s3: { from: Math.ceil(36.1 * 30), dur: Math.ceil(19.4 * 30) },  // 36.1–55.5s (narr 18.4s)
+  s4: { from: Math.ceil(55.5 * 30), dur: Math.ceil(15.9 * 30) },  // 55.5–71.4s (narr 14.9s)
+  s5: { from: Math.ceil(71.4 * 30), dur: Math.ceil(14.8 * 30) },  // 71.4–86.2s (narr 13.8s)
+  s6: { from: Math.ceil(86.2 * 30), dur: Math.ceil(18.4 * 30) },  // 86.2–104.6s (narr 17.4s)
+  cta: { from: Math.ceil(104.6 * 30), dur: Math.ceil(8 * 30) },   // 104.6–112.6s (아웃로)
+};
+const TOTAL_FRAMES = B.cta.from + B.cta.dur;
+
 export const BobotSafetyPromo: React.FC = () => {
   return (
     <AbsoluteFill style={{ background: C.bg }}>
+      {/* BGM */}
       <Audio src={staticFile('insuregraph/bgm.wav')} volume={0.10} />
-      <Audio src={staticFile('insuregraph/bobot_narration_full.mp3')} volume={0.9} />
 
-      {/* Scene 1: 타이틀 (0–8s = 0–240f) */}
-      <Sequence from={0} durationInFrames={240}>
+      {/* 씬별 나레이션 (개별 MP3 → 정확한 싱크) */}
+      <Sequence from={B.s1.from}><Audio src={staticFile('insuregraph/narr_bobot1.mp3')} volume={0.9} /></Sequence>
+      <Sequence from={B.s2.from}><Audio src={staticFile('insuregraph/narr_bobot2.mp3')} volume={0.9} /></Sequence>
+      <Sequence from={B.s3.from}><Audio src={staticFile('insuregraph/narr_bobot3.mp3')} volume={0.9} /></Sequence>
+      <Sequence from={B.s4.from}><Audio src={staticFile('insuregraph/narr_bobot4.mp3')} volume={0.9} /></Sequence>
+      <Sequence from={B.s5.from}><Audio src={staticFile('insuregraph/narr_bobot5.mp3')} volume={0.9} /></Sequence>
+      <Sequence from={B.s6.from}><Audio src={staticFile('insuregraph/narr_bobot6.mp3')} volume={0.9} /></Sequence>
+
+      {/* 씬별 비주얼 */}
+      <Sequence from={B.s1.from} durationInFrames={B.s1.dur}>
         <TitleScene />
       </Sequence>
 
-      {/* Scene 2: 금소법 6대 원칙 (8–18s = 240–540f) */}
-      <Sequence from={240} durationInFrames={300}>
-        <SafetyPointScene
-          number={1} title="금소법 6대 원칙 자동 준수" color={C.green} icon="⚖️"
-          points={[
-            '적합성 원칙 · 적정성 원칙 실시간 검증',
-            '설명 의무 · 불공정 영업 금지 자동 체크',
-            '부당 권유 금지 · 허위 과장 금지 모니터링',
-          ]}
-        />
+      <Sequence from={B.s2.from} durationInFrames={B.s2.dur}>
+        <SafetyPointScene number={1} title="금소법 6대 원칙 자동 준수" color={C.green} icon="⚖️"
+          points={['적합성 원칙 · 적정성 원칙 실시간 검증', '설명 의무 · 불공정 영업 금지 자동 체크', '부당 권유 금지 · 허위 과장 금지 모니터링']} />
       </Sequence>
 
-      {/* Scene 3: 법적 증빙 (18–27s = 540–810f) */}
-      <Sequence from={540} durationInFrames={270}>
-        <SafetyPointScene
-          number={2} title="모든 AI 판단에 법적 증빙" color={C.blue} icon="📋"
-          points={[
-            'ComplianceRecord에 상담 근거 자동 기록',
-            '추천 이유 · 고객 동의 내역 추적',
-            '금융감독원 검사 즉시 대응 가능',
-          ]}
-        />
+      <Sequence from={B.s3.from} durationInFrames={B.s3.dur}>
+        <SafetyPointScene number={2} title="모든 AI 판단에 법적 증빙" color={C.blue} icon="📋"
+          points={['ComplianceRecord에 상담 근거 자동 기록', '추천 이유 · 고객 동의 내역 추적', '금융감독원 검사 즉시 대응 가능']} />
       </Sequence>
 
-      {/* Scene 4: GA 감독 (27–35s = 810–1050f) */}
-      <Sequence from={810} durationInFrames={240}>
-        <SafetyPointScene
-          number={3} title="GA법인 관리·감독 하에 운영" color={C.accent} icon="🏢"
-          points={[
-            '독단적 계약 체결 불가',
-            '모든 최종 결정은 담당 설계사 확인',
-            'AI는 보조 도구, 사람이 최종 판단',
-          ]}
-        />
+      <Sequence from={B.s4.from} durationInFrames={B.s4.dur}>
+        <SafetyPointScene number={3} title="GA법인 관리·감독 하에 운영" color={C.accent} icon="🏢"
+          points={['독단적 계약 체결 불가', '모든 최종 결정은 담당 설계사 확인', 'AI는 보조 도구, 사람이 최종 판단']} />
       </Sequence>
 
-      {/* Scene 5: 할루시네이션 방지 (35–43s = 1050–1290f) */}
-      <Sequence from={1050} durationInFrames={240}>
-        <SafetyPointScene
-          number={4} title="할루시네이션 방지 — GraphRAG" color={C.amber} icon="🧠"
-          points={[
-            '38,000개 약관 원문을 인용하며 답변',
-            '출처를 명시하여 검증 가능',
-            'GraphRAG 기반 — 추론이 아닌 검색',
-          ]}
-        />
+      <Sequence from={B.s5.from} durationInFrames={B.s5.dur}>
+        <SafetyPointScene number={4} title="할루시네이션 방지 — GraphRAG" color={C.amber} icon="🧠"
+          points={['38,000개 약관 원문을 인용하며 답변', '출처를 명시하여 검증 가능', 'GraphRAG 기반 — 추론이 아닌 검색']} />
       </Sequence>
 
-      {/* Scene 6: 샌드박스 설계 (43–52s = 1290–1560f) */}
-      <Sequence from={1290} durationInFrames={270}>
-        <SafetyPointScene
-          number={5} title="혁신금융서비스 샌드박스 기준" color={C.green} icon="🏛️"
-          points={[
-            '금융위원회 승인 절차를 염두에 둔 설계',
-            'MyData API 헬스케어 연동 아키텍처',
-            '컴플라이언스 퍼스트 접근',
-          ]}
-        />
+      <Sequence from={B.s6.from} durationInFrames={B.s6.dur}>
+        <SafetyPointScene number={5} title="혁신금융서비스 샌드박스 기준" color={C.green} icon="🏛️"
+          points={['금융위원회 승인 절차를 염두에 둔 설계', 'MyData API 헬스케어 연동 아키텍처', '컴플라이언스 퍼스트 접근']} />
       </Sequence>
 
-      {/* Scene 7: CTA (52–60s = 1560–1800f) */}
-      <Sequence from={1560} durationInFrames={240}>
+      <Sequence from={B.cta.from} durationInFrames={B.cta.dur}>
         <CTAScene />
       </Sequence>
     </AbsoluteFill>
   );
 };
+
+export const BOBOT_TOTAL_FRAMES = TOTAL_FRAMES;

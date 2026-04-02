@@ -367,43 +367,39 @@ const CTAScene: React.FC = () => {
 };
 
 // ── MAIN COMPOSITION ─────────────────────────────
+// 나레이션 실측: s1=10.1s, s2=12.2s, s3=12.1s, s4=12.8s, s5=11.2s, s6=10.9s → 합계 69.3s
+// 씬 duration = 나레이션 + 1초 버퍼
+const IG = {
+  s1: { from: 0,    dur: Math.ceil(11.1 * 30) },
+  s2: { from: Math.ceil(11.1 * 30), dur: Math.ceil(13.2 * 30) },
+  s3: { from: Math.ceil(24.3 * 30), dur: Math.ceil(13.1 * 30) },
+  s4: { from: Math.ceil(37.4 * 30), dur: Math.ceil(13.8 * 30) },
+  s5: { from: Math.ceil(51.2 * 30), dur: Math.ceil(12.2 * 30) },
+  s6: { from: Math.ceil(63.4 * 30), dur: Math.ceil(11.9 * 30) },
+};
+const IG_TOTAL = IG.s6.from + IG.s6.dur + Math.ceil(3 * 30); // +3s 아웃로
+
 export const InsureGraphPromo: React.FC = () => {
   return (
     <AbsoluteFill style={{ background: C.bg }}>
-      {/* BGM (D minor corporate) */}
       <Audio src={staticFile('insuregraph/bgm.wav')} volume={0.12} />
-      {/* 남성 나레이션 (InJoon) */}
-      <Audio src={staticFile('insuregraph/narration_full.mp3')} volume={0.9} />
 
-      {/* Scene 1: 랜딩 히어로 (0–7s = 0–210f) */}
-      <Sequence from={0} durationInFrames={210}>
-        <LandingScene />
-      </Sequence>
+      {/* 씬별 나레이션 (개별 MP3 → 정확한 싱크) */}
+      <Sequence from={IG.s1.from}><Audio src={staticFile('insuregraph/narr_scene1.mp3')} volume={0.9} /></Sequence>
+      <Sequence from={IG.s2.from}><Audio src={staticFile('insuregraph/narr_scene2.mp3')} volume={0.9} /></Sequence>
+      <Sequence from={IG.s3.from}><Audio src={staticFile('insuregraph/narr_scene3.mp3')} volume={0.9} /></Sequence>
+      <Sequence from={IG.s4.from}><Audio src={staticFile('insuregraph/narr_scene4.mp3')} volume={0.9} /></Sequence>
+      <Sequence from={IG.s5.from}><Audio src={staticFile('insuregraph/narr_scene5.mp3')} volume={0.9} /></Sequence>
+      <Sequence from={IG.s6.from}><Audio src={staticFile('insuregraph/narr_scene6.mp3')} volume={0.9} /></Sequence>
 
-      {/* Scene 2: 대시보드 (7–15s = 210–450f) */}
-      <Sequence from={210} durationInFrames={240}>
-        <DashboardScene />
-      </Sequence>
-
-      {/* Scene 3: 보장 분석 (15–23s = 450–690f) */}
-      <Sequence from={450} durationInFrames={240}>
-        <CoverageScene />
-      </Sequence>
-
-      {/* Scene 4: 갭 리포트 (23–31s = 690–930f) */}
-      <Sequence from={690} durationInFrames={240}>
-        <ReportScene />
-      </Sequence>
-
-      {/* Scene 5: 포트폴리오 (31–39s = 930–1170f) */}
-      <Sequence from={930} durationInFrames={240}>
-        <PortfolioScene />
-      </Sequence>
-
-      {/* Scene 6: CTA (39–50s = 1170–1500f) */}
-      <Sequence from={1170} durationInFrames={330}>
-        <CTAScene />
-      </Sequence>
+      <Sequence from={IG.s1.from} durationInFrames={IG.s1.dur}><LandingScene /></Sequence>
+      <Sequence from={IG.s2.from} durationInFrames={IG.s2.dur}><DashboardScene /></Sequence>
+      <Sequence from={IG.s3.from} durationInFrames={IG.s3.dur}><CoverageScene /></Sequence>
+      <Sequence from={IG.s4.from} durationInFrames={IG.s4.dur}><ReportScene /></Sequence>
+      <Sequence from={IG.s5.from} durationInFrames={IG.s5.dur}><PortfolioScene /></Sequence>
+      <Sequence from={IG.s6.from} durationInFrames={IG.s6.dur + Math.ceil(3 * 30)}><CTAScene /></Sequence>
     </AbsoluteFill>
   );
 };
+
+export const IG_TOTAL_FRAMES = IG_TOTAL;

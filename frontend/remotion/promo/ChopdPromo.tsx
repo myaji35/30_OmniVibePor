@@ -402,44 +402,39 @@ const CTAScene: React.FC = () => {
 };
 
 // ── MAIN COMPOSITION ─────────────────────────────
+// 나레이션 실측: s1=12.5s, s2=9.1s, s3=8.5s, s4=8.7s, s5=11.9s, s6=10.5s → 합계 61.1s
+// 씬 duration = 나레이션 + 1초 버퍼
+const CD = {
+  s1: { from: 0,    dur: Math.ceil(13.5 * 30) },
+  s2: { from: Math.ceil(13.5 * 30), dur: Math.ceil(10.1 * 30) },
+  s3: { from: Math.ceil(23.6 * 30), dur: Math.ceil(9.5 * 30) },
+  s4: { from: Math.ceil(33.1 * 30), dur: Math.ceil(9.7 * 30) },
+  s5: { from: Math.ceil(42.8 * 30), dur: Math.ceil(12.9 * 30) },
+  s6: { from: Math.ceil(55.7 * 30), dur: Math.ceil(11.5 * 30) },
+};
+const CD_TOTAL = CD.s6.from + CD.s6.dur + Math.ceil(3 * 30);
+
 export const ChopdPromo: React.FC = () => {
   return (
     <AbsoluteFill style={{ background: C.bg }}>
-      {/* 배경 음악 (볼륨 낮춤 — 나레이션과 공존) */}
       <Audio src={staticFile('chopd/bgm.wav')} volume={0.15} />
 
-      {/* 나레이션 (씬별 edge-tts 한국어) */}
-      <Audio src={staticFile('chopd/narration_full.mp3')} volume={0.9} />
+      {/* 씬별 나레이션 (개별 MP3 → 정확한 싱크) */}
+      <Sequence from={CD.s1.from}><Audio src={staticFile('chopd/narr_scene1.mp3')} volume={0.9} /></Sequence>
+      <Sequence from={CD.s2.from}><Audio src={staticFile('chopd/narr_scene2.mp3')} volume={0.9} /></Sequence>
+      <Sequence from={CD.s3.from}><Audio src={staticFile('chopd/narr_scene3.mp3')} volume={0.9} /></Sequence>
+      <Sequence from={CD.s4.from}><Audio src={staticFile('chopd/narr_scene4.mp3')} volume={0.9} /></Sequence>
+      <Sequence from={CD.s5.from}><Audio src={staticFile('chopd/narr_scene5.mp3')} volume={0.9} /></Sequence>
+      <Sequence from={CD.s6.from}><Audio src={staticFile('chopd/narr_scene6.mp3')} volume={0.9} /></Sequence>
 
-      {/* Scene 1: 타이틀 (0–6s = 0–180f) */}
-      <Sequence from={0} durationInFrames={180}>
-        <TitleScene />
-      </Sequence>
-
-      {/* Scene 2: 히어로 3D (6–13s = 180–390f) */}
-      <Sequence from={180} durationInFrames={210}>
-        <HeroScene />
-      </Sequence>
-
-      {/* Scene 3: 듀얼 뷰 (13–20s = 390–600f) */}
-      <Sequence from={390} durationInFrames={210}>
-        <DualViewScene />
-      </Sequence>
-
-      {/* Scene 4: 풀페이지 스크롤 (20–28s = 600–840f) */}
-      <Sequence from={600} durationInFrames={240}>
-        <FullPageScrollScene />
-      </Sequence>
-
-      {/* Scene 5: WeWork 스타일 (28–35s = 840–1050f) */}
-      <Sequence from={840} durationInFrames={210}>
-        <WeWorkScene />
-      </Sequence>
-
-      {/* Scene 6: CTA (35–45s = 1050–1350f) */}
-      <Sequence from={1050} durationInFrames={300}>
-        <CTAScene />
-      </Sequence>
+      <Sequence from={CD.s1.from} durationInFrames={CD.s1.dur}><TitleScene /></Sequence>
+      <Sequence from={CD.s2.from} durationInFrames={CD.s2.dur}><HeroScene /></Sequence>
+      <Sequence from={CD.s3.from} durationInFrames={CD.s3.dur}><DualViewScene /></Sequence>
+      <Sequence from={CD.s4.from} durationInFrames={CD.s4.dur}><FullPageScrollScene /></Sequence>
+      <Sequence from={CD.s5.from} durationInFrames={CD.s5.dur}><WeWorkScene /></Sequence>
+      <Sequence from={CD.s6.from} durationInFrames={CD.s6.dur + Math.ceil(3 * 30)}><CTAScene /></Sequence>
     </AbsoluteFill>
   );
 };
+
+export const CD_TOTAL_FRAMES = CD_TOTAL;
