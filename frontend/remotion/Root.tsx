@@ -5,6 +5,7 @@ import { InstagramTemplate } from './templates/InstagramTemplate';
 import { TikTokTemplate } from './templates/TikTokTemplate';
 import { PromoVideo } from './promo/PromoVideo';
 import { ChopdPromo } from './promo/ChopdPromo';
+import { InsureGraphPromo } from './promo/InsureGraphPromo';
 import { EN, KO } from './promo/i18n';
 import type { VideoTemplateProps } from './types';
 
@@ -87,6 +88,15 @@ export const RemotionRoot: React.FC = () => {
         width={1920}
         height={1080}
         defaultProps={{ texts: KO }}
+      />
+      {/* InsureGraph Pro — 남성 더빙 홍보 영상 (1920x1080, 50s) */}
+      <Composition
+        id="insuregraph"
+        component={InsureGraphPromo}
+        durationInFrames={1500}
+        fps={30}
+        width={1920}
+        height={1080}
       />
       {/* chopd (imPD) — 한글 홍보 영상 + 사운드 (1920x1080, 45s) */}
       <Composition
