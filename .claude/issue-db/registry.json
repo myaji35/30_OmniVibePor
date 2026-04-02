@@ -72,7 +72,7 @@
       "id": "ISS-003",
       "title": "온보딩 플로우: OnboardingTour.tsx + 10분 내 첫 영상 목표",
       "type": "GENERATE_CODE",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P2",
       "assign_to": "agent-harness",
       "depth": 0,
@@ -85,7 +85,10 @@
         "description": "신규 사용자 온보딩 투어, 10분 내 첫 영상 완성 유도, 완주율 측정",
         "success_criteria": ["온보딩 투어 완주율 측정 가능"]
       },
-      "result": null,
+      "result": {
+        "completed_at": "2026-04-03",
+        "files_created": ["frontend/components/onboarding/OnboardingTour.tsx"]
+      },
       "spawn_rules": ["RUN_TESTS", "SCENARIO_PLAY", "UX_FIX"]
     },
     {
@@ -128,7 +131,7 @@
   },
   "stats": {
     "total_issues": 4,
-    "completed": 2,
+    "completed": 3,
     "failed": 0,
     "evolved": 0
   }
