@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-03-07T12:20:18.231Z",
+  "lastUpdated": "2026-03-25T22:22:27.375Z",
   "activeFeatures": [
     "template-start",
     "generate",
@@ -33,7 +33,10 @@
     "schedule",
     "styles",
     "videogen",
-    "vrew-videogen-pipeline Gap 분석"
+    "vrew-videogen-pipeline Gap 분석",
+    "neo4j_client.py",
+    "e2e",
+    "0030_OmniVibePro"
   ],
   "primaryFeature": "template-start",
   "features": {
@@ -196,7 +199,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-17T04:13:50.231Z",
-        "lastUpdated": "2026-02-28T13:51:23.327Z"
+        "lastUpdated": "2026-03-25T11:26:43.278Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/api/v1/__init__.py"
     },
@@ -461,6 +464,45 @@
       },
       "previousPhase": "check",
       "autoAdvanced": true
+    },
+    "neo4j_client.py": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-25T11:33:38.696Z",
+        "lastUpdated": "2026-03-25T11:33:38.696Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/services/neo4j_client.py"
+    },
+    "e2e": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-25T11:34:51.973Z",
+        "lastUpdated": "2026-03-25T11:34:51.973Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/tests/e2e/test_failure_scenarios.py"
+    },
+    "0030_OmniVibePro": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-25T11:43:08.688Z",
+        "lastUpdated": "2026-03-25T22:22:27.375Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/deploy-omnivibe.sh"
     }
   },
   "pipeline": {
@@ -471,7 +513,7 @@
   "session": {
     "startedAt": "2026-02-17T03:58:39.163Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-03-07T12:20:18.231Z"
+    "lastActivity": "2026-03-25T22:22:27.375Z"
   },
   "history": [
     {
@@ -1480,6 +1522,48 @@
       "timestamp": "2026-03-07T12:20:18.231Z",
       "feature": "vrew-videogen-pipeline Gap 분석",
       "phase": "act",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-25T11:26:35.805Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-25T11:26:39.274Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-25T11:26:43.278Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-25T11:33:38.696Z",
+      "feature": "neo4j_client.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-25T11:34:51.973Z",
+      "feature": "e2e",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-25T11:43:08.688Z",
+      "feature": "0030_OmniVibePro",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-25T22:22:27.375Z",
+      "feature": "0030_OmniVibePro",
+      "phase": "do",
       "action": "updated"
     }
   ]

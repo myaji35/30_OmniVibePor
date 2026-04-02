@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0",
+  "created_at": "2026-04-03T07:01:45.749414",
+  "issues": [],
+  "hooks": {
+    "on_create": [],
+    "on_start": [],
+    "on_complete": [],
+    "on_fail": [],
+    "on_learn": []
+  },
+  "knowledge": {
+    "success_patterns": [],
+    "failure_patterns": [],
+    "meta_observations": []
+  },
+  "stats": {
+    "total_issues": 0,
+    "completed": 0,
+    "failed": 0,
+    "evolved": 0
+  }
+}

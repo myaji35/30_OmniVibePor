@@ -1,14 +1,25 @@
 {
   "version": "1.0",
-  "enabled": false,
+  "enabled": true,
   "teamName": "",
-  "feature": "generate",
-  "pdcaPhase": "do",
+  "feature": "template-start",
+  "pdcaPhase": "plan",
   "orchestrationPattern": "leader",
   "ctoAgent": "opus",
-  "startedAt": "2026-02-28T20:26:39.508Z",
-  "lastUpdated": "2026-03-07T12:20:18.244Z",
-  "teammates": [],
+  "startedAt": "2026-04-02T21:59:20.822Z",
+  "lastUpdated": "2026-04-02T22:01:35.186Z",
+  "teammates": [
+    {
+      "name": "a6d6d9487a7ba12af",
+      "role": "Explore",
+      "model": "sonnet",
+      "status": "completed",
+      "currentTask": null,
+      "taskId": null,
+      "startedAt": "2026-04-02T21:59:20.828Z",
+      "lastActivityAt": "2026-04-02T22:01:35.174Z"
+    }
+  ],
   "progress": {
     "totalTasks": 0,
     "completedTasks": 0,
@@ -16,13 +27,6 @@
     "failedTasks": 0,
     "pendingTasks": 0
   },
-  "recentMessages": [
-    {
-      "from": "system",
-      "to": "all",
-      "content": "Phase check → act (auto-advanced)",
-      "timestamp": "2026-03-07T12:20:18.244Z"
-    }
-  ],
-  "sessionId": "79939a86-ed3a-4621-be15-7e8c9004ef7a"
+  "recentMessages": [],
+  "sessionId": "1456f515-108d-43f3-a368-e9c2b5cdca31"
 }
