@@ -1,14 +1,14 @@
 'use client'
 
 /**
- * 전략 수립 대시보드 — AI Director가 채널별 전략 + 콘텐츠 캘린더 자동 생성
+ * 전략 수립 대시보드 — AI Director가 포맷별 전략 + 콘텐츠 캘린더 자동 생성
  * ISS-007: Phase 5 핵심 UI
  */
 
 import { useState, useCallback } from 'react'
 import {
-  Sparkles, Target, Calendar, TrendingUp, Loader2, Play,
-  Youtube, Instagram, FileText, ChevronDown, ChevronRight,
+  Sparkles, Target, Calendar, TrendingUp, Loader2, Play, Film,
+  FileText, ChevronDown, ChevronRight,
   Zap, BarChart3, Clock, ArrowRight,
 } from 'lucide-react'
 import AppShell from '@/components/AppShell'
@@ -50,18 +50,18 @@ interface StrategyResult {
 }
 
 // ── Constants ────────────────────────────────────
-const CHANNELS = [
-  { id: 'youtube', label: 'YouTube', icon: <Youtube className="w-4 h-4" /> },
-  { id: 'instagram', label: 'Instagram', icon: <Instagram className="w-4 h-4" /> },
-  { id: 'tiktok', label: 'TikTok', icon: <Play className="w-4 h-4" /> },
-  { id: 'blog', label: '블로그', icon: <FileText className="w-4 h-4" /> },
+const FORMATS = [
+  { id: 'promo', label: '홍보 영상', icon: <Film className="w-4 h-4" /> },
+  { id: 'explainer', label: '설명 영상', icon: <Play className="w-4 h-4" /> },
+  { id: 'presentation', label: '프레젠테이션', icon: <FileText className="w-4 h-4" /> },
+  { id: 'shorts', label: '숏폼 (60초)', icon: <Zap className="w-4 h-4" /> },
 ]
 
-const CHANNEL_COLORS: Record<string, string> = {
-  youtube: '#FF0000',
-  instagram: '#E4405F',
-  tiktok: '#00F2EA',
-  blog: '#00A1E0',
+const FORMAT_COLORS: Record<string, string> = {
+  promo: '#A855F7',
+  explainer: '#3B82F6',
+  presentation: '#00A1E0',
+  shorts: '#F59E0B',
 }
 
 const TONES = [
@@ -89,7 +89,7 @@ export default function StrategyPage() {
   const [targetAudience, setTargetAudience] = useState('')
   const [industry, setIndustry] = useState('general')
   const [tone, setTone] = useState('professional')
-  const [channels, setChannels] = useState(['youtube', 'instagram', 'blog'])
+  const [formats, setFormats] = useState(['promo', 'explainer'])
   const [weeks, setWeeks] = useState(4)
   const [budget, setBudget] = useState('medium')
 
@@ -99,9 +99,9 @@ export default function StrategyPage() {
   const [error, setError] = useState<string | null>(null)
   const [expandedWeek, setExpandedWeek] = useState<number | null>(1)
 
-  const toggleChannel = (ch: string) => {
-    setChannels(prev =>
-      prev.includes(ch) ? prev.filter(c => c !== ch) : [...prev, ch]
+  const toggleFormat = (f: string) => {
+    setFormats(prev =>
+      prev.includes(f) ? prev.filter(x => x !== f) : [...prev, f]
     )
   }
 
@@ -125,7 +125,7 @@ export default function StrategyPage() {
           target_audience: targetAudience,
           industry,
           tone,
-          channels,
+          channels: formats,
           duration_weeks: weeks,
           budget_level: budget,
         }),
@@ -159,7 +159,7 @@ export default function StrategyPage() {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-white">전략 수립</h1>
-            <p className="text-sm text-white/40">AI Director가 채널별 전략 + 콘텐츠 캘린더를 자동 생성합니다</p>
+            <p className="text-sm text-white/40">AI Director가 포맷별 전략 + 콘텐츠 캘린더를 자동 생성합니다</p>
           </div>
         </div>
 
@@ -218,24 +218,24 @@ export default function StrategyPage() {
                 </div>
               </div>
 
-              {/* 채널 */}
+              {/* 영상 포맷 */}
               <div>
-                <label className="block text-xs font-semibold text-gray-400 mb-1.5">채널</label>
+                <label className="block text-xs font-semibold text-gray-400 mb-1.5">영상 포맷</label>
                 <div className="flex flex-wrap gap-2">
-                  {CHANNELS.map(ch => (
-                    <button key={ch.id} onClick={() => toggleChannel(ch.id)}
+                  {FORMATS.map(f => (
+                    <button key={f.id} onClick={() => toggleFormat(f.id)}
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all
-                        ${channels.includes(ch.id)
+                        ${formats.includes(f.id)
                           ? 'text-white border'
                           : 'bg-white/[0.05] text-white/30 border border-white/10'
                         }`}
-                      style={channels.includes(ch.id) ? {
-                        background: `${CHANNEL_COLORS[ch.id]}20`,
-                        borderColor: `${CHANNEL_COLORS[ch.id]}40`,
-                        color: CHANNEL_COLORS[ch.id],
+                      style={formats.includes(f.id) ? {
+                        background: `${FORMAT_COLORS[f.id]}20`,
+                        borderColor: `${FORMAT_COLORS[f.id]}40`,
+                        color: FORMAT_COLORS[f.id],
                       } : undefined}
                     >
-                      {ch.icon} {ch.label}
+                      {f.icon} {f.label}
                     </button>
                   ))}
                 </div>
@@ -288,7 +288,7 @@ export default function StrategyPage() {
                   {[
                     { icon: <Calendar className="w-4 h-4" />, n: `${result.total_contents}개`, l: '총 콘텐츠', c: '#6366F1' },
                     { icon: <Clock className="w-4 h-4" />, n: `${result.estimated_weekly_hours.toFixed(1)}h`, l: '주당 예상 시간', c: '#22C55E' },
-                    { icon: <BarChart3 className="w-4 h-4" />, n: `${result.channel_strategies.length}개`, l: '활용 채널', c: '#00A1E0' },
+                    { icon: <BarChart3 className="w-4 h-4" />, n: `${result.channel_strategies.length}개`, l: '영상 포맷', c: '#00A1E0' },
                   ].map((k, i) => (
                     <div key={i} className="rounded-xl bg-[#141414] border border-white/[0.07] p-4">
                       <div className="flex items-center gap-2 mb-2">
@@ -309,14 +309,14 @@ export default function StrategyPage() {
                   <p className="text-sm text-white/60 leading-relaxed">{result.overall_strategy}</p>
                 </div>
 
-                {/* 채널별 전략 */}
+                {/* 포맷별 전략 */}
                 <div className="rounded-xl bg-[#141414] border border-white/[0.07] p-5">
-                  <h3 className="text-sm font-bold text-white/70 mb-4">채널별 전략</h3>
+                  <h3 className="text-sm font-bold text-white/70 mb-4">포맷별 전략</h3>
                   <div className="space-y-3">
                     {result.channel_strategies.map((cs, i) => (
                       <div key={i} className="rounded-lg bg-white/[0.02] border border-white/[0.05] p-4">
                         <div className="flex items-center gap-2 mb-2">
-                          <span className="w-2 h-2 rounded-full" style={{ background: CHANNEL_COLORS[cs.channel] || '#6366F1' }} />
+                          <span className="w-2 h-2 rounded-full" style={{ background: FORMAT_COLORS[cs.channel] || '#6366F1' }} />
                           <span className="text-sm font-bold text-white">{cs.channel.toUpperCase()}</span>
                           <span className="text-xs text-white/30 ml-auto">{cs.posting_frequency}</span>
                         </div>
@@ -353,7 +353,7 @@ export default function StrategyPage() {
                                 <div key={j} className="flex items-center gap-3 py-2 border-t border-white/[0.03]">
                                   <span className="text-xs font-mono text-white/25 w-6">{item.day}</span>
                                   <span className="w-2 h-2 rounded-full flex-shrink-0"
-                                    style={{ background: CHANNEL_COLORS[item.channel] || '#6366F1' }} />
+                                    style={{ background: FORMAT_COLORS[item.channel] || '#6366F1' }} />
                                   <span className="text-xs text-white/40 w-16">{item.channel}</span>
                                   <span className="text-xs text-white/60 flex-1">{item.topic}</span>
                                   <span className="text-[10px] text-white/20 truncate max-w-[200px]">"{item.hook}"</span>
