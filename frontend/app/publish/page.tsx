@@ -77,8 +77,8 @@ export default function PublishPage() {
     setLoading(true)
     try {
       const [chRes, hRes] = await Promise.all([
-        fetch('/api/v1/publish/channels'),
-        fetch('/api/v1/publish/history?limit=20'),
+        fetch('/api/publish?action=channels'),
+        fetch('/api/publish?action=history'),
       ])
       if (chRes.ok) setChannels((await chRes.json()).channels || [])
       if (hRes.ok) setHistory((await hRes.json()).items || [])
@@ -94,7 +94,7 @@ export default function PublishPage() {
     setPublishResult(null)
 
     try {
-      const res = await fetch('/api/v1/publish/schedule', {
+      const res = await fetch('/api/publish?action=schedule', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -116,7 +116,7 @@ export default function PublishPage() {
 
   const handleFeedback = useCallback(async () => {
     try {
-      await fetch('/api/v1/publish/feedback', {
+      await fetch('/api/publish?action=feedback', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

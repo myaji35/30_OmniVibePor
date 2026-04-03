@@ -85,7 +85,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetch('/api/campaigns')
-      .then((r) => r.json())
+      .then((r) => r.ok ? r.json() : { campaigns: [] })
       .then((data) => {
         const list: Campaign[] = data.campaigns || []
         setCampaigns(list)
@@ -98,7 +98,11 @@ export default function DashboardPage() {
           campaignsNeedAttention: list.filter((c) => c.status === 'active' && (c.content_count || 0) < 3).length,
         })
       })
-      .catch(() => {})
+      .catch(() => {
+        // 백엔드 미연결 시 데모 데이터
+        setCampaigns([])
+        setStats({ totalVideos: 0, activeCampaigns: 0, avgRenderTime: '—', videoGrowth: '—', campaignsNeedAttention: 0 })
+      })
       .finally(() => setLoading(false))
   }, [])
 

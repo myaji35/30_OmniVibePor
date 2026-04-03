@@ -65,7 +65,7 @@ export default function AudioPage() {
     setLoading(true)
     setTaskStatus(null)
     try {
-      const res = await fetch('http://localhost:8000/api/v1/audio/generate', {
+      const res = await fetch('/api/audio/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text, voice_id: voiceId, language, accuracy_threshold: accuracyThreshold, max_attempts: maxAttempts }),
@@ -83,7 +83,7 @@ export default function AudioPage() {
 
   const checkTaskStatus = async (id: string) => {
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/audio/status/${id}`)
+      const res = await fetch(`/api/audio/status/${id}`)
       const data: TaskStatus = await res.json()
       setTaskStatus(data)
       if (data.status === 'SUCCESS' || data.status === 'FAILURE') {
@@ -95,7 +95,7 @@ export default function AudioPage() {
 
   const downloadAudio = () => {
     if (!taskId) return
-    window.open(`http://localhost:8000/api/v1/audio/download/${taskId}`, '_blank')
+    window.open(`/api/audio/download/${taskId}`, '_blank')
   }
 
   const isProcessing = loading || taskStatus?.status === 'STARTED' || taskStatus?.status === 'PENDING'
@@ -240,7 +240,7 @@ export default function AudioPage() {
               </div>
 
               <audio controls className="w-full mb-3 rounded-xl"
-                src={`http://localhost:8000/api/v1/audio/download/${taskId}`} />
+                src={`/api/audio/download/${taskId}`} />
 
               <button onClick={downloadAudio}
                 className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all"

@@ -55,8 +55,8 @@ function ProduceContent() {
 
     try {
       let endpoint = ''
-      if (format === 'presentation') endpoint = '/api/v1/produce/presentation'
-      else if (format === 'narration') endpoint = '/api/v1/produce/narration'
+      if (format === 'presentation') endpoint = `/api/produce?type=presentation`
+      else if (format === 'narration') endpoint = `/api/produce?type=narration`
       else {
         setError('영상 렌더링은 /render 페이지에서 진행하세요')
         setLoading(null)
