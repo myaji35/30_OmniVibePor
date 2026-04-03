@@ -1,209 +1,134 @@
 {
-  "version": "2.0.0",
-  "created_at": "2026-04-03T07:01:45.749414",
-  "updated_at": "2026-04-03T10:00:00",
+  "version": "3.0.0",
+  "updated_at": "2026-04-03T11:40:00",
   "architecture": "supervisor",
   "scale_mode": "full",
-  "current_phase": "Phase 5",
+  "current_phase": "Stabilization",
   "phase_summary": {
-    "Phase 1": "DONE — 기반 정비 + VIDEOGEN",
-    "Phase 2": "DONE — 네비게이션 + 데이터 모델",
-    "Phase 3": "DONE — VREW 편집기 + Quota + 온보딩 + WebSocket (ISS-001~004)",
-    "Phase 4": "PENDING — E2E 통합 테스트 + 프로덕션 배포",
-    "Phase 5": "PENDING — 전략 수립 엔진 + 멀티포맷 콘텐츠 생산"
+    "Phase 1-3": "DONE",
+    "Phase 4": "DONE (E2E 20/20, 번들 84KB)",
+    "Phase 5": "DONE (전략→컨셉→생산→배포)",
+    "Stabilization": "IN_PROGRESS — 검토 보고서 기반 이슈 해결"
   },
   "issues": [
+    { "id": "ISS-001", "status": "DONE", "title": "VREW SubtitleTimeline + Whisper API" },
+    { "id": "ISS-002", "status": "DONE", "title": "Tier별 Quota + 업그레이드 UI" },
+    { "id": "ISS-003", "status": "DONE", "title": "온보딩 투어 OnboardingTour" },
+    { "id": "ISS-004", "status": "DONE", "title": "WebSocket Redis 캐시 동기화" },
+    { "id": "ISS-005", "status": "DONE", "title": "E2E 통합 테스트 20/20 PASSED" },
+    { "id": "ISS-006", "status": "DONE", "title": "성능 검증 — 번들 84KB" },
+    { "id": "ISS-007", "status": "DONE", "title": "전략 수립 엔진 /strategy" },
+    { "id": "ISS-008", "status": "DONE", "title": "컨셉 기획기 /concept" },
+    { "id": "ISS-009", "status": "DONE", "title": "멀티포맷 생산 /produce" },
+    { "id": "ISS-010", "status": "DONE", "title": "멀티채널 배포 /publish" },
+
     {
-      "id": "ISS-001", "status": "DONE", "title": "VREW SubtitleTimeline + Whisper API", "realplan": "3.1"
-    },
-    {
-      "id": "ISS-002", "status": "DONE", "title": "Tier별 Quota + 업그레이드 UI", "realplan": "3.2"
-    },
-    {
-      "id": "ISS-003", "status": "DONE", "title": "온보딩 플로우 OnboardingTour", "realplan": "3.3"
-    },
-    {
-      "id": "ISS-004", "status": "DONE", "title": "WebSocket Redis 캐시 동기화", "realplan": "3.4"
-    },
-    {
-      "id": "ISS-005",
-      "title": "E2E 통합 테스트: Creator/Marketer User Flow",
-      "type": "RUN_TESTS",
-      "status": "DONE",
-      "priority": "P1",
-      "assign_to": "test-harness",
-      "depth": 0,
-      "retry_count": 0,
-      "parent_id": null,
-      "depends_on": [],
-      "payload": {
-        "realplan_task": "4.1",
-        "description": "Creator 페르소나 전체 User Flow 검증 + 실패 시나리오 10개",
-        "success_criteria": ["10개 페이지 순환 성공", "실패 시나리오 사용자 친화적 에러"]
-      },
-      "result": null,
-      "spawn_rules": ["SCORE", "SCENARIO_PLAY"]
-    },
-    {
-      "id": "ISS-006",
-      "title": "성능 최적화: API P95 < 3s, 렌더링 < 2min",
-      "type": "GENERATE_CODE",
-      "status": "DONE",
-      "priority": "P1",
-      "assign_to": "agent-harness",
-      "depth": 0,
-      "retry_count": 0,
-      "parent_id": null,
-      "depends_on": ["ISS-005"],
-      "payload": {
-        "realplan_task": "4.2",
-        "description": "API P95 < 3초, Remotion 렌더링 < 2분, 프론트엔드 번들 < 3MB",
-        "success_criteria": ["P95 < 3s", "렌더 < 2min", "번들 < 3MB"]
-      },
-      "result": null,
-      "spawn_rules": ["RUN_TESTS", "SCORE"]
-    },
-    {
-      "id": "ISS-007",
-      "title": "전략 수립 엔진: AI Director + 채널별 전략 제안",
-      "type": "GENERATE_CODE",
-      "status": "DONE",
+      "id": "ISS-011",
+      "title": "[P0] /strategy 런타임 에러 — channels 의존성 배열 참조",
+      "type": "FIX_BUG",
+      "status": "READY",
       "priority": "P0",
       "assign_to": "agent-harness",
-      "depth": 0,
-      "retry_count": 0,
-      "parent_id": null,
       "depends_on": [],
       "payload": {
-        "realplan_task": "5.1",
-        "scope": [
-          "backend/app/agents/strategy_agent.py",
-          "backend/app/api/v1/strategy.py",
-          "frontend/app/strategy/page.tsx"
-        ],
-        "description": "AI Director가 비즈니스 목표 → 채널별 전략 → 콘텐츠 캘린더를 자동 생성. Google Sheets 연동.",
-        "success_criteria": [
-          "비즈니스 목표 입력 → 채널별 전략 JSON 출력",
-          "주간 콘텐츠 캘린더 자동 생성",
-          "Google Sheets 동기화"
-        ]
-      },
-      "result": null,
-      "spawn_rules": ["RUN_TESTS", "BIZ_VALIDATE", "DOMAIN_ANALYZE"]
+        "file": "frontend/app/strategy/page.tsx",
+        "line": 143,
+        "problem": "channels 변수를 formats로 변경했으나 useCallback 의존성 배열에 channels가 남아있음",
+        "fix": "의존성 배열의 channels → formats"
+      }
     },
     {
-      "id": "ISS-008",
-      "title": "컨셉 기획기: AI Writer + 스크립트 → 스토리보드 자동화",
-      "type": "GENERATE_CODE",
-      "status": "DONE",
+      "id": "ISS-012",
+      "title": "[P0] macOS ._* 메타데이터 파일 2,904개 정리",
+      "type": "FIX_BUG",
+      "status": "READY",
       "priority": "P0",
       "assign_to": "agent-harness",
-      "depth": 0,
-      "retry_count": 0,
-      "parent_id": null,
-      "depends_on": ["ISS-007"],
+      "depends_on": [],
       "payload": {
-        "realplan_task": "5.2",
-        "scope": [
-          "backend/app/services/concept_planner.py",
-          "frontend/app/concept/page.tsx",
-          "frontend/components/ConceptBoard.tsx"
-        ],
-        "description": "전략에서 도출된 컨셉 → AI Writer가 스크립트 자동 생성 → 스토리보드 시각화. 편집 가능한 컨셉 보드 UI.",
-        "success_criteria": [
-          "전략 → 컨셉 → 스크립트 3단계 자동 흐름",
-          "스토리보드 카드 DnD 편집",
-          "컨셉 보드에서 직접 영상/프레젠테이션 생성 트리거"
-        ]
-      },
-      "result": null,
-      "spawn_rules": ["RUN_TESTS", "UI_REVIEW", "SCENARIO_PLAY"]
+        "problem": "._* 파일 2,904개가 Git에 포함되어 저장소 오염",
+        "fix": "find + rm, .gitignore에 ._* 추가"
+      }
     },
     {
-      "id": "ISS-009",
-      "title": "멀티포맷 콘텐츠 생산: 영상 + 프레젠테이션 + 썸네일",
-      "type": "GENERATE_CODE",
-      "status": "DONE",
-      "priority": "P1",
+      "id": "ISS-013",
+      "title": "[P0] /concept → /production 네비 오류 수정",
+      "type": "FIX_BUG",
+      "status": "READY",
+      "priority": "P0",
       "assign_to": "agent-harness",
-      "depth": 0,
-      "retry_count": 0,
-      "parent_id": null,
-      "depends_on": ["ISS-008"],
+      "depends_on": [],
       "payload": {
-        "realplan_task": "5.3",
-        "scope": [
-          "frontend/app/produce/page.tsx",
-          "backend/app/services/presentation_generator.py",
-          "backend/app/services/thumbnail_generator.py"
-        ],
-        "description": "컨셉에서 멀티포맷 자동 생산. Remotion(영상), PDF/HTML(프레젠테이션), AI 이미지(썸네일). edge-tts 나레이션 자동 생성.",
-        "success_criteria": [
-          "컨셉 → 영상 MP4 자동 렌더",
-          "컨셉 → 프레젠테이션 PDF 자동 생성",
-          "컨셉 → 썸네일 AI 생성",
-          "edge-tts 나레이션 자동 삽입"
-        ]
-      },
-      "result": null,
-      "spawn_rules": ["RUN_TESTS", "DESIGN_REVIEW", "SCENARIO_PLAY"]
+        "file": "frontend/app/concept/page.tsx",
+        "problem": "handleProduce가 /production으로 이동하지만 해당 경로는 ProductionDashboard (다른 용도)",
+        "fix": "/produce 또는 /render로 변경"
+      }
     },
     {
-      "id": "ISS-010",
-      "title": "멀티채널 배포: 예약 발행 + 성과 추적",
-      "type": "GENERATE_CODE",
-      "status": "DONE",
+      "id": "ISS-014",
+      "title": "[P1] /publish 페이지 SNS 채널 잔존 → 영상 포맷으로 전환",
+      "type": "FIX_BUG",
+      "status": "READY",
       "priority": "P1",
       "assign_to": "agent-harness",
-      "depth": 0,
-      "retry_count": 0,
-      "parent_id": null,
-      "depends_on": ["ISS-009"],
+      "depends_on": [],
       "payload": {
-        "realplan_task": "5.4",
-        "scope": [
-          "frontend/app/publish/page.tsx",
-          "backend/app/services/channel_publisher.py",
-          "backend/app/services/content_performance_tracker.py"
-        ],
-        "description": "YouTube/Instagram/TikTok/블로그 멀티채널 예약 발행. 성과 데이터 → GraphRAG → 다음 전략 최적화 루프.",
-        "success_criteria": [
-          "멀티채널 예약 발행 UI",
-          "성과 데이터 자동 수집",
-          "GraphRAG에 성과 저장 → 전략 피드백 루프"
-        ]
-      },
-      "result": null,
-      "spawn_rules": ["RUN_TESTS", "BIZ_VALIDATE", "SCENARIO_PLAY"]
+        "file": "frontend/app/publish/page.tsx",
+        "problem": "YouTube/Instagram/TikTok/블로그 채널 선택이 SocialDoctors 영역과 충돌",
+        "fix": "영상 출력/공유 중심으로 재설계"
+      }
+    },
+    {
+      "id": "ISS-015",
+      "title": "[P1] AppShell 미사용 페이지 8개 — 네비 일관성 확보",
+      "type": "FIX_BUG",
+      "status": "CREATED",
+      "priority": "P1",
+      "assign_to": "agent-harness",
+      "depends_on": ["ISS-011"],
+      "payload": {
+        "pages": ["/pricing", "/presentation", "/script-editor", "/storyboard", "/studio", "/subtitle-editor", "/test-websocket"],
+        "problem": "네비게이션 없이 독립 렌더링 → 사용자 UX 혼란",
+        "fix": "AppShell 래핑 추가"
+      }
+    },
+    {
+      "id": "ISS-016",
+      "title": "[P1] 랜딩/파이프라인에서 SocialDoctors 잔존 기능 완전 정리",
+      "type": "FIX_BUG",
+      "status": "CREATED",
+      "priority": "P1",
+      "assign_to": "agent-harness",
+      "depends_on": ["ISS-014"],
+      "payload": {
+        "problem": "랜딩 파이프라인 04 배포, Feature '멀티채널 배포' 등 SNS 배포 표현 잔존",
+        "fix": "영상 콘텐츠 제작/공유 중심으로 통일"
+      }
     }
   ],
-  "hooks": {
-    "on_create": [],
-    "on_start": [],
-    "on_complete": [],
-    "on_fail": [],
-    "on_learn": []
-  },
+  "hooks": { "on_create": [], "on_start": [], "on_complete": [], "on_fail": [], "on_learn": [] },
   "knowledge": {
     "success_patterns": [
-      "Phase 1-2: SLDS 디자인 시스템, 3-Tier 네비게이션, Templates API, Remotion 통합",
-      "Phase 3: VREW 편집기, 4-Tier Quota, 온보딩 투어, WebSocket 안정화",
-      "edge-tts: 무료 한국어 TTS 8종, 나레이션 생산 파이프라인 구축",
-      "Remotion 프로모 영상 파이프라인: 씬별 나레이션 싱크 + BGM + 다운로드/삭제 UI"
+      "Phase 1-5 전체 구현 완료",
+      "E2E 20/20 PASSED, 번들 84KB",
+      "edge-tts 무료 한국어 TTS 파이프라인 구축"
     ],
     "failure_patterns": [
-      "나레이션-씬 싱크 불일치: narration_full.mp3 단일 사용 → 씬별 개별 MP3로 해결"
+      "변수명 리팩토링 시 의존성 배열 미갱신 (channels→formats)",
+      "macOS ._* 파일 .gitignore 누락",
+      "기능 구현 후 on_complete 파생 이슈 자동 생성 미작동"
     ],
     "meta_observations": [
-      "프로젝트 본래 컨셉: 전략 수립 → 컨셉 기획 → 콘텐츠 생산 → 배포 자동화",
-      "Remotion은 콘텐츠 생산 도구 중 하나 (영상 렌더링 엔진)",
-      "Phase 5에서 본래 컨셉의 핵심 파이프라인(전략→컨셉→생산→배포) 구현 필요"
+      "Harness on_complete hook이 코드 변경 후 파생 이슈(FIX_BUG, UI_REVIEW)를 자동 생성하지 못함 → 수동 검토 필요",
+      "SocialDoctors 영역 분리 시 전체 페이지 일괄 검토 필요했으나 개별 파일만 수정",
+      "프로젝트 복잡도 증가 시 qa-reviewer/design-critic 에이전트 주기적 실행 필요"
     ]
   },
   "stats": {
-    "total_issues": 10,
+    "total_issues": 16,
     "completed": 10,
     "failed": 0,
-    "evolved": 0
+    "evolved": 0,
+    "stabilization_issues": 6
   }
 }

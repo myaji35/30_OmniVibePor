@@ -140,7 +140,7 @@ export default function StrategyPage() {
     } finally {
       setLoading(false)
     }
-  }, [brandName, businessGoal, targetAudience, industry, tone, channels, weeks, budget])
+  }, [brandName, businessGoal, targetAudience, industry, tone, formats, weeks, budget])
 
   // 주차별 캘린더 그룹핑
   const calendarByWeek = result?.content_calendar.reduce<Record<number, CalendarItem[]>>((acc, item) => {

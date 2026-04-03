@@ -185,7 +185,7 @@ function ConceptContent() {
       brand,
       type,
     })
-    window.location.href = `/production?${params.toString()}`
+    window.location.href = `/produce?${params.toString()}`
   }
 
   const PHASE_STEPS = [

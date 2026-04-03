@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-03-25T22:22:27.375Z",
+  "lastUpdated": "2026-04-03T03:24:41.387Z",
   "activeFeatures": [
     "template-start",
     "generate",
@@ -36,7 +36,24 @@
     "vrew-videogen-pipeline Gap 분석",
     "neo4j_client.py",
     "e2e",
-    "0030_OmniVibePro"
+    "0030_OmniVibePro",
+    "vrew",
+    "whisper-timing",
+    "quota",
+    "pricing",
+    "onboarding",
+    "promo",
+    "websocket_manager.py",
+    "scripts",
+    "render-promo",
+    "render",
+    "agents",
+    "strategy",
+    "concept",
+    "presentation_generator.py",
+    "produce",
+    "publish",
+    "tests"
   ],
   "primaryFeature": "template-start",
   "features": {
@@ -146,7 +163,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-17T04:07:23.741Z",
-        "lastUpdated": "2026-03-07T12:11:15.699Z"
+        "lastUpdated": "2026-04-03T02:24:52.242Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/page.tsx"
     },
@@ -199,7 +216,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-17T04:13:50.231Z",
-        "lastUpdated": "2026-03-25T11:26:43.278Z"
+        "lastUpdated": "2026-04-03T01:34:30.992Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/api/v1/__init__.py"
     },
@@ -238,9 +255,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-17T04:24:38.539Z",
-        "lastUpdated": "2026-02-28T13:50:13.256Z"
+        "lastUpdated": "2026-04-02T22:19:45.404Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/models/render.py"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/models/subscription.py"
     },
     "scenes": {
       "phase": "do",
@@ -290,9 +307,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-28T13:52:02.548Z",
-        "lastUpdated": "2026-03-07T11:38:51.891Z"
+        "lastUpdated": "2026-04-02T22:13:10.420Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/.claude/skills/videogen/templates/FullVisual.tsx"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/remotion/templates/YouTubeTemplate.tsx"
     },
     "remotion": {
       "phase": "do",
@@ -303,7 +320,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-28T13:52:29.659Z",
-        "lastUpdated": "2026-02-28T13:55:14.036Z"
+        "lastUpdated": "2026-04-02T23:27:28.092Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/remotion/Root.tsx"
     },
@@ -503,6 +520,227 @@
         "lastUpdated": "2026-03-25T22:22:27.375Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/deploy-omnivibe.sh"
+    },
+    "vrew": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-02T22:11:19.922Z",
+        "lastUpdated": "2026-04-02T22:12:03.932Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/components/vrew/ScriptSubtitleSync.tsx"
+    },
+    "whisper-timing": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-02T22:13:29.945Z",
+        "lastUpdated": "2026-04-02T22:13:29.945Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/api/whisper-timing/route.ts"
+    },
+    "quota": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-02T22:17:27.277Z",
+        "lastUpdated": "2026-04-02T22:17:50.323Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/components/quota/UpgradePrompt.tsx"
+    },
+    "pricing": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-02T22:19:12.038Z",
+        "lastUpdated": "2026-04-02T22:19:12.038Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/pricing/page.tsx"
+    },
+    "onboarding": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-02T22:21:14.663Z",
+        "lastUpdated": "2026-04-02T22:21:14.663Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/components/onboarding/OnboardingTour.tsx"
+    },
+    "promo": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-02T22:22:47.479Z",
+        "lastUpdated": "2026-04-02T23:27:13.836Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/remotion/promo/ChopdPromo.tsx"
+    },
+    "websocket_manager.py": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-02T22:25:27.881Z",
+        "lastUpdated": "2026-04-02T22:25:55.595Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/services/websocket_manager.py"
+    },
+    "scripts": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-02T23:01:59.280Z",
+        "lastUpdated": "2026-04-02T23:17:52.382Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/scripts/generate_bobot_narration.py"
+    },
+    "render-promo": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-02T23:30:53.820Z",
+        "lastUpdated": "2026-04-02T23:30:53.820Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/api/render-promo/route.ts"
+    },
+    "render": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-02T23:31:29.181Z",
+        "lastUpdated": "2026-04-02T23:31:29.181Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/render/page.tsx"
+    },
+    "agents": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-03T01:14:27.337Z",
+        "lastUpdated": "2026-04-03T02:07:32.684Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/agents/strategy_agent.py"
+    },
+    "strategy": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-03T01:16:03.540Z",
+        "lastUpdated": "2026-04-03T03:22:15.619Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/strategy/page.tsx"
+    },
+    "concept": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-03T01:18:38.090Z",
+        "lastUpdated": "2026-04-03T03:23:00.004Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/concept/page.tsx"
+    },
+    "presentation_generator.py": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-03T01:24:34.904Z",
+        "lastUpdated": "2026-04-03T01:24:34.904Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/services/presentation_generator.py"
+    },
+    "produce": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-03T01:25:56.529Z",
+        "lastUpdated": "2026-04-03T01:25:56.529Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/produce/page.tsx"
+    },
+    "publish": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-03T01:35:33.115Z",
+        "lastUpdated": "2026-04-03T03:24:41.387Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/publish/page.tsx"
+    },
+    "tests": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-03T02:05:46.888Z",
+        "lastUpdated": "2026-04-03T02:07:08.955Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/tests/conftest.py"
     }
   },
   "pipeline": {
@@ -513,7 +751,7 @@
   "session": {
     "startedAt": "2026-02-17T03:58:39.163Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-03-25T22:22:27.375Z"
+    "lastActivity": "2026-04-03T03:24:41.387Z"
   },
   "history": [
     {
@@ -1563,6 +1801,864 @@
     {
       "timestamp": "2026-03-25T22:22:27.375Z",
       "feature": "0030_OmniVibePro",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:11:04.756Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:11:08.957Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:11:14.118Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:11:19.922Z",
+      "feature": "vrew",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:11:29.193Z",
+      "feature": "vrew",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:11:36.697Z",
+      "feature": "vrew",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:11:52.772Z",
+      "feature": "vrew",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:12:03.932Z",
+      "feature": "vrew",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:12:17.054Z",
+      "feature": "remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:12:56.126Z",
+      "feature": "remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:13:02.753Z",
+      "feature": "templates",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:13:10.420Z",
+      "feature": "templates",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:13:29.945Z",
+      "feature": "whisper-timing",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:17:27.277Z",
+      "feature": "quota",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:17:50.323Z",
+      "feature": "quota",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:19:12.038Z",
+      "feature": "pricing",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:19:27.405Z",
+      "feature": "backend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:19:45.404Z",
+      "feature": "backend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:21:14.663Z",
+      "feature": "onboarding",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:22:47.479Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:22:55.936Z",
+      "feature": "remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:23:01.498Z",
+      "feature": "remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:25:27.881Z",
+      "feature": "websocket_manager.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:25:36.203Z",
+      "feature": "websocket_manager.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:25:42.126Z",
+      "feature": "websocket_manager.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:25:47.544Z",
+      "feature": "websocket_manager.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:25:55.595Z",
+      "feature": "websocket_manager.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:26:08.642Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:26:16.318Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:28:13.416Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:30:44.198Z",
+      "feature": "remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:36:36.142Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:36:45.679Z",
+      "feature": "remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:39:42.709Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:39:56.164Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:40:04.062Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:40:12.964Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:40:20.093Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:40:26.427Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:40:31.983Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:40:37.582Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:40:42.912Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:40:48.407Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:40:54.592Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:41:00.525Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:41:07.153Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:41:13.023Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:41:18.929Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:41:26.136Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:41:34.681Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:41:40.566Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:41:49.374Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:41:54.798Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:42:00.513Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:42:08.391Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:42:13.619Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:42:19.487Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:42:34.034Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:42:44.733Z",
+      "feature": "remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:42:53.589Z",
+      "feature": "remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:48:07.625Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:48:18.165Z",
+      "feature": "remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T22:48:24.511Z",
+      "feature": "remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T23:01:59.280Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T23:02:14.687Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T23:02:20.319Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T23:02:53.358Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T23:14:18.638Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T23:16:08.787Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T23:16:17.780Z",
+      "feature": "remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T23:16:26.280Z",
+      "feature": "remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T23:17:52.382Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T23:19:14.815Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T23:19:23.417Z",
+      "feature": "remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T23:19:32.522Z",
+      "feature": "remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T23:26:26.608Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T23:26:52.088Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T23:27:13.836Z",
+      "feature": "promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T23:27:28.092Z",
+      "feature": "remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T23:30:53.820Z",
+      "feature": "render-promo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-02T23:31:29.181Z",
+      "feature": "render",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T01:14:27.337Z",
+      "feature": "agents",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T01:14:40.754Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T01:14:46.584Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T01:14:52.713Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T01:16:03.540Z",
+      "feature": "strategy",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T01:18:38.090Z",
+      "feature": "concept",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T01:24:34.904Z",
+      "feature": "presentation_generator.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T01:25:00.289Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T01:25:06.580Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T01:25:11.023Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T01:25:56.529Z",
+      "feature": "produce",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T01:34:20.364Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T01:34:25.841Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T01:34:30.992Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T01:35:33.115Z",
+      "feature": "publish",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:05:46.888Z",
+      "feature": "tests",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:05:53.616Z",
+      "feature": "tests",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:06:25.542Z",
+      "feature": "tests",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:06:43.828Z",
+      "feature": "tests",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:07:08.955Z",
+      "feature": "tests",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:07:32.684Z",
+      "feature": "agents",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:08:09.435Z",
+      "feature": "concept",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:08:18.335Z",
+      "feature": "concept",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:16:26.407Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:16:34.254Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:16:40.751Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:16:47.351Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:16:53.379Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:17:02.799Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:17:08.896Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:17:18.524Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:17:28.072Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:17:37.242Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:17:50.811Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:18:01.751Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:18:14.926Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:19:50.491Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:20:20.543Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:20:36.029Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:21:03.558Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:21:39.969Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:24:52.242Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:27:11.135Z",
+      "feature": "strategy",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:27:19.095Z",
+      "feature": "strategy",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:27:25.962Z",
+      "feature": "strategy",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:27:34.530Z",
+      "feature": "strategy",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:27:47.682Z",
+      "feature": "strategy",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:27:56.663Z",
+      "feature": "strategy",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:28:04.899Z",
+      "feature": "strategy",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:28:11.842Z",
+      "feature": "strategy",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T02:28:20.592Z",
+      "feature": "strategy",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:22:15.619Z",
+      "feature": "strategy",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:23:00.004Z",
+      "feature": "concept",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:23:16.528Z",
+      "feature": "publish",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:23:26.457Z",
+      "feature": "publish",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:23:33.761Z",
+      "feature": "publish",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:23:47.998Z",
+      "feature": "publish",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:23:55.747Z",
+      "feature": "publish",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:24:02.495Z",
+      "feature": "publish",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:24:09.732Z",
+      "feature": "publish",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:24:15.681Z",
+      "feature": "publish",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:24:41.387Z",
+      "feature": "publish",
       "phase": "do",
       "action": "updated"
     }

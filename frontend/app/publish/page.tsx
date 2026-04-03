@@ -7,9 +7,9 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import {
-  Send, Calendar, BarChart3, Youtube, Instagram, Play, FileText,
-  Loader2, CheckCircle, Clock, AlertCircle, TrendingUp, Eye, Heart,
-  MessageCircle, Share2, ArrowRight, RefreshCw,
+  Send, Calendar, BarChart3, Film, Play, FileText, Mic,
+  Loader2, CheckCircle, Clock, AlertCircle, TrendingUp,
+  Share2, ArrowRight, RefreshCw, Download,
 } from 'lucide-react'
 import AppShell from '@/components/AppShell'
 
@@ -30,18 +30,18 @@ interface PublishItem {
   publish_date: string
 }
 
-const CHANNEL_ICONS: Record<string, React.ReactNode> = {
-  youtube: <Youtube className="w-4 h-4" />,
-  instagram: <Instagram className="w-4 h-4" />,
-  tiktok: <Play className="w-4 h-4" />,
-  blog: <FileText className="w-4 h-4" />,
+const OUTPUT_ICONS: Record<string, React.ReactNode> = {
+  video: <Film className="w-4 h-4" />,
+  presentation: <FileText className="w-4 h-4" />,
+  narration: <Mic className="w-4 h-4" />,
+  shorts: <Play className="w-4 h-4" />,
 }
 
-const CHANNEL_COLORS: Record<string, string> = {
-  youtube: '#FF0000',
-  instagram: '#E4405F',
-  tiktok: '#00F2EA',
-  blog: '#00A1E0',
+const OUTPUT_COLORS: Record<string, string> = {
+  video: '#A855F7',
+  presentation: '#3B82F6',
+  narration: '#22C55E',
+  shorts: '#F59E0B',
 }
 
 const STATUS_MAP: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
@@ -59,7 +59,7 @@ export default function PublishPage() {
 
   // 배포 폼
   const [title, setTitle] = useState('')
-  const [channel, setChannel] = useState('youtube')
+  const [outputType, setOutputType] = useState('video')
   const [contentUrl, setContentUrl] = useState('')
   const [description, setDescription] = useState('')
   const [scheduleAt, setScheduleAt] = useState('')
@@ -98,7 +98,7 @@ export default function PublishPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title, channel, content_url: contentUrl,
+          title, channel: outputType, content_url: contentUrl,
           description: description || undefined,
           schedule_at: scheduleAt || undefined,
           tags: [],
@@ -120,7 +120,7 @@ export default function PublishPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          content_id: feedbackId, channel,
+          content_id: feedbackId, channel: outputType,
           views: feedbackViews, likes: feedbackLikes,
           comments: 0, shares: 0,
           engagement_rate: feedbackViews > 0 ? (feedbackLikes / feedbackViews) * 100 : 0,
@@ -142,8 +142,8 @@ export default function PublishPage() {
             <Send className="w-5 h-5 text-[#22C55E]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">멀티채널 배포</h1>
-            <p className="text-sm text-white/40">예약 발행 + 성과 추적 → GraphRAG 피드백 루프</p>
+            <h1 className="text-2xl font-bold text-white">콘텐츠 공유 & 추적</h1>
+            <p className="text-sm text-white/40">영상 내보내기 + 성과 기록 → GraphRAG 피드백 루프</p>
           </div>
         </div>
 
@@ -160,19 +160,24 @@ export default function PublishPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-400 mb-1.5">채널</label>
+                <label className="block text-xs font-semibold text-gray-400 mb-1.5">출력 유형</label>
                 <div className="grid grid-cols-2 gap-2">
-                  {['youtube', 'instagram', 'tiktok', 'blog'].map(ch => (
-                    <button key={ch} onClick={() => setChannel(ch)}
+                  {[
+                    { id: 'video', label: 'MP4 영상' },
+                    { id: 'presentation', label: '프레젠테이션' },
+                    { id: 'narration', label: '나레이션' },
+                    { id: 'shorts', label: '숏폼 (60초)' },
+                  ].map(item => (
+                    <button key={item.id} onClick={() => setOutputType(item.id)}
                       className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition-all
-                        ${channel === ch ? 'text-white border' : 'bg-white/[0.03] text-white/30 border border-white/10'}`}
-                      style={channel === ch ? {
-                        background: `${CHANNEL_COLORS[ch]}20`,
-                        borderColor: `${CHANNEL_COLORS[ch]}40`,
-                        color: CHANNEL_COLORS[ch],
+                        ${outputType === item.id ? 'text-white border' : 'bg-white/[0.03] text-white/30 border border-white/10'}`}
+                      style={outputType === item.id ? {
+                        background: `${OUTPUT_COLORS[item.id]}20`,
+                        borderColor: `${OUTPUT_COLORS[item.id]}40`,
+                        color: OUTPUT_COLORS[item.id],
                       } : undefined}
                     >
-                      {CHANNEL_ICONS[ch]} {ch}
+                      {OUTPUT_ICONS[item.id]} {item.label}
                     </button>
                   ))}
                 </div>
@@ -249,7 +254,7 @@ export default function PublishPage() {
               {channels.map(ch => (
                 <div key={ch.id} className="rounded-xl bg-[#141414] border border-white/[0.07] p-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <span style={{ color: CHANNEL_COLORS[ch.id] }}>{CHANNEL_ICONS[ch.id]}</span>
+                    <span style={{ color: OUTPUT_COLORS[ch.id] }}>{OUTPUT_ICONS[ch.id]}</span>
                     <span className="text-sm font-bold text-white">{ch.name}</span>
                     <span className={`ml-auto text-[10px] px-2 py-0.5 rounded-full ${ch.api_connected ? 'bg-green-500/10 text-green-400' : 'bg-white/[0.05] text-white/30'}`}>
                       {ch.api_connected ? '연동됨' : '미연동'}
@@ -288,8 +293,8 @@ export default function PublishPage() {
                     const st = STATUS_MAP[item.status] || STATUS_MAP.draft
                     return (
                       <div key={i} className="flex items-center gap-3 py-2.5 border-b border-white/[0.03] last:border-0">
-                        <span style={{ color: CHANNEL_COLORS[item.platform?.toLowerCase()] || '#706E6B' }}>
-                          {CHANNEL_ICONS[item.platform?.toLowerCase()] || <FileText className="w-4 h-4" />}
+                        <span style={{ color: OUTPUT_COLORS[item.platform?.toLowerCase()] || '#706E6B' }}>
+                          {OUTPUT_ICONS[item.platform?.toLowerCase()] || <FileText className="w-4 h-4" />}
                         </span>
                         <span className="text-sm text-white/70 flex-1 truncate">{item.topic}</span>
                         <span className="flex items-center gap-1 text-[11px]" style={{ color: st.color }}>
