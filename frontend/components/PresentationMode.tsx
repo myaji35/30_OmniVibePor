@@ -85,12 +85,29 @@ export default function PresentationMode({
   const [demoStep, setDemoStep] = useState<string | null>(null);
   const [voiceConfig, setVoiceConfig] = useState<VoiceConfig>(DEMO_VOICE_CONFIG);
 
+  // Brand template
+  const [brandTemplates, setBrandTemplates] = useState<Array<{ id: string; name: string; is_default: boolean }>>([]);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
+
   // Narration editing
   const [editingSlideIndex, setEditingSlideIndex] = useState<number | null>(null);
   const [editedScript, setEditedScript] = useState<string>("");
 
   // File input ref
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Load brand templates on mount
+  useEffect(() => {
+    fetch('/api/brand-templates?project_id=default')
+      .then(r => r.json())
+      .then(data => {
+        const tpls = data.templates || [];
+        setBrandTemplates(tpls);
+        const defaultTpl = tpls.find((t: any) => t.is_default);
+        if (defaultTpl) setSelectedTemplateId(defaultTpl.id);
+      })
+      .catch(() => {});
+  }, []);
 
   // Load presentation data (skip in demo mode)
   useEffect(() => {
@@ -135,6 +152,9 @@ export default function PresentationMode({
       formData.append("project_id", projectId);
       formData.append("dpi", "200");
       formData.append("lang", "kor+eng");
+      if (selectedTemplateId) {
+        formData.append("template_id", selectedTemplateId);
+      }
 
       const response = await axios.post(
         `${API_BASE_URL}/api/v1/presentations/upload`,
@@ -528,9 +548,23 @@ export default function PresentationMode({
               </div>
 
               <h3 className="text-lg font-semibold text-white mb-2">PDF 파일 업로드</h3>
-              <p className="text-gray-400 text-sm mb-6">
+              <p className="text-gray-400 text-sm mb-4">
                 프리젠테이션 PDF를 업로드하면 자동으로 슬라이드를 분석합니다
               </p>
+
+              {/* 브랜드 템플릿 선택 */}
+              {brandTemplates.length > 0 && (
+                <div className="mb-6 max-w-xs mx-auto">
+                  <label className="block text-xs font-semibold text-gray-400 mb-1.5 text-left">브랜드 템플릿 (인트로/아웃트로)</label>
+                  <select value={selectedTemplateId} onChange={e => setSelectedTemplateId(e.target.value)}
+                    className="w-full px-3 py-2.5 border border-gray-600 rounded-lg text-sm text-white bg-[#2a2a2a] focus:outline-none focus:border-purple-500">
+                    <option value="">템플릿 없음</option>
+                    {brandTemplates.map(t => (
+                      <option key={t.id} value={t.id}>{t.name}{t.is_default ? ' (기본)' : ''}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               <div className="flex items-center gap-4 justify-center">
                 <button
