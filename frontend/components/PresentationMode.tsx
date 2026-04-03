@@ -900,9 +900,37 @@ export default function PresentationMode({
                     </div>
                   </div>
 
-                  {/* Slide Player */}
+                  {/* Slide Player — 인트로/아웃트로 가상 슬라이드 포함 */}
                   <SlidePlayer
-                    slides={presentation.slides}
+                    slides={(() => {
+                      const tpl = brandTemplates.find(t => t.id === selectedTemplateId) as any;
+                      let allSlides = [...presentation.slides];
+                      if (tpl?.intro?.enabled && tpl.intro.script) {
+                        const introDur = tpl.intro.duration || 3;
+                        const firstStart = allSlides[0]?.start_time ?? 0;
+                        allSlides.unshift({
+                          slide_number: 0,
+                          image_path: '/intro-placeholder.svg',
+                          script: `[인트로] ${tpl.intro.script}`,
+                          start_time: firstStart - introDur,
+                          end_time: firstStart,
+                          duration: introDur,
+                        } as any);
+                      }
+                      if (tpl?.outro?.enabled && tpl.outro.script) {
+                        const outroDur = tpl.outro.duration || 4;
+                        const lastEnd = allSlides[allSlides.length - 1]?.end_time ?? 0;
+                        allSlides.push({
+                          slide_number: allSlides.length + 1,
+                          image_path: '/outro-placeholder.svg',
+                          script: `[아웃트로] ${tpl.outro.script}`,
+                          start_time: lastEnd,
+                          end_time: lastEnd + outroDur,
+                          duration: outroDur,
+                        } as any);
+                      }
+                      return allSlides;
+                    })()}
                     localImages={isDemoMode}
                     apiBaseUrl={API_BASE_URL}
                     audioSrc={
