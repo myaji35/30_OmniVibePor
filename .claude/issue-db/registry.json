@@ -152,7 +152,7 @@
       "id": "ISS-010",
       "title": "멀티채널 배포: 예약 발행 + 성과 추적",
       "type": "GENERATE_CODE",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P1",
       "assign_to": "agent-harness",
       "depth": 0,
@@ -202,7 +202,7 @@
   },
   "stats": {
     "total_issues": 10,
-    "completed": 7,
+    "completed": 8,
     "failed": 0,
     "evolved": 0
   }
