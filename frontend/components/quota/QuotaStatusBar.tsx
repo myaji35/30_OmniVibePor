@@ -45,16 +45,16 @@ export default function QuotaStatusBar({ onUpgradeClick }: QuotaStatusBarProps) 
 
       setPlan(data.plan || 'free')
       setQuotas([
-        { type: 'render', label: '영상 렌더', used: data.render_used ?? 0, limit: data.render_limit ?? 3 },
-        { type: 'audio', label: '오디오 생성', used: data.audio_used ?? 0, limit: data.audio_limit ?? 10 },
+        { type: 'render', label: '영상 렌더', used: data.render_used ?? 0, limit: data.render_limit ?? 5 },
+        { type: 'audio', label: '오디오 생성', used: data.audio_used ?? 0, limit: data.audio_limit ?? 15 },
         { type: 'voice_clone', label: '음성 클론', used: data.voice_clone_used ?? 0, limit: data.voice_clone_limit ?? 0 },
       ])
     } catch {
       // 기본값 (백엔드 미연결 시)
       setPlan('free')
       setQuotas([
-        { type: 'render', label: '영상 렌더', used: 0, limit: 3 },
-        { type: 'audio', label: '오디오 생성', used: 0, limit: 10 },
+        { type: 'render', label: '영상 렌더', used: 0, limit: 5 },
+        { type: 'audio', label: '오디오 생성', used: 0, limit: 15 },
         { type: 'voice_clone', label: '음성 클론', used: 0, limit: 0 },
       ])
     } finally {

@@ -7,7 +7,8 @@ import {
   Zap, LayoutDashboard, PenTool, Clapperboard, Layers,
   Volume2, FileText, Monitor, Rocket, Image, Upload,
   Presentation, CalendarDays, Settings, ChevronDown,
-  ChevronRight, Menu, X, LogIn, CreditCard
+  ChevronRight, Menu, X, LogIn, CreditCard,
+  Target, Lightbulb, Film, Share2, DollarSign
 } from 'lucide-react'
 import { useAuth } from '@/lib/contexts/AuthContext'
 import AuthModal from './AuthModal'
@@ -19,7 +20,7 @@ interface AppShellProps {
   actions?: React.ReactNode
 }
 
-// ── 3-Tier 네비게이션 구조 ──────────────────────────────────────────
+// ── MVP 네비게이션 구조 (비즈니스 분석 기반) ─────────────────────
 const NAV_GROUPS = [
   {
     label: '대시보드',
@@ -28,37 +29,35 @@ const NAV_GROUPS = [
     ],
   },
   {
-    label: '프로덕션',
+    label: '기획',
     collapsible: true,
     items: [
-      { href: '/writer',          label: '스크립트 작성',  icon: PenTool },
-      { href: '/director',        label: '디렉터',         icon: Clapperboard },
-      { href: '/storyboard',      label: '스토리보드',     icon: Layers },
-      { href: '/audio',           label: '오디오 생성',    icon: Volume2 },
-      { href: '/subtitle-editor', label: '자막 편집',      icon: FileText },
-      { href: '/studio',          label: '스튜디오',       icon: Monitor },
-      { href: '/production',      label: '배포',           icon: Rocket },
+      { href: '/strategy',   label: '전략 수립',      icon: Target },
+      { href: '/concept',    label: '컨셉 기획',      icon: Lightbulb },
+      { href: '/storyboard', label: '스토리보드',     icon: Layers },
     ],
   },
   {
-    label: '리소스',
+    label: '제작',
     collapsible: true,
     items: [
-      { href: '/gallery',         label: '템플릿 갤러리',  icon: Image },
-      { href: '/upload',          label: '업로드',         icon: Upload },
-      { href: '/presentation',    label: '프레젠테이션',   icon: Presentation },
-      { href: '/schedule',        label: '일정 관리',      icon: CalendarDays },
+      { href: '/produce',         label: '콘텐츠 생산',  icon: Film },
+      { href: '/audio',           label: 'AI 오디오',    icon: Volume2 },
+      { href: '/subtitle-editor', label: '자막 편집',    icon: FileText },
+      { href: '/render',          label: '영상 렌더링',  icon: Monitor },
+      { href: '/studio',          label: '스튜디오',     icon: Clapperboard },
     ],
   },
-  // TODO: /settings, /settings/billing 페이지 구현 후 활성화
-  // {
-  //   label: '설정',
-  //   collapsible: true,
-  //   items: [
-  //     { href: '/settings/billing', label: '빌링',  icon: CreditCard },
-  //     { href: '/settings',         label: '설정',  icon: Settings },
-  //   ],
-  // },
+  {
+    label: '관리',
+    collapsible: true,
+    items: [
+      { href: '/gallery',   label: '템플릿 갤러리', icon: Image },
+      { href: '/publish',   label: '공유 & 추적',   icon: Share2 },
+      { href: '/schedule',  label: '일정 관리',     icon: CalendarDays },
+      { href: '/pricing',   label: '가격',          icon: DollarSign },
+    ],
+  },
 ]
 
 export default function AppShell({ children, title, subtitle, actions }: AppShellProps) {

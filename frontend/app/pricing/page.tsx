@@ -18,16 +18,16 @@ const PLANS = [
     color: '#706E6B',
     popular: false,
     limits: {
-      render: '3회/월',
-      audio: '10회/월',
+      render: '5회/월 (워터마크)',
+      audio: '15회/월',
       voiceClone: '-',
       templates: '기본',
       support: '커뮤니티',
       api: false,
     },
     features: [
-      { text: '영상 렌더 3회/월', included: true },
-      { text: '오디오 생성 10회/월', included: true },
+      { text: '영상 렌더 5회/월 (워터마크)', included: true },
+      { text: '오디오 생성 15회/월', included: true },
       { text: '기본 템플릿', included: true },
       { text: '음성 클로닝', included: false },
       { text: 'API 접근', included: false },
@@ -178,7 +178,7 @@ export default function PricingPage() {
                   : 'text-white/70 hover:text-white'
                 }`}
             >
-              연간 <span className="text-[#4BCA81] text-xs ml-1">20% 할인</span>
+              연간 <span className="text-[#4BCA81] text-xs ml-1">2개월 무료</span>
             </button>
           </div>
         </div>
@@ -189,7 +189,7 @@ export default function PricingPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {PLANS.map(plan => {
             const price = billingPeriod === 'yearly'
-              ? Math.round(plan.price * 0.8)
+              ? Math.round(plan.price * 10 / 12)  // 연간 = 10개월분 (2개월 무료)
               : plan.price
 
             return (
@@ -240,7 +240,7 @@ export default function PricingPage() {
                       }`}
                     style={plan.id !== 'free' ? { background: plan.color } : undefined}
                   >
-                    {plan.id === 'free' ? '현재 플랜' : '시작하기'}
+                    {plan.id === 'free' ? '현재 플랜' : plan.id === 'enterprise' ? '데모 요청' : '시작하기'}
                     {plan.id !== 'free' && <ArrowRight className="w-4 h-4" />}
                   </button>
 

@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 # ── Tier별 한도 정의 ────────────────────────────────────────────────
 # -1 = 무제한
 PLAN_LIMITS: dict[str, dict[str, int]] = {
-    "free":       {"render": 3,   "audio": 10,  "voice_clone": 0},
+    "free":       {"render": 5,   "audio": 15,  "voice_clone": 0},
     "creator":    {"render": 30,  "audio": 100, "voice_clone": 1},
     "pro":        {"render": 100, "audio": -1,  "voice_clone": 3},
     "enterprise": {"render": -1,  "audio": -1,  "voice_clone": 10},
