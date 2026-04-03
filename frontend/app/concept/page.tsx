@@ -8,7 +8,7 @@
  * 또는 직접 입력
  */
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import {
   Lightbulb, FileText, Film, ArrowRight, Loader2, Sparkles,
@@ -30,6 +30,14 @@ type Phase = 'concept' | 'script' | 'storyboard'
 
 // ── Component ────────────────────────────────────
 export default function ConceptPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center h-96 text-white/30">로딩 중...</div>}>
+      <ConceptContent />
+    </Suspense>
+  )
+}
+
+function ConceptContent() {
   const searchParams = useSearchParams()
 
   // URL params (전략 페이지에서 넘어온 경우)

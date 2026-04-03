@@ -18,9 +18,9 @@ logger = logging.getLogger(__name__)
 
 class StrategyInput(BaseModel):
     """전략 수립 요청"""
-    business_goal: str = Field(..., description="비즈니스 목표 (예: '3개월 내 신규 고객 100명 확보')")
-    target_audience: str = Field(..., description="타겟 오디언스 (예: '30~40대 직장인, 보험 관심자')")
-    brand_name: str = Field(..., description="브랜드명")
+    business_goal: str = Field(..., min_length=1, description="비즈니스 목표 (예: '3개월 내 신규 고객 100명 확보')")
+    target_audience: str = Field(..., min_length=1, description="타겟 오디언스 (예: '30~40대 직장인, 보험 관심자')")
+    brand_name: str = Field(..., min_length=1, description="브랜드명")
     industry: str = Field("general", description="산업 분야 (insurance, tech, education, ecommerce 등)")
     budget_level: str = Field("medium", description="예산 수준 (low, medium, high)")
     duration_weeks: int = Field(4, ge=1, le=12, description="전략 기간 (주)")

@@ -29,7 +29,7 @@
       "id": "ISS-005",
       "title": "E2E 통합 테스트: Creator/Marketer User Flow",
       "type": "RUN_TESTS",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P1",
       "assign_to": "test-harness",
       "depth": 0,
@@ -48,7 +48,7 @@
       "id": "ISS-006",
       "title": "성능 최적화: API P95 < 3s, 렌더링 < 2min",
       "type": "GENERATE_CODE",
-      "status": "CREATED",
+      "status": "READY",
       "priority": "P1",
       "assign_to": "agent-harness",
       "depth": 0,
@@ -202,7 +202,7 @@
   },
   "stats": {
     "total_issues": 10,
-    "completed": 8,
+    "completed": 9,
     "failed": 0,
     "evolved": 0
   }

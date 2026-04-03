@@ -4,24 +4,18 @@ Pytest 공통 Fixtures 및 설정
 import pytest
 import asyncio
 import os
-from httpx import AsyncClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from httpx import AsyncClient, ASGITransport
 
 from app.main import app
-from app.db.sqlite_client import get_db, init_db
 
 
 # 테스트 DB 경로
 TEST_DB_PATH = "test_omni_db.sqlite"
-TEST_DATABASE_URL = f"sqlite:///{TEST_DB_PATH}"
 
 
 @pytest.fixture(scope="session")
 def event_loop():
-    """
-    세션 스코프 이벤트 루프
-    """
+    """세션 스코프 이벤트 루프"""
     loop = asyncio.get_event_loop_policy().new_event_loop()
     yield loop
     loop.close()
@@ -29,46 +23,16 @@ def event_loop():
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_test_db():
-    """
-    테스트 DB 초기화 (세션 시작 시 1회)
-    """
-    # 기존 테스트 DB 삭제
-    if os.path.exists(TEST_DB_PATH):
-        os.remove(TEST_DB_PATH)
-
-    # 테스트 DB 초기화
-    init_db(db_path=TEST_DB_PATH)
-
+    """테스트 DB — 기존 DB 사용 (테스트에서는 읽기 위주)"""
     yield
-
-    # 테스트 종료 후 DB 삭제
-    if os.path.exists(TEST_DB_PATH):
-        os.remove(TEST_DB_PATH)
 
 
 @pytest.fixture(scope="function")
 async def client():
-    """
-    테스트용 HTTP 클라이언트 (각 테스트마다 새로 생성)
-    """
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    """테스트용 HTTP 클라이언트"""
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as ac:
         yield ac
-
-
-@pytest.fixture(scope="function")
-def db_session():
-    """
-    테스트용 DB 세션 (각 테스트마다 롤백)
-    """
-    engine = create_engine(TEST_DATABASE_URL)
-    Session = sessionmaker(bind=engine)
-    session = Session()
-
-    yield session
-
-    # 테스트 종료 후 롤백
-    session.rollback()
-    session.close()
 
 
 @pytest.fixture
@@ -176,7 +140,7 @@ def pytest_configure(config):
     """
     # 환경 변수 설정 (테스트 모드)
     os.environ["TESTING"] = "true"
-    os.environ["DATABASE_URL"] = TEST_DATABASE_URL
+    os.environ["DATABASE_URL"] = f"sqlite:///{TEST_DB_PATH}"
 
     # Stripe 테스트 키 (Mock)
     os.environ["STRIPE_SECRET_KEY"] = "sk_test_mock"
