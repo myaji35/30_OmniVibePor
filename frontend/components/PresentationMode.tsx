@@ -872,9 +872,11 @@ export default function PresentationMode({
                     localImages={isDemoMode}
                     apiBaseUrl={API_BASE_URL}
                     audioSrc={
-                      presentation.audio_path && !isDemoMode
-                        ? `${API_BASE_URL}${presentation.audio_path}`
-                        : null
+                      isDemoMode
+                        ? "/demo/audio/narration.mp3"
+                        : presentation.audio_path
+                          ? `${API_BASE_URL}${presentation.audio_path}`
+                          : null
                     }
                   />
                 </div>

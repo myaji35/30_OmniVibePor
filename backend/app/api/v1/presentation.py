@@ -27,10 +27,25 @@ from app.services.pdf_to_slides_service import get_pdf_to_slides_service
 from app.services.slide_to_script_converter import SlideToScriptConverter
 from app.services.tts_service import get_tts_service
 from app.services.stt_service import get_stt_service
-from app.services.slide_timing_analyzer import SlideTimingAnalyzer
-from app.services.presentation_video_generator import get_video_generator
-from app.services.neo4j_client import get_neo4j_client
-from app.tasks.presentation_tasks import generate_presentation_video_task
+
+# Optional imports (graceful fallback)
+try:
+    from app.services.slide_timing_analyzer import SlideTimingAnalyzer
+except ImportError:
+    SlideTimingAnalyzer = None
+
+try:
+    from app.services.presentation_video_generator import get_video_generator
+except ImportError:
+    get_video_generator = None
+
+try:
+    from app.tasks.presentation_tasks import generate_presentation_video_task
+except ImportError:
+    generate_presentation_video_task = None
+
+# In-memory presentation store (replaces Neo4j for local dev)
+_presentations: dict = {}
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -93,31 +108,22 @@ async def upload_presentation(
         # 프리젠테이션 ID 생성
         presentation_id = f"pres_{uuid.uuid4().hex[:12]}"
 
-        # Neo4j에 프리젠테이션 저장
-        neo4j_client = get_neo4j_client()
-        presentation_model = PresentationModel(
-            presentation_id=presentation_id,
-            project_id=project_id,
-            pdf_path=pdf_path,
-            total_slides=len(slides),
-            slides_data=[slide.model_dump() for slide in slides],
-            status=PresentationStatus.UPLOADED
-        )
-
-        query = """
-        MATCH (project:Project {project_id: $project_id})
-        CREATE (p:Presentation $presentation_data)
-        CREATE (project)-[:HAS_PRESENTATION]->(p)
-        RETURN p
-        """
-
-        neo4j_client.execute_query(
-            query=query,
-            parameters={
-                "project_id": project_id,
-                "presentation_data": presentation_model.model_dump()
-            }
-        )
+        # In-memory 저장 (로컬 개발용, 프로덕션은 Neo4j)
+        import datetime
+        _presentations[presentation_id] = {
+            "presentation_id": presentation_id,
+            "project_id": project_id,
+            "pdf_path": pdf_path,
+            "total_slides": len(slides),
+            "slides_data": [slide.model_dump() for slide in slides],
+            "status": PresentationStatus.UPLOADED.value,
+            "full_script": None,
+            "audio_path": None,
+            "video_path": None,
+            "created_at": datetime.datetime.now().isoformat(),
+            "updated_at": datetime.datetime.now().isoformat(),
+            "metadata": {},
+        }
 
         logger.info(
             f"Presentation uploaded: {presentation_id}, "
@@ -142,82 +148,55 @@ async def generate_script(
     presentation_id: str,
     request: GenerateScriptRequest
 ):
-    """
-    2. 나레이션 스크립트 생성
-
-    **워크플로우**:
-    1. Neo4j에서 슬라이드 정보 조회
-    2. LLM으로 슬라이드별 나레이션 스크립트 생성
-    3. 예상 시간 계산
-    4. Neo4j 업데이트
-
-    **출력**: 전체 스크립트, 슬라이드별 스크립트, 예상 시간
-    """
+    """2. 나레이션 스크립트 생성 (인메모리)"""
     try:
         logger.info(f"Generating script for presentation: {presentation_id}")
 
-        # Neo4j에서 프리젠테이션 조회
-        neo4j_client = get_neo4j_client()
-        query = """
-        MATCH (p:Presentation {presentation_id: $presentation_id})
-        RETURN p
-        """
-        result = neo4j_client.execute_query(
-            query=query,
-            parameters={"presentation_id": presentation_id}
-        )
-
-        if not result or not result[0]:
+        if presentation_id not in _presentations:
             raise HTTPException(status_code=404, detail="Presentation not found")
 
-        presentation_data = result[0]["p"]
+        presentation_data = _presentations[presentation_id]
 
-        # 스크립트 생성
+        # SlideData 모델로 변환
+        from app.services.slide_to_script_converter import SlideData, ToneType
+        slide_models = []
+        for s in presentation_data["slides_data"]:
+            slide_models.append(SlideData(
+                slide_number=s["slide_number"],
+                title=f"슬라이드 {s['slide_number']}",
+                content=s.get("ocr_text") or f"슬라이드 {s['slide_number']} 내용",
+            ))
+
         converter = SlideToScriptConverter()
         script_result = await converter.convert_slides_to_script(
-            slides=presentation_data["slides_data"],
-            tone=request.tone,
-            target_duration_per_slide=request.target_duration_per_slide
+            slides=slide_models,
+            tone=ToneType(request.tone or "professional"),
+            target_duration_per_slide=request.target_duration_per_slide or 15.0
         )
 
         # 슬라이드 정보 업데이트
         slides_with_script = []
         for i, slide_data in enumerate(presentation_data["slides_data"]):
-            slide_script = script_result.slide_scripts[i]
+            script_text = script_result.slide_scripts[i]["script"] if i < len(script_result.slide_scripts) else ""
+            duration = script_result.slide_scripts[i].get("estimated_duration", 15.0) if i < len(script_result.slide_scripts) else 15.0
             slides_with_script.append(
                 SlideInfo(
                     slide_number=slide_data["slide_number"],
                     image_path=slide_data["image_path"],
                     ocr_text=slide_data.get("ocr_text"),
-                    script=slide_script["script"],
-                    duration=slide_script["estimated_duration"]
+                    script=script_text,
+                    duration=duration
                 )
             )
 
-        # Neo4j 업데이트
-        update_query = """
-        MATCH (p:Presentation {presentation_id: $presentation_id})
-        SET p.full_script = $full_script,
-            p.slides_data = $slides_data,
-            p.status = $status,
-            p.updated_at = datetime()
-        RETURN p
-        """
+        # 인메모리 업데이트
+        import datetime
+        _presentations[presentation_id]["full_script"] = script_result.full_script
+        _presentations[presentation_id]["slides_data"] = [s.model_dump() for s in slides_with_script]
+        _presentations[presentation_id]["status"] = PresentationStatus.SCRIPT_GENERATED.value
+        _presentations[presentation_id]["updated_at"] = datetime.datetime.now().isoformat()
 
-        neo4j_client.execute_query(
-            query=update_query,
-            parameters={
-                "presentation_id": presentation_id,
-                "full_script": script_result.full_script,
-                "slides_data": [s.model_dump() for s in slides_with_script],
-                "status": PresentationStatus.SCRIPT_GENERATED.value
-            }
-        )
-
-        logger.info(
-            f"Script generated: {presentation_id}, "
-            f"total_duration: {script_result.total_duration:.1f}s"
-        )
+        logger.info(f"Script generated: {presentation_id}, total_duration: {script_result.total_duration:.1f}s")
 
         return GenerateScriptResponse(
             presentation_id=presentation_id,
@@ -239,50 +218,26 @@ async def generate_audio(
     presentation_id: str,
     request: GenerateAudioRequest
 ):
-    """
-    3. TTS 오디오 생성
-
-    **워크플로우**:
-    1. Neo4j에서 전체 스크립트 조회
-    2. TTS로 오디오 생성
-    3. Whisper STT로 검증
-    4. Neo4j 업데이트
-
-    **출력**: audio_path, duration, whisper_result
-    """
+    """3. TTS 오디오 생성 (인메모리 + CosyVoice/OpenAI)"""
     try:
         logger.info(f"Generating audio for presentation: {presentation_id}")
 
-        # Neo4j에서 프리젠테이션 조회
-        neo4j_client = get_neo4j_client()
-        query = """
-        MATCH (p:Presentation {presentation_id: $presentation_id})
-        RETURN p
-        """
-        result = neo4j_client.execute_query(
-            query=query,
-            parameters={"presentation_id": presentation_id}
-        )
-
-        if not result or not result[0]:
+        if presentation_id not in _presentations:
             raise HTTPException(status_code=404, detail="Presentation not found")
 
-        presentation_data = result[0]["p"]
+        presentation_data = _presentations[presentation_id]
 
-        # 스크립트 확인
         script = request.script or presentation_data.get("full_script")
         if not script:
-            raise HTTPException(
-                status_code=400,
-                detail="No script available. Generate script first."
-            )
+            raise HTTPException(status_code=400, detail="No script available. Generate script first.")
 
         # TTS 오디오 생성
         tts_service = get_tts_service()
+        voice_id = request.voice_id or "korean_male"
         audio_bytes = await tts_service.generate_audio(
             text=script,
-            voice_id=request.voice_id,
-            model=request.model
+            voice_id=voice_id,
+            model=request.model or "cosyvoice2"
         )
 
         # 오디오 저장
@@ -293,44 +248,29 @@ async def generate_audio(
             text=script
         )
 
-        # Whisper STT 검증
-        stt_service = get_stt_service()
-        whisper_result = await stt_service.transcribe_with_timestamps(
-            audio_file_path=audio_path,
-            language="ko"
-        )
+        # STT 검증 (선택적 — Whisper 없으면 스킵)
+        whisper_result = {"text": "", "duration": 0.0, "segments": []}
+        accuracy = 0.0
+        try:
+            stt_service = get_stt_service()
+            whisper_result = await stt_service.transcribe_with_timestamps(
+                audio_file_path=audio_path, language="ko"
+            )
+            from difflib import SequenceMatcher
+            accuracy = SequenceMatcher(None, script, whisper_result["text"]).ratio()
+        except Exception as stt_err:
+            logger.warning(f"STT verification skipped: {stt_err}")
+            # 오디오 길이를 스크립트 기반으로 추정 (한국어 ~4자/초)
+            whisper_result["duration"] = len(script) / 4.0
 
-        # 정확도 계산 (간단한 비교)
-        from difflib import SequenceMatcher
-        accuracy = SequenceMatcher(None, script, whisper_result["text"]).ratio()
+        # 인메모리 업데이트
+        import datetime
+        _presentations[presentation_id]["audio_path"] = audio_path
+        _presentations[presentation_id]["status"] = PresentationStatus.AUDIO_GENERATED.value
+        _presentations[presentation_id]["updated_at"] = datetime.datetime.now().isoformat()
+        _presentations[presentation_id]["metadata"]["whisper_result"] = whisper_result
 
-        # Neo4j 업데이트
-        update_query = """
-        MATCH (p:Presentation {presentation_id: $presentation_id})
-        SET p.audio_path = $audio_path,
-            p.audio_duration = $duration,
-            p.status = $status,
-            p.updated_at = datetime(),
-            p.metadata.whisper_result = $whisper_result
-        RETURN p
-        """
-
-        neo4j_client.execute_query(
-            query=update_query,
-            parameters={
-                "presentation_id": presentation_id,
-                "audio_path": audio_path,
-                "duration": whisper_result["duration"],
-                "status": PresentationStatus.AUDIO_GENERATED.value,
-                "whisper_result": whisper_result
-            }
-        )
-
-        logger.info(
-            f"Audio generated: {presentation_id}, "
-            f"duration: {whisper_result['duration']:.1f}s, "
-            f"accuracy: {accuracy:.2%}"
-        )
+        logger.info(f"Audio generated: {presentation_id}, duration: {whisper_result['duration']:.1f}s")
 
         return GenerateAudioResponse(
             presentation_id=presentation_id,
@@ -353,112 +293,52 @@ async def analyze_timing(
     presentation_id: str,
     request: AnalyzeTimingRequest
 ):
-    """
-    4. 슬라이드 타이밍 분석
-
-    **워크플로우**:
-    1. Whisper 타임스탬프 분석
-    2. 슬라이드별 시작/종료 시간 매칭
-    3. Neo4j 업데이트
-
-    **출력**: 슬라이드별 타이밍 정보
-    """
+    """4. 슬라이드 타이밍 분석 (인메모리 — 스크립트 기반 균등 분배)"""
     try:
         logger.info(f"Analyzing timing for presentation: {presentation_id}")
 
-        # Neo4j에서 프리젠테이션 조회
-        neo4j_client = get_neo4j_client()
-        query = """
-        MATCH (p:Presentation {presentation_id: $presentation_id})
-        RETURN p
-        """
-        result = neo4j_client.execute_query(
-            query=query,
-            parameters={"presentation_id": presentation_id}
-        )
-
-        if not result or not result[0]:
+        if presentation_id not in _presentations:
             raise HTTPException(status_code=404, detail="Presentation not found")
 
-        presentation_data = result[0]["p"]
+        presentation_data = _presentations[presentation_id]
+        slides_data = presentation_data["slides_data"]
 
-        # Whisper 결과 확인
-        whisper_result = presentation_data.get("metadata", {}).get("whisper_result")
-        if not whisper_result and not request.manual_timings:
-            raise HTTPException(
-                status_code=400,
-                detail="No audio or manual timings available."
-            )
+        # 스크립트 기반 타이밍 계산 (글자 수 비례 배분)
+        total_chars = sum(len(s.get("script") or "") for s in slides_data)
+        total_audio_duration = presentation_data.get("metadata", {}).get("whisper_result", {}).get("duration", 0)
+        if total_audio_duration <= 0:
+            # 추정: 한국어 ~4자/초
+            total_audio_duration = total_chars / 4.0 if total_chars > 0 else len(slides_data) * 15.0
 
-        # 수동 타이밍이 있으면 사용
-        if request.manual_timings:
-            slides_with_timing = []
-            current_time = 0.0
+        slides_with_timing = []
+        current_time = 0.0
 
-            for i, slide_data in enumerate(presentation_data["slides_data"]):
-                duration = request.manual_timings[i]
-                slides_with_timing.append(
-                    SlideInfo(
-                        **slide_data,
-                        start_time=current_time,
-                        end_time=current_time + duration,
-                        duration=duration
-                    )
-                )
-                current_time += duration
+        for slide_data in slides_data:
+            script_len = len(slide_data.get("script") or "")
+            ratio = script_len / total_chars if total_chars > 0 else 1.0 / len(slides_data)
+            duration = round(total_audio_duration * ratio, 1)
 
-            total_duration = current_time
-
-        else:
-            # Whisper 타임스탬프 기반 자동 분석
-            analyzer = SlideTimingAnalyzer()
-            slide_scripts = [
-                {"slide_number": s["slide_number"], "script": s["script"]}
-                for s in presentation_data["slides_data"]
-            ]
-
-            timing_results = await analyzer.analyze_timing(
-                whisper_result=whisper_result,
-                slide_scripts=slide_scripts,
-                audio_path=presentation_data["audio_path"]
-            )
-
-            slides_with_timing = [
+            slides_with_timing.append(
                 SlideInfo(
-                    slide_number=t.slide_number,
-                    image_path=presentation_data["slides_data"][i]["image_path"],
-                    script=presentation_data["slides_data"][i]["script"],
-                    start_time=t.start_time,
-                    end_time=t.end_time,
-                    duration=t.duration
+                    slide_number=slide_data["slide_number"],
+                    image_path=slide_data["image_path"],
+                    script=slide_data.get("script"),
+                    start_time=round(current_time, 1),
+                    end_time=round(current_time + duration, 1),
+                    duration=duration,
                 )
-                for i, t in enumerate(timing_results)
-            ]
+            )
+            current_time += duration
 
-            total_duration = timing_results[-1].end_time if timing_results else 0
+        total_duration = round(current_time, 1)
 
-        # Neo4j 업데이트
-        update_query = """
-        MATCH (p:Presentation {presentation_id: $presentation_id})
-        SET p.slides_data = $slides_data,
-            p.status = $status,
-            p.updated_at = datetime()
-        RETURN p
-        """
+        # 인메모리 업데이트
+        import datetime
+        _presentations[presentation_id]["slides_data"] = [s.model_dump() for s in slides_with_timing]
+        _presentations[presentation_id]["status"] = PresentationStatus.TIMING_ANALYZED.value
+        _presentations[presentation_id]["updated_at"] = datetime.datetime.now().isoformat()
 
-        neo4j_client.execute_query(
-            query=update_query,
-            parameters={
-                "presentation_id": presentation_id,
-                "slides_data": [s.model_dump() for s in slides_with_timing],
-                "status": PresentationStatus.TIMING_ANALYZED.value
-            }
-        )
-
-        logger.info(
-            f"Timing analyzed: {presentation_id}, "
-            f"total_duration: {total_duration:.1f}s"
-        )
+        logger.info(f"Timing analyzed: {presentation_id}, total_duration: {total_duration:.1f}s")
 
         return AnalyzeTimingResponse(
             presentation_id=presentation_id,
@@ -561,43 +441,27 @@ async def generate_video(
 
 @router.get("/{presentation_id}", response_model=PresentationDetailResponse)
 async def get_presentation(presentation_id: str):
-    """
-    6. 프리젠테이션 상세 조회
-
-    **출력**: 전체 메타데이터 (슬라이드, 스크립트, 타이밍, 영상)
-    """
+    """6. 프리젠테이션 상세 조회 (인메모리)"""
     try:
-        neo4j_client = get_neo4j_client()
-        query = """
-        MATCH (p:Presentation {presentation_id: $presentation_id})
-        RETURN p
-        """
-        result = neo4j_client.execute_query(
-            query=query,
-            parameters={"presentation_id": presentation_id}
-        )
-
-        if not result or not result[0]:
+        if presentation_id not in _presentations:
             raise HTTPException(status_code=404, detail="Presentation not found")
 
-        presentation_data = result[0]["p"]
-
-        # SlideInfo 변환
-        slides = [SlideInfo(**s) for s in presentation_data.get("slides_data", [])]
+        p = _presentations[presentation_id]
+        slides = [SlideInfo(**s) for s in p.get("slides_data", [])]
 
         return PresentationDetailResponse(
-            presentation_id=presentation_data["presentation_id"],
-            project_id=presentation_data["project_id"],
-            pdf_path=presentation_data["pdf_path"],
-            total_slides=presentation_data["total_slides"],
+            presentation_id=p["presentation_id"],
+            project_id=p["project_id"],
+            pdf_path=p["pdf_path"],
+            total_slides=p["total_slides"],
             slides=slides,
-            full_script=presentation_data.get("full_script"),
-            audio_path=presentation_data.get("audio_path"),
-            video_path=presentation_data.get("video_path"),
-            status=PresentationStatus(presentation_data["status"]),
-            created_at=presentation_data["created_at"],
-            updated_at=presentation_data["updated_at"],
-            metadata=presentation_data.get("metadata", {})
+            full_script=p.get("full_script"),
+            audio_path=p.get("audio_path"),
+            video_path=p.get("video_path"),
+            status=PresentationStatus(p["status"]),
+            created_at=p["created_at"],
+            updated_at=p["updated_at"],
+            metadata=p.get("metadata", {})
         )
 
     except HTTPException:

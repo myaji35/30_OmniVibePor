@@ -1,4 +1,5 @@
 """PDF to Slides 변환 서비스"""
+import logging
 from typing import List, Dict
 from pathlib import Path
 import asyncio
@@ -19,7 +20,6 @@ settings = get_settings()
 
 class PDFToSlidesService:
     """
-import logging
     PDF를 개별 슬라이드 이미지로 변환
 
     특징:
@@ -52,18 +52,18 @@ import logging
             이미지 파일 경로 리스트
             ["slide_1.png", "slide_2.png", ...]
         """
-        with self.logger.span("pdf2image.convert") as span:
-            pdf_file = Path(pdf_path)
+        pdf_file = Path(pdf_path)
 
-            if not pdf_file.exists():
-                raise FileNotFoundError(f"PDF file not found: {pdf_path}")
+        if not pdf_file.exists():
+            raise FileNotFoundError(f"PDF file not found: {pdf_path}")
 
-            # 파일명 해시 (충돌 방지)
-            file_hash = hashlib.md5(pdf_path.encode()).hexdigest()[:8]
-            timestamp = int(time.time())
+        # 파일명 해시 (충돌 방지)
+        file_hash = hashlib.md5(pdf_path.encode()).hexdigest()[:8]
+        timestamp = int(time.time())
 
-            span.set_attribute("pdf_file", pdf_path)
-            span.set_attribute("dpi", dpi)
+        self.logger.info(f"Converting PDF: {pdf_path}, dpi={dpi}")
+
+        if True:
 
             # PDF → 이미지 변환 (동기 작업을 비동기로 실행)
             images = await asyncio.to_thread(
@@ -74,7 +74,7 @@ import logging
             )
 
             total_pages = len(images)
-            span.set_attribute("total_pages", total_pages)
+            self.logger.info(f"Total pages: {total_pages}")
 
             self.logger.info(f"Converted {total_pages} pages from PDF")
 

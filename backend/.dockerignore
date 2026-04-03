@@ -19,6 +19,10 @@ build/
 venv/
 ENV/
 
+# macOS Extended Attributes (xattr issue)
+._.env
+._*
+
 # IDEs
 .vscode/
 .idea/
