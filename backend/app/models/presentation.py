@@ -79,6 +79,7 @@ class GenerateVideoRequest(BaseModel):
     )
     bgm_path: Optional[str] = Field(None, description="배경음악 파일 경로")
     bgm_volume: float = Field(0.3, description="배경음악 볼륨 (0.0~1.0)", ge=0.0, le=1.0)
+    template_id: Optional[str] = Field(None, description="브랜드 템플릿 ID (인트로/아웃트로 자동 합성)")
 
 
 # ==================== Response Models ====================

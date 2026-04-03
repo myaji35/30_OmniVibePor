@@ -1,11 +1,12 @@
 """Presentation API 엔드포인트"""
 import asyncio
 import logging
+import re
+import tempfile
 from pathlib import Path
 from fastapi import APIRouter, HTTPException, UploadFile, File, Form, BackgroundTasks
 from fastapi.responses import FileResponse
 from typing import Optional, List
-from pathlib import Path
 import uuid
 
 from app.models.presentation import (
@@ -53,12 +54,182 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
+# ============================================================
+# 헬퍼 함수
+# ============================================================
+
+def _substitute_variables(text: str, variables: dict) -> str:
+    """
+    {{변수명}} 패턴을 실제 값으로 치환한다.
+
+    지원 변수:
+        presentation_title  : PDF 파일명 or 첫 슬라이드 OCR 텍스트 앞 50자
+        date                : 현재 날짜 (YYYY년 MM월)
+        slide_count         : 슬라이드 수
+        author              : project_id
+    """
+    def replacer(match):
+        key = match.group(1).strip()
+        return str(variables.get(key, match.group(0)))
+
+    return re.sub(r"\{\{(\w+)\}\}", replacer, text)
+
+
+def _build_variables(pdata: dict) -> dict:
+    """presentation 데이터에서 변수 딕셔너리를 구성한다."""
+    import datetime
+
+    # presentation_title: pdf_path에서 줄기 이름, 없으면 첫 슬라이드 OCR
+    pdf_path = pdata.get("pdf_path", "")
+    title = Path(pdf_path).stem if pdf_path else "발표자료"
+    slides = pdata.get("slides_data", [])
+    if not title and slides:
+        first_ocr = (slides[0].get("ocr_text") or "").strip()
+        title = first_ocr[:50] if first_ocr else "발표자료"
+
+    now = datetime.datetime.now()
+    return {
+        "presentation_title": title,
+        "date": now.strftime("%Y년 %m월"),
+        "slide_count": str(len(slides)),
+        "author": pdata.get("project_id", ""),
+    }
+
+
+def _generate_title_image(
+    output_path: str,
+    title: str,
+    subtitle: str,
+    bg_color: str = "#16325C",
+    width: int = 1920,
+    height: int = 1080,
+) -> None:
+    """
+    PIL을 사용해 단색 배경 + 제목/부제목 이미지를 생성한다.
+    한국어 폰트가 없으면 기본 폰트로 fallback한다.
+    """
+    try:
+        from PIL import Image, ImageDraw, ImageFont
+    except ImportError:
+        logger.warning("Pillow not installed — skipping title image generation")
+        raise
+
+    # hex → RGB 변환
+    hex_color = bg_color.lstrip("#")
+    r, g, b = int(hex_color[0:2], 16), int(hex_color[2:4], 16), int(hex_color[4:6], 16)
+
+    img = Image.new("RGB", (width, height), (r, g, b))
+    draw = ImageDraw.Draw(img)
+
+    # 폰트 탐색 (한국어 우선, 없으면 기본 폰트)
+    korean_fonts = [
+        "/System/Library/Fonts/AppleSDGothicNeo.ttc",       # macOS
+        "/usr/share/fonts/truetype/nanum/NanumGothic.ttf",  # Ubuntu
+        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+        "/Windows/Fonts/malgun.ttf",                         # Windows
+    ]
+
+    title_font = None
+    subtitle_font = None
+    for font_path in korean_fonts:
+        if Path(font_path).exists():
+            try:
+                title_font = ImageFont.truetype(font_path, 80)
+                subtitle_font = ImageFont.truetype(font_path, 40)
+                break
+            except Exception:
+                continue
+
+    if title_font is None:
+        # 기본 폰트 fallback (크기 지정 불가)
+        title_font = ImageFont.load_default()
+        subtitle_font = ImageFont.load_default()
+
+    # 제목 — 수직 중앙에서 약간 위
+    _draw_centered_text(draw, title, title_font, (255, 255, 255), width, height // 2 - 60)
+
+    # 부제목 — 제목 아래
+    if subtitle:
+        _draw_centered_text(draw, subtitle, subtitle_font, (200, 200, 200), width, height // 2 + 60)
+
+    img.save(output_path, "PNG")
+
+
+def _draw_centered_text(draw, text: str, font, color, canvas_width: int, y: int) -> None:
+    """텍스트를 수평 중앙 정렬로 그린다."""
+    try:
+        bbox = draw.textbbox((0, 0), text, font=font)
+        text_width = bbox[2] - bbox[0]
+    except AttributeError:
+        # 구버전 Pillow
+        text_width, _ = draw.textsize(text, font=font)
+
+    x = (canvas_width - text_width) // 2
+    draw.text((x, y), text, font=font, fill=color)
+
+
+async def _generate_segment_video(
+    image_path: str,
+    audio_path: str,
+    output_path: str,
+    duration: float,
+) -> None:
+    """
+    단일 이미지 + 오디오 → MP4 세그먼트를 생성한다.
+    audio_path가 비어 있으면 무음으로 처리한다.
+    """
+    import subprocess
+
+    # concat 방식: 단일 이미지를 duration 동안 표시
+    concat_tmp = tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False)
+    abs_image = str(Path(image_path).resolve())
+    concat_tmp.write(f"file '{abs_image}'\n")
+    concat_tmp.write(f"duration {duration}\n")
+    concat_tmp.write(f"file '{abs_image}'\n")  # FFmpeg 마지막 프레임 반복 필요
+    concat_tmp.close()
+
+    if audio_path and Path(audio_path).exists():
+        cmd = [
+            "ffmpeg", "-y",
+            "-f", "concat", "-safe", "0", "-i", concat_tmp.name,
+            "-i", str(Path(audio_path).resolve()),
+            "-c:v", "libx264", "-pix_fmt", "yuv420p",
+            "-vf", "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:black",
+            "-c:a", "aac", "-b:a", "192k",
+            "-shortest",
+            "-movflags", "+faststart",
+            output_path,
+        ]
+    else:
+        # 무음 — 지정 duration 사용
+        cmd = [
+            "ffmpeg", "-y",
+            "-f", "concat", "-safe", "0", "-i", concat_tmp.name,
+            "-f", "lavfi", "-i", f"anullsrc=r=44100:cl=stereo",
+            "-c:v", "libx264", "-pix_fmt", "yuv420p",
+            "-vf", "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:black",
+            "-c:a", "aac", "-b:a", "192k",
+            "-t", str(duration),
+            "-movflags", "+faststart",
+            output_path,
+        ]
+
+    result = await asyncio.to_thread(
+        subprocess.run, cmd, capture_output=True, text=True, timeout=120
+    )
+    Path(concat_tmp.name).unlink(missing_ok=True)
+
+    if result.returncode != 0:
+        raise RuntimeError(f"FFmpeg segment failed: {result.stderr[-400:]}")
+
+
 @router.post("/upload", response_model=PresentationUploadResponse)
 async def upload_presentation(
     file: UploadFile = File(..., description="PDF 파일"),
     project_id: str = Form(..., description="프로젝트 ID"),
     dpi: int = Form(200, description="슬라이드 이미지 해상도 (DPI)"),
-    lang: str = Form("kor+eng", description="OCR 언어")
+    lang: str = Form("kor+eng", description="OCR 언어"),
+    template_id: Optional[str] = Form(None, description="브랜드 템플릿 ID (인트로/아웃트로 적용)"),
 ):
     """
     1. PDF 업로드 및 처리
@@ -128,6 +299,7 @@ async def upload_presentation(
             "full_script": None,
             "audio_path": None,
             "video_path": None,
+            "template_id": template_id,
             "created_at": datetime.datetime.now().isoformat(),
             "updated_at": datetime.datetime.now().isoformat(),
             "metadata": {},
@@ -371,11 +543,11 @@ async def generate_video(
     presentation_id: str,
     request: GenerateVideoRequest
 ):
-    """5. FFmpeg 영상 생성 (동기 — 인메모리)"""
-    try:
-        import subprocess
-        import tempfile
+    """5. FFmpeg 영상 생성 (동기 — 인메모리, 인트로/아웃트로 지원)"""
+    import subprocess
+    import datetime
 
+    try:
         logger.info(f"Starting video generation for presentation: {presentation_id}")
 
         if presentation_id not in _presentations:
@@ -392,47 +564,200 @@ async def generate_video(
         output_dir.mkdir(parents=True, exist_ok=True)
         output_path = output_dir / f"{presentation_id}.mp4"
 
-        # FFmpeg concat 파일 생성 (슬라이드별 duration)
-        concat_file = tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False)
+        # ── 브랜드 템플릿 조회 ──────────────────────────────────────
+        template_id = pdata.get("template_id") or (
+            request.template_id if hasattr(request, "template_id") else None
+        )
+        template_data = None
+        if template_id:
+            try:
+                from app.api.v1.brand_templates import _brand_templates
+                template_data = _brand_templates.get(template_id)
+                if template_data is None:
+                    logger.warning(f"template_id={template_id} not found — skipping intro/outro")
+            except Exception as tmpl_err:
+                logger.warning(f"Failed to load brand template: {tmpl_err}")
+
+        # ── 변수 딕셔너리 구성 ──────────────────────────────────────
+        variables = _build_variables(pdata)
+
+        # ── 인트로 세그먼트 생성 ────────────────────────────────────
+        intro_segment_path: Optional[str] = None
+        if template_data:
+            intro_cfg = template_data.get("intro", {})
+            if intro_cfg.get("enabled", True) and intro_cfg.get("script", ""):
+                try:
+                    intro_script = _substitute_variables(intro_cfg["script"], variables)
+                    intro_title = _substitute_variables(
+                        intro_cfg.get("title_template", variables["presentation_title"]),
+                        variables,
+                    )
+                    intro_subtitle = _substitute_variables(
+                        intro_cfg.get("subtitle_template", variables["date"]),
+                        variables,
+                    )
+                    intro_duration = float(intro_cfg.get("duration", 3.0))
+
+                    # 배경 이미지 생성
+                    intro_img_path = str(output_dir / f"{presentation_id}_intro_bg.png")
+                    bg_color = intro_cfg.get("background_color", "#16325C")
+                    _generate_title_image(
+                        output_path=intro_img_path,
+                        title=intro_title,
+                        subtitle=intro_subtitle,
+                        bg_color=bg_color,
+                    )
+
+                    # 인트로 TTS
+                    tts_service = get_tts_service()
+                    voice_cfg = template_data.get("voice_config", {})
+                    intro_audio_bytes = await tts_service.generate_audio(
+                        text=intro_script,
+                        voice_id=voice_cfg.get("voice_id", "onyx"),
+                        model="tts-1",
+                    )
+                    intro_audio_path = str(output_dir / f"{presentation_id}_intro.mp3")
+                    with open(intro_audio_path, "wb") as f:
+                        f.write(intro_audio_bytes)
+
+                    # 인트로 MP4 세그먼트
+                    intro_segment_path = str(output_dir / f"{presentation_id}_intro.mp4")
+                    await _generate_segment_video(
+                        image_path=intro_img_path,
+                        audio_path=intro_audio_path,
+                        output_path=intro_segment_path,
+                        duration=intro_duration,
+                    )
+                    logger.info(f"Intro segment created: {intro_segment_path}")
+                except Exception as intro_err:
+                    logger.warning(f"Intro generation failed (skipping): {intro_err}")
+                    intro_segment_path = None
+
+        # ── 본편 슬라이드 세그먼트 ─────────────────────────────────
+        main_segment_path = str(output_dir / f"{presentation_id}_main.mp4")
+
+        main_concat = tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False)
         for slide in slides:
             img_path = Path(slide["image_path"]).resolve()
             duration = slide.get("duration") or 15.0
-            concat_file.write(f"file '{img_path}'\n")
-            concat_file.write(f"duration {duration}\n")
-        # FFmpeg needs last image repeated
+            main_concat.write(f"file '{img_path}'\n")
+            main_concat.write(f"duration {duration}\n")
         if slides:
             last_img = Path(slides[-1]["image_path"]).resolve()
-            concat_file.write(f"file '{last_img}'\n")
-        concat_file.close()
+            main_concat.write(f"file '{last_img}'\n")
+        main_concat.close()
 
-        # FFmpeg: 슬라이드 이미지 + 오디오 → MP4
-        cmd = [
+        main_cmd = [
             "ffmpeg", "-y",
-            "-f", "concat", "-safe", "0", "-i", concat_file.name,
+            "-f", "concat", "-safe", "0", "-i", main_concat.name,
             "-i", str(Path(audio_path).resolve()),
             "-c:v", "libx264", "-pix_fmt", "yuv420p",
             "-vf", "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:black",
             "-c:a", "aac", "-b:a", "192k",
             "-shortest",
             "-movflags", "+faststart",
-            str(output_path)
+            main_segment_path,
         ]
-
-        logger.info(f"Running FFmpeg: {' '.join(cmd[:6])}...")
-        result = await asyncio.to_thread(
-            subprocess.run, cmd,
-            capture_output=True, text=True, timeout=300
+        logger.info(f"Running FFmpeg (main): {' '.join(main_cmd[:6])}...")
+        main_result = await asyncio.to_thread(
+            subprocess.run, main_cmd, capture_output=True, text=True, timeout=300
         )
+        Path(main_concat.name).unlink(missing_ok=True)
 
-        # Cleanup temp file
-        Path(concat_file.name).unlink(missing_ok=True)
+        if main_result.returncode != 0:
+            logger.error(f"FFmpeg main failed: {main_result.stderr[-500:]}")
+            raise HTTPException(status_code=500, detail=f"FFmpeg error: {main_result.stderr[-200:]}")
 
-        if result.returncode != 0:
-            logger.error(f"FFmpeg failed: {result.stderr[-500:]}")
-            raise HTTPException(status_code=500, detail=f"FFmpeg error: {result.stderr[-200:]}")
+        # ── 아웃트로 세그먼트 생성 ──────────────────────────────────
+        outro_segment_path: Optional[str] = None
+        if template_data:
+            outro_cfg = template_data.get("outro", {})
+            if outro_cfg.get("enabled", True) and outro_cfg.get("script", ""):
+                try:
+                    outro_script = _substitute_variables(outro_cfg["script"], variables)
+                    outro_duration = float(outro_cfg.get("duration", 4.0))
+                    cta_text = outro_cfg.get("cta_text", "구독 · 좋아요 · 공유")
+                    contact_info = outro_cfg.get("contact_info", "")
+
+                    # 아웃트로 배경 (어두운 배경)
+                    outro_img_path = str(output_dir / f"{presentation_id}_outro_bg.png")
+                    _generate_title_image(
+                        output_path=outro_img_path,
+                        title=cta_text,
+                        subtitle=contact_info,
+                        bg_color="#0D1B2A",
+                    )
+
+                    # 아웃트로 TTS
+                    tts_service = get_tts_service()
+                    voice_cfg = template_data.get("voice_config", {})
+                    outro_audio_bytes = await tts_service.generate_audio(
+                        text=outro_script,
+                        voice_id=voice_cfg.get("voice_id", "onyx"),
+                        model="tts-1",
+                    )
+                    outro_audio_path = str(output_dir / f"{presentation_id}_outro.mp3")
+                    with open(outro_audio_path, "wb") as f:
+                        f.write(outro_audio_bytes)
+
+                    # 아웃트로 MP4 세그먼트
+                    outro_segment_path = str(output_dir / f"{presentation_id}_outro.mp4")
+                    await _generate_segment_video(
+                        image_path=outro_img_path,
+                        audio_path=outro_audio_path,
+                        output_path=outro_segment_path,
+                        duration=outro_duration,
+                    )
+                    logger.info(f"Outro segment created: {outro_segment_path}")
+                except Exception as outro_err:
+                    logger.warning(f"Outro generation failed (skipping): {outro_err}")
+                    outro_segment_path = None
+
+        # ── 최종 concat (인트로 + 본편 + 아웃트로) ─────────────────
+        segments = []
+        if intro_segment_path and Path(intro_segment_path).exists():
+            segments.append(intro_segment_path)
+        segments.append(main_segment_path)
+        if outro_segment_path and Path(outro_segment_path).exists():
+            segments.append(outro_segment_path)
+
+        if len(segments) == 1:
+            # 인트로/아웃트로 없음 → 본편 그대로 이동
+            import shutil
+            shutil.move(main_segment_path, str(output_path))
+        else:
+            # FFmpeg concat (demuxer — 이미 인코딩된 스트림 합치기)
+            final_concat = tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False)
+            for seg in segments:
+                final_concat.write(f"file '{Path(seg).resolve()}'\n")
+            final_concat.close()
+
+            concat_cmd = [
+                "ffmpeg", "-y",
+                "-f", "concat", "-safe", "0", "-i", final_concat.name,
+                "-c", "copy",
+                "-movflags", "+faststart",
+                str(output_path),
+            ]
+            logger.info(f"Running FFmpeg (final concat): {len(segments)} segments")
+            concat_result = await asyncio.to_thread(
+                subprocess.run, concat_cmd, capture_output=True, text=True, timeout=300
+            )
+            Path(final_concat.name).unlink(missing_ok=True)
+
+            if concat_result.returncode != 0:
+                logger.error(f"FFmpeg final concat failed: {concat_result.stderr[-500:]}")
+                # 본편만이라도 저장
+                import shutil
+                shutil.copy(main_segment_path, str(output_path))
+                logger.warning("Falling back to main segment only")
+
+        # ── 임시 세그먼트 파일 정리 ─────────────────────────────────
+        for seg in [intro_segment_path, main_segment_path, outro_segment_path]:
+            if seg and seg != str(output_path):
+                Path(seg).unlink(missing_ok=True)
 
         # 인메모리 업데이트
-        import datetime
         _presentations[presentation_id]["video_path"] = str(output_path)
         _presentations[presentation_id]["status"] = PresentationStatus.VIDEO_READY.value
         _presentations[presentation_id]["updated_at"] = datetime.datetime.now().isoformat()
