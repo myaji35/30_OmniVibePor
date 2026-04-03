@@ -67,7 +67,7 @@
       "id": "ISS-007",
       "title": "전략 수립 엔진: AI Director + 채널별 전략 제안",
       "type": "GENERATE_CODE",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P0",
       "assign_to": "agent-harness",
       "depth": 0,
@@ -95,7 +95,7 @@
       "id": "ISS-008",
       "title": "컨셉 기획기: AI Writer + 스크립트 → 스토리보드 자동화",
       "type": "GENERATE_CODE",
-      "status": "CREATED",
+      "status": "READY",
       "priority": "P0",
       "assign_to": "agent-harness",
       "depth": 0,
@@ -202,7 +202,7 @@
   },
   "stats": {
     "total_issues": 10,
-    "completed": 4,
+    "completed": 5,
     "failed": 0,
     "evolved": 0
   }
