@@ -12,6 +12,7 @@ import {
   CheckCircle, AlertCircle, Play,
 } from 'lucide-react'
 import AppShell from '@/components/AppShell'
+import PipelineNav from '@/components/PipelineNav'
 
 interface ProduceResult {
   type: 'video' | 'presentation' | 'narration'
@@ -33,9 +34,23 @@ const VOICES = [
 function ProduceContent() {
   const searchParams = useSearchParams()
 
-  const [script, setScript] = useState(searchParams.get('script') || '')
-  const [brand, setBrand] = useState(searchParams.get('brand') || '')
-  const [channel, setChannel] = useState(searchParams.get('channel') || 'youtube')
+  const [script, setScript] = useState('')
+  const [brand, setBrand] = useState('')
+  const [channel, setChannel] = useState('youtube')
+
+  // /concept에서 전달된 스크립트 복원
+  useEffect(() => {
+    const saved = sessionStorage.getItem('omnivibe_script')
+    if (saved) { setScript(saved); sessionStorage.removeItem('omnivibe_script') }
+    else if (searchParams.get('script')) setScript(searchParams.get('script')!)
+
+    const savedBrand = sessionStorage.getItem('omnivibe_brand')
+    if (savedBrand) { setBrand(savedBrand); sessionStorage.removeItem('omnivibe_brand') }
+    else if (searchParams.get('brand')) setBrand(searchParams.get('brand')!)
+
+    const savedCh = searchParams.get('channel')
+    if (savedCh) setChannel(savedCh)
+  }, [searchParams])
   const [theme, setTheme] = useState('dark')
   const [voice, setVoice] = useState('ko-KR-SunHiNeural')
   const [title, setTitle] = useState('')
@@ -108,6 +123,7 @@ function ProduceContent() {
 
   return (
     <div className="max-w-5xl mx-auto py-8 px-6">
+      <div className="mb-6"><PipelineNav /></div>
       {/* 헤더 */}
       <div className="flex items-center gap-3 mb-8">
         <div className="w-10 h-10 rounded-xl bg-[#00FF88]/10 flex items-center justify-center">

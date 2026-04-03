@@ -115,13 +115,13 @@ export default function DashboardPage() {
   return (
     <AppShell
       title="대시보드"
-      subtitle="캠페인 및 영상 생성 현황"
+      subtitle="영상 콘텐츠 제작 현황"
       actions={
-        <Link href="/studio"
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all active:scale-95"
+        <Link href="/strategy"
+          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-all active:scale-95"
           style={{ background: 'linear-gradient(135deg, #a855f7, #6366f1)', boxShadow: '0 0 16px rgba(168,85,247,0.3)' }}>
-          <Plus className="w-3.5 h-3.5" />
-          새 캠페인
+          <Plus className="w-4 h-4" />
+          새 프로젝트
         </Link>
       }
     >
@@ -151,6 +151,28 @@ export default function DashboardPage() {
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* ── 빠른 시작 파이프라인 ── */}
+          <div className={`${CARD} p-5`} style={CARD_S}>
+            <SLabel>빠른 시작</SLabel>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {[
+                { href: '/strategy', label: '전략 수립', desc: 'AI 전략 + 캘린더', color: '#6366F1', icon: '📊' },
+                { href: '/concept', label: '컨셉 기획', desc: '스크립트 + 스토리보드', color: '#F59E0B', icon: '💡' },
+                { href: '/produce', label: '콘텐츠 생산', desc: '영상 + 나레이션', color: '#22C55E', icon: '🎬' },
+                { href: '/render', label: '영상 렌더링', desc: 'MP4 내보내기', color: '#3B82F6', icon: '🖥️' },
+              ].map(item => (
+                <Link key={item.href} href={item.href}
+                  className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/[0.04] transition-all border border-white/[0.05]">
+                  <span className="text-2xl">{item.icon}</span>
+                  <div>
+                    <div className="text-sm font-bold text-white">{item.label}</div>
+                    <div className="text-xs text-white/40">{item.desc}</div>
+                  </div>
+                </Link>
+              ))}
+            </div>
           </div>
 
           {/* ── 2열 레이아웃: 캠페인 목록 + 사이드바 ── */}

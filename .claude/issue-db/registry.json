@@ -106,6 +106,35 @@
       }
     }
   ],
+    {
+      "id": "ISS-017", "title": "[P0] /strategy 캘린더 → /concept 자동 이동 링크",
+      "type": "GENERATE_CODE", "status": "READY", "priority": "P0", "assign_to": "agent-harness", "depends_on": []
+    },
+    {
+      "id": "ISS-018", "title": "[P0] /concept 스크립트 → /produce 나레이션 자동 연결",
+      "type": "GENERATE_CODE", "status": "READY", "priority": "P0", "assign_to": "agent-harness", "depends_on": []
+    },
+    {
+      "id": "ISS-019", "title": "[P0] /produce 나레이션 — Next.js API Route에서 edge-tts 직접 실행",
+      "type": "GENERATE_CODE", "status": "READY", "priority": "P0", "assign_to": "agent-harness", "depends_on": []
+    },
+    {
+      "id": "ISS-020", "title": "[P1] /concept 스크립트 → TTS 원클릭 나레이션 생성",
+      "type": "GENERATE_CODE", "status": "CREATED", "priority": "P1", "assign_to": "agent-harness", "depends_on": ["ISS-019"]
+    },
+    {
+      "id": "ISS-021", "title": "[P1] 템플릿 기반 자동 영상 생성 (스크립트→Remotion)",
+      "type": "GENERATE_CODE", "status": "CREATED", "priority": "P1", "assign_to": "agent-harness", "depends_on": ["ISS-018"]
+    },
+    {
+      "id": "ISS-022", "title": "[P2] 각 페이지 완료 시 '다음 단계' CTA 안내",
+      "type": "GENERATE_CODE", "status": "CREATED", "priority": "P2", "assign_to": "agent-harness", "depends_on": ["ISS-017"]
+    },
+    {
+      "id": "ISS-023", "title": "[P2] 생성 콘텐츠 히스토리 대시보드 연동",
+      "type": "GENERATE_CODE", "status": "CREATED", "priority": "P2", "assign_to": "agent-harness", "depends_on": ["ISS-020"]
+    }
+  ],
   "hooks": { "on_create": [], "on_start": [], "on_complete": [], "on_fail": [], "on_learn": [] },
   "knowledge": {
     "success_patterns": [

@@ -12,6 +12,7 @@ import {
   Share2, ArrowRight, RefreshCw, Download,
 } from 'lucide-react'
 import AppShell from '@/components/AppShell'
+import PipelineNav from '@/components/PipelineNav'
 
 interface Channel {
   id: string
@@ -136,6 +137,7 @@ export default function PublishPage() {
   return (
     <AppShell>
       <div className="max-w-6xl mx-auto py-8 px-6">
+        <div className="mb-6"><PipelineNav /></div>
         {/* 헤더 */}
         <div className="flex items-center gap-3 mb-8">
           <div className="w-10 h-10 rounded-xl bg-[#22C55E]/10 flex items-center justify-center">

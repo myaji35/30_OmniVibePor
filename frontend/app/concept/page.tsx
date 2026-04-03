@@ -12,9 +12,10 @@ import { useState, useCallback, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import {
   Lightbulb, FileText, Film, ArrowRight, Loader2, Sparkles,
-  ChevronDown, ChevronRight, Copy, Check, GripVertical,
+  ChevronDown, ChevronRight, Copy, Check, GripVertical, Mic, Download,
 } from 'lucide-react'
 import AppShell from '@/components/AppShell'
+import PipelineNav from '@/components/PipelineNav'
 
 // ── Types ────────────────────────────────────────
 interface StoryboardCard {
@@ -68,6 +69,8 @@ function ConceptContent() {
   // UI 상태
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [narrationLoading, setNarrationLoading] = useState(false)
+  const [narrationResult, setNarrationResult] = useState<{ url: string; size: string } | null>(null)
 
   // ── Phase 1 → 2: 컨셉 → 스크립트 생성 ──────────
   const handleGenerateScript = useCallback(async () => {
@@ -177,14 +180,33 @@ function ConceptContent() {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  // ── 나레이션 원클릭 생성 ────────────────────────
+  const handleNarration = useCallback(async () => {
+    if (!script) return
+    setNarrationLoading(true)
+    setNarrationResult(null)
+    try {
+      const res = await fetch('/api/produce?type=narration', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ script, voice: 'ko-KR-InJoonNeural', voice_rate: '-5%' }),
+      })
+      const data = await res.json()
+      if (data.download_url) {
+        setNarrationResult({ url: data.download_url, size: data.size_human })
+      }
+    } catch { /* ignore */ }
+    setNarrationLoading(false)
+  }, [script])
+
   // ── 콘텐츠 생산 트리거 ─────────────────────────
   const handleProduce = (type: 'video' | 'presentation') => {
-    const params = new URLSearchParams({
-      script: script.slice(0, 500),
-      channel,
-      brand,
-      type,
-    })
+    // 전체 스크립트를 sessionStorage에 저장 (URL 길이 제한 회피)
+    sessionStorage.setItem('omnivibe_script', script)
+    sessionStorage.setItem('omnivibe_brand', brand)
+    sessionStorage.setItem('omnivibe_channel', channel)
+    sessionStorage.setItem('omnivibe_cards', JSON.stringify(cards))
+    const params = new URLSearchParams({ type, channel, brand })
     window.location.href = `/produce?${params.toString()}`
   }
 
@@ -203,6 +225,7 @@ function ConceptContent() {
   return (
     <AppShell>
       <div className="max-w-5xl mx-auto py-8 px-6">
+        <div className="mb-6"><PipelineNav /></div>
         {/* 헤더 */}
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
@@ -320,12 +343,29 @@ function ConceptContent() {
                   className="px-4 py-2.5 rounded-lg text-sm font-semibold bg-white/[0.05] border border-white/10 text-white/50 hover:text-white/80 transition-all">
                   컨셉 수정
                 </button>
+                <button onClick={handleNarration} disabled={narrationLoading}
+                  className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold
+                    bg-[#22C55E]/10 border border-[#22C55E]/20 text-[#22C55E] hover:bg-[#22C55E]/20 transition-all disabled:opacity-50">
+                  {narrationLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mic className="w-4 h-4" />}
+                  나레이션
+                </button>
                 <button onClick={handleGenerateStoryboard}
                   className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold
                     bg-[#6366F1] text-white hover:bg-[#5558E6] transition-all">
                   <Film className="w-4 h-4" /> 스토리보드 생성
                 </button>
               </div>
+
+              {/* 나레이션 결과 */}
+              {narrationResult && (
+                <div className="mt-3 flex items-center gap-3 p-3 rounded-lg bg-[#22C55E]/10 border border-[#22C55E]/20">
+                  <Check className="w-4 h-4 text-[#22C55E]" />
+                  <span className="text-sm text-[#22C55E]">나레이션 생성 완료 ({narrationResult.size})</span>
+                  <a href={narrationResult.url} download className="ml-auto flex items-center gap-1 text-xs text-white/50 hover:text-white/80">
+                    <Download className="w-3 h-3" /> 다운로드
+                  </a>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -401,9 +441,15 @@ function ConceptContent() {
                   <Film className="w-4 h-4" /> 영상 제작
                 </button>
                 <button onClick={() => handleProduce('presentation')}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold
+                  className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold
                     bg-[#00A1E0]/10 border border-[#00A1E0]/20 text-[#00A1E0] hover:bg-[#00A1E0]/20 transition-all">
                   <FileText className="w-4 h-4" /> 프레젠테이션
+                </button>
+                <button onClick={handleNarration} disabled={narrationLoading}
+                  className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold
+                    bg-[#22C55E]/10 border border-[#22C55E]/20 text-[#22C55E] hover:bg-[#22C55E]/20 transition-all disabled:opacity-50">
+                  {narrationLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mic className="w-4 h-4" />}
+                  나레이션
                 </button>
               </div>
             </div>

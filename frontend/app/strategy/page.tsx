@@ -12,6 +12,7 @@ import {
   Zap, BarChart3, Clock, ArrowRight,
 } from 'lucide-react'
 import AppShell from '@/components/AppShell'
+import PipelineNav from '@/components/PipelineNav'
 
 // ── Types ────────────────────────────────────────
 interface ChannelStrategy {
@@ -152,6 +153,7 @@ export default function StrategyPage() {
   return (
     <AppShell>
       <div className="max-w-6xl mx-auto py-8 px-6">
+        <div className="mb-6"><PipelineNav /></div>
         {/* 헤더 */}
         <div className="flex items-center gap-3 mb-8">
           <div className="w-10 h-10 rounded-xl bg-[#6366F1]/10 flex items-center justify-center">
@@ -360,9 +362,12 @@ export default function StrategyPage() {
                                   {item.estimated_duration && (
                                     <span className="text-[10px] font-mono text-white/20">{item.estimated_duration}s</span>
                                   )}
-                                  <button className="px-2 py-0.5 rounded text-[10px] bg-[#6366F1]/10 text-[#6366F1] border border-[#6366F1]/20 hover:bg-[#6366F1]/20 transition-colors">
-                                    <ArrowRight className="w-3 h-3" />
-                                  </button>
+                                  <a
+                                    href={`/concept?topic=${encodeURIComponent(item.topic)}&channel=${encodeURIComponent(item.channel)}&brand=${encodeURIComponent(result?.brand_name || '')}`}
+                                    className="px-2.5 py-1 rounded text-[11px] font-semibold bg-[#6366F1]/10 text-[#6366F1] border border-[#6366F1]/20 hover:bg-[#6366F1]/20 transition-colors flex items-center gap-1"
+                                  >
+                                    기획 <ArrowRight className="w-3 h-3" />
+                                  </a>
                                 </div>
                               ))}
                             </div>

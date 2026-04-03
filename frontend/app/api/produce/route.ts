@@ -25,13 +25,50 @@ export async function POST(request: NextRequest) {
   const ts = Date.now()
 
   if (type === 'narration') {
-    // edge-tts는 서버 사이드에서만 실행 가능 → 안내 메시지
+    // Next.js API Route에서 edge-tts 직접 실행 (Node.js child_process)
+    try {
+      const { execSync } = await import('child_process')
+      const path = await import('path')
+      const fs = await import('fs')
+
+      const voice = body.voice || 'ko-KR-SunHiNeural'
+      const rate = body.voice_rate || '-5%'
+      const text = body.script || ''
+      const outputDir = path.join(process.cwd(), 'public', 'rendered')
+      fs.mkdirSync(outputDir, { recursive: true })
+
+      const filename = `narration_${ts}.mp3`
+      const outputPath = path.join(outputDir, filename)
+
+      // edge-tts CLI 실행
+      const escapedText = text.replace(/"/g, '\\"').replace(/\n/g, ' ')
+      execSync(
+        `edge-tts --voice "${voice}" --rate="${rate}" --text "${escapedText}" --write-media "${outputPath}"`,
+        { timeout: 60000 }
+      )
+
+      if (fs.existsSync(outputPath)) {
+        const size = fs.statSync(outputPath).size
+        return NextResponse.json({
+          filename,
+          download_url: `/rendered/${filename}`,
+          size_human: `${Math.round(size / 1024)}KB`,
+          voice,
+          message: '나레이션 생성 완료',
+          fallback: false,
+        })
+      }
+    } catch (e: any) {
+      // edge-tts CLI 미설치 시 fallback
+      console.warn('edge-tts CLI not available:', e.message)
+    }
+
     return NextResponse.json({
       filename: `narration_${ts}.mp3`,
       download_url: null,
       size_human: '—',
       voice: body.voice || 'ko-KR-SunHiNeural',
-      message: '나레이션 생성은 백엔드 서버가 필요합니다. backend를 실행해주세요.',
+      message: 'edge-tts CLI를 설치해주세요: pip install edge-tts',
       fallback: true,
     })
   }
