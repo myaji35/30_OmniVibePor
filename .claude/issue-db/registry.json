@@ -95,7 +95,7 @@
       "id": "ISS-008",
       "title": "컨셉 기획기: AI Writer + 스크립트 → 스토리보드 자동화",
       "type": "GENERATE_CODE",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P0",
       "assign_to": "agent-harness",
       "depth": 0,
@@ -123,7 +123,7 @@
       "id": "ISS-009",
       "title": "멀티포맷 콘텐츠 생산: 영상 + 프레젠테이션 + 썸네일",
       "type": "GENERATE_CODE",
-      "status": "CREATED",
+      "status": "READY",
       "priority": "P1",
       "assign_to": "agent-harness",
       "depth": 0,
@@ -202,7 +202,7 @@
   },
   "stats": {
     "total_issues": 10,
-    "completed": 5,
+    "completed": 6,
     "failed": 0,
     "evolved": 0
   }
