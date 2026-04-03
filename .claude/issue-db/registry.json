@@ -1,121 +1,180 @@
 {
-  "version": "1.0.0",
+  "version": "2.0.0",
   "created_at": "2026-04-03T07:01:45.749414",
+  "updated_at": "2026-04-03T10:00:00",
   "architecture": "supervisor",
   "scale_mode": "full",
-  "current_phase": "Phase 3",
+  "current_phase": "Phase 5",
+  "phase_summary": {
+    "Phase 1": "DONE — 기반 정비 + VIDEOGEN",
+    "Phase 2": "DONE — 네비게이션 + 데이터 모델",
+    "Phase 3": "DONE — VREW 편집기 + Quota + 온보딩 + WebSocket (ISS-001~004)",
+    "Phase 4": "PENDING — E2E 통합 테스트 + 프로덕션 배포",
+    "Phase 5": "PENDING — 전략 수립 엔진 + 멀티포맷 콘텐츠 생산"
+  },
   "issues": [
     {
-      "id": "ISS-001",
-      "title": "VREW SubtitleTimeline + ScriptSubtitleSync + Whisper 토큰 타이밍 API",
-      "type": "GENERATE_CODE",
-      "status": "DONE",
+      "id": "ISS-001", "status": "DONE", "title": "VREW SubtitleTimeline + Whisper API", "realplan": "3.1"
+    },
+    {
+      "id": "ISS-002", "status": "DONE", "title": "Tier별 Quota + 업그레이드 UI", "realplan": "3.2"
+    },
+    {
+      "id": "ISS-003", "status": "DONE", "title": "온보딩 플로우 OnboardingTour", "realplan": "3.3"
+    },
+    {
+      "id": "ISS-004", "status": "DONE", "title": "WebSocket Redis 캐시 동기화", "realplan": "3.4"
+    },
+    {
+      "id": "ISS-005",
+      "title": "E2E 통합 테스트: Creator/Marketer User Flow",
+      "type": "RUN_TESTS",
+      "status": "READY",
       "priority": "P1",
+      "assign_to": "test-harness",
+      "depth": 0,
+      "retry_count": 0,
+      "parent_id": null,
+      "depends_on": [],
+      "payload": {
+        "realplan_task": "4.1",
+        "description": "Creator 페르소나 전체 User Flow 검증 + 실패 시나리오 10개",
+        "success_criteria": ["10개 페이지 순환 성공", "실패 시나리오 사용자 친화적 에러"]
+      },
+      "result": null,
+      "spawn_rules": ["SCORE", "SCENARIO_PLAY"]
+    },
+    {
+      "id": "ISS-006",
+      "title": "성능 최적화: API P95 < 3s, 렌더링 < 2min",
+      "type": "GENERATE_CODE",
+      "status": "CREATED",
+      "priority": "P1",
+      "assign_to": "agent-harness",
+      "depth": 0,
+      "retry_count": 0,
+      "parent_id": null,
+      "depends_on": ["ISS-005"],
+      "payload": {
+        "realplan_task": "4.2",
+        "description": "API P95 < 3초, Remotion 렌더링 < 2분, 프론트엔드 번들 < 3MB",
+        "success_criteria": ["P95 < 3s", "렌더 < 2min", "번들 < 3MB"]
+      },
+      "result": null,
+      "spawn_rules": ["RUN_TESTS", "SCORE"]
+    },
+    {
+      "id": "ISS-007",
+      "title": "전략 수립 엔진: AI Director + 채널별 전략 제안",
+      "type": "GENERATE_CODE",
+      "status": "READY",
+      "priority": "P0",
       "assign_to": "agent-harness",
       "depth": 0,
       "retry_count": 0,
       "parent_id": null,
       "depends_on": [],
       "payload": {
-        "realplan_task": "3.1",
-        "scope": ["frontend/components/SubtitleTimeline.tsx", "frontend/components/ScriptSubtitleSync.tsx", "backend/app/api/v1/whisper_timing.py"],
-        "description": "SubtitleTimeline에서 자막 토큰 편집, Whisper 타이밍 오차 < 0.2초, ScriptSubtitleSync 연동",
-        "success_criteria": ["SubtitleTimeline에서 자막 토큰 편집 가능", "Whisper 타이밍 오차 < 0.2초"]
-      },
-      "result": {
-        "completed_at": "2026-04-03",
-        "files_created": [
-          "backend/app/api/v1/whisper_timing.py",
-          "frontend/remotion/components/SubtitleOverlay.tsx",
-          "frontend/app/api/whisper-timing/route.ts"
+        "realplan_task": "5.1",
+        "scope": [
+          "backend/app/agents/strategy_agent.py",
+          "backend/app/api/v1/strategy.py",
+          "frontend/app/strategy/page.tsx"
         ],
-        "files_modified": [
-          "backend/app/api/v1/__init__.py",
-          "frontend/components/vrew/ScriptSubtitleSync.tsx",
-          "frontend/remotion/types.ts",
-          "frontend/remotion/templates/YouTubeTemplate.tsx"
+        "description": "AI Director가 비즈니스 목표 → 채널별 전략 → 콘텐츠 캘린더를 자동 생성. Google Sheets 연동.",
+        "success_criteria": [
+          "비즈니스 목표 입력 → 채널별 전략 JSON 출력",
+          "주간 콘텐츠 캘린더 자동 생성",
+          "Google Sheets 동기화"
         ]
       },
-      "spawn_rules": ["RUN_TESTS", "DOMAIN_ANALYZE", "UI_REVIEW"]
+      "result": null,
+      "spawn_rules": ["RUN_TESTS", "BIZ_VALIDATE", "DOMAIN_ANALYZE"]
     },
     {
-      "id": "ISS-002",
-      "title": "Tier별 Quota: Subscription 테이블 + quota.py + 업그레이드 유도 UI",
+      "id": "ISS-008",
+      "title": "컨셉 기획기: AI Writer + 스크립트 → 스토리보드 자동화",
       "type": "GENERATE_CODE",
-      "status": "DONE",
+      "status": "CREATED",
+      "priority": "P0",
+      "assign_to": "agent-harness",
+      "depth": 0,
+      "retry_count": 0,
+      "parent_id": null,
+      "depends_on": ["ISS-007"],
+      "payload": {
+        "realplan_task": "5.2",
+        "scope": [
+          "backend/app/services/concept_planner.py",
+          "frontend/app/concept/page.tsx",
+          "frontend/components/ConceptBoard.tsx"
+        ],
+        "description": "전략에서 도출된 컨셉 → AI Writer가 스크립트 자동 생성 → 스토리보드 시각화. 편집 가능한 컨셉 보드 UI.",
+        "success_criteria": [
+          "전략 → 컨셉 → 스크립트 3단계 자동 흐름",
+          "스토리보드 카드 DnD 편집",
+          "컨셉 보드에서 직접 영상/프레젠테이션 생성 트리거"
+        ]
+      },
+      "result": null,
+      "spawn_rules": ["RUN_TESTS", "UI_REVIEW", "SCENARIO_PLAY"]
+    },
+    {
+      "id": "ISS-009",
+      "title": "멀티포맷 콘텐츠 생산: 영상 + 프레젠테이션 + 썸네일",
+      "type": "GENERATE_CODE",
+      "status": "CREATED",
       "priority": "P1",
       "assign_to": "agent-harness",
       "depth": 0,
       "retry_count": 0,
       "parent_id": null,
-      "depends_on": [],
+      "depends_on": ["ISS-008"],
       "payload": {
-        "realplan_task": "3.2",
-        "scope": ["backend/app/models/subscription.py", "backend/app/services/quota.py", "backend/app/api/v1/subscription.py", "frontend/components/UpgradePrompt.tsx"],
-        "description": "4개 Tier (Free/Starter/Pro/Enterprise) Quota 테이블, 렌더 횟수 제한, 업그레이드 유도 UI",
-        "success_criteria": ["4개 Tier Quota 동작", "Free: 렌더 3회/월 제한"]
-      },
-      "result": {
-        "completed_at": "2026-04-03",
-        "files_created": [
-          "frontend/components/quota/QuotaStatusBar.tsx",
-          "frontend/components/quota/UpgradePrompt.tsx",
-          "frontend/app/pricing/page.tsx"
+        "realplan_task": "5.3",
+        "scope": [
+          "frontend/app/produce/page.tsx",
+          "backend/app/services/presentation_generator.py",
+          "backend/app/services/thumbnail_generator.py"
         ],
-        "files_modified": [
-          "backend/app/models/subscription.py"
+        "description": "컨셉에서 멀티포맷 자동 생산. Remotion(영상), PDF/HTML(프레젠테이션), AI 이미지(썸네일). edge-tts 나레이션 자동 생성.",
+        "success_criteria": [
+          "컨셉 → 영상 MP4 자동 렌더",
+          "컨셉 → 프레젠테이션 PDF 자동 생성",
+          "컨셉 → 썸네일 AI 생성",
+          "edge-tts 나레이션 자동 삽입"
         ]
       },
-      "spawn_rules": ["RUN_TESTS", "BIZ_VALIDATE", "DESIGN_REVIEW"]
+      "result": null,
+      "spawn_rules": ["RUN_TESTS", "DESIGN_REVIEW", "SCENARIO_PLAY"]
     },
     {
-      "id": "ISS-003",
-      "title": "온보딩 플로우: OnboardingTour.tsx + 10분 내 첫 영상 목표",
+      "id": "ISS-010",
+      "title": "멀티채널 배포: 예약 발행 + 성과 추적",
       "type": "GENERATE_CODE",
-      "status": "DONE",
-      "priority": "P2",
-      "assign_to": "agent-harness",
-      "depth": 0,
-      "retry_count": 0,
-      "parent_id": null,
-      "depends_on": ["ISS-002"],
-      "payload": {
-        "realplan_task": "3.3",
-        "scope": ["frontend/components/OnboardingTour.tsx", "frontend/hooks/useOnboarding.ts"],
-        "description": "신규 사용자 온보딩 투어, 10분 내 첫 영상 완성 유도, 완주율 측정",
-        "success_criteria": ["온보딩 투어 완주율 측정 가능"]
-      },
-      "result": {
-        "completed_at": "2026-04-03",
-        "files_created": ["frontend/components/onboarding/OnboardingTour.tsx"]
-      },
-      "spawn_rules": ["RUN_TESTS", "SCENARIO_PLAY", "UX_FIX"]
-    },
-    {
-      "id": "ISS-004",
-      "title": "WebSocket 안정화: 재연결 시 진행률 동기화 + Redis 상태 캐싱",
-      "type": "FIX_BUG",
-      "status": "DONE",
+      "status": "CREATED",
       "priority": "P1",
       "assign_to": "agent-harness",
       "depth": 0,
       "retry_count": 0,
       "parent_id": null,
-      "depends_on": ["ISS-001"],
+      "depends_on": ["ISS-009"],
       "payload": {
-        "realplan_task": "3.4",
-        "scope": ["frontend/hooks/useWebSocket.ts", "backend/app/api/v1/websocket.py", "backend/app/services/ws_state_cache.py"],
-        "description": "WebSocket 끊김 시 재연결 + Redis에 캐싱된 진행률 복원, 유실 제로",
-        "success_criteria": ["WebSocket 재연결 시 진행률 유실 없음"]
-      },
-      "result": {
-        "completed_at": "2026-04-03",
-        "files_modified": [
-          "backend/app/services/websocket_manager.py",
-          "frontend/hooks/useWebSocket.ts"
+        "realplan_task": "5.4",
+        "scope": [
+          "frontend/app/publish/page.tsx",
+          "backend/app/services/channel_publisher.py",
+          "backend/app/services/content_performance_tracker.py"
+        ],
+        "description": "YouTube/Instagram/TikTok/블로그 멀티채널 예약 발행. 성과 데이터 → GraphRAG → 다음 전략 최적화 루프.",
+        "success_criteria": [
+          "멀티채널 예약 발행 UI",
+          "성과 데이터 자동 수집",
+          "GraphRAG에 성과 저장 → 전략 피드백 루프"
         ]
       },
-      "spawn_rules": ["RUN_TESTS", "SCENARIO_PLAY"]
+      "result": null,
+      "spawn_rules": ["RUN_TESTS", "BIZ_VALIDATE", "SCENARIO_PLAY"]
     }
   ],
   "hooks": {
@@ -127,16 +186,22 @@
   },
   "knowledge": {
     "success_patterns": [
-      "Phase 1-2 완료: SLDS 디자인 시스템, 3-Tier 네비게이션, Templates API, Remotion 통합"
+      "Phase 1-2: SLDS 디자인 시스템, 3-Tier 네비게이션, Templates API, Remotion 통합",
+      "Phase 3: VREW 편집기, 4-Tier Quota, 온보딩 투어, WebSocket 안정화",
+      "edge-tts: 무료 한국어 TTS 8종, 나레이션 생산 파이프라인 구축",
+      "Remotion 프로모 영상 파이프라인: 씬별 나레이션 싱크 + BGM + 다운로드/삭제 UI"
     ],
-    "failure_patterns": [],
+    "failure_patterns": [
+      "나레이션-씬 싱크 불일치: narration_full.mp3 단일 사용 → 씬별 개별 MP3로 해결"
+    ],
     "meta_observations": [
-      "프로젝트 복잡도 Complex → Supervisor 패턴 선택",
-      "Phase 3에서 과금 체계 도입 → biz-validator 필수"
+      "프로젝트 본래 컨셉: 전략 수립 → 컨셉 기획 → 콘텐츠 생산 → 배포 자동화",
+      "Remotion은 콘텐츠 생산 도구 중 하나 (영상 렌더링 엔진)",
+      "Phase 5에서 본래 컨셉의 핵심 파이프라인(전략→컨셉→생산→배포) 구현 필요"
     ]
   },
   "stats": {
-    "total_issues": 4,
+    "total_issues": 10,
     "completed": 4,
     "failed": 0,
     "evolved": 0

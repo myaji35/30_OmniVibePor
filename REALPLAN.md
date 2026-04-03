@@ -2,7 +2,7 @@
 
 ## Meta
 - **project**: OmniVibe Pro
-- **total_phases**: 4
+- **total_phases**: 5
 - **phase_unit**: week
 - **skill_chain**: [brainstorming, writing-plans, executing-plans, TDD, verification, code-review, health, ship]
 - **created**: 2026-03-25
@@ -11,8 +11,9 @@
 ## Status
 - [x] Phase 1: 기반 정비 + 경로B 완성
 - [x] Phase 2: 네비게이션 + 데이터 모델
-- [x] Phase 3: 경로A 착수 + GTM
-- [x] Phase 4: 통합 테스트 + 런칭 준비
+- [x] Phase 3: VREW 편집기 + Quota + 온보딩 + WebSocket (ISS-001~004)
+- [ ] Phase 4: 통합 테스트 + 프로덕션 배포
+- [ ] Phase 5: 전략 수립 → 컨셉 기획 → 멀티포맷 콘텐츠 생산 → 배포
 
 ---
 
@@ -116,10 +117,10 @@
 
 | Task | 내용 | 병렬 | 의존 | 상태 |
 |------|------|------|------|------|
-| 3.1 | VREW 레이어: SubtitleTimeline, ScriptSubtitleSync, Whisper 토큰 타이밍 API | [3.1, 3.2] 병렬 | - | pending |
-| 3.2 | Tier별 Quota: Subscription 테이블, quota.py 연동, 업그레이드 유도 UI | [3.1, 3.2] 병렬 | - | pending |
-| 3.3 | 온보딩 플로우: OnboardingTour.tsx, 10분 내 첫 영상 목표 | - | 3.2 | pending |
-| 3.4 | WebSocket 안정화: 재연결 시 진행률 동기화, Redis 상태 캐싱 | - | 3.1 | pending |
+| 3.1 | VREW 레이어: SubtitleTimeline, ScriptSubtitleSync, Whisper 토큰 타이밍 API | [3.1, 3.2] 병렬 | - | completed |
+| 3.2 | Tier별 Quota: Subscription 테이블, quota.py 연동, 업그레이드 유도 UI | [3.1, 3.2] 병렬 | - | completed |
+| 3.3 | 온보딩 플로우: OnboardingTour.tsx, 10분 내 첫 영상 목표 | - | 3.2 | completed |
+| 3.4 | WebSocket 안정화: 재연결 시 진행률 동기화, Redis 상태 캐싱 | - | 3.1 | completed |
 
 ### Dependencies
 - [3.1, 3.2] 병렬 실행 가능
@@ -178,3 +179,50 @@
 ### References
 - docs/01-plan/features/template-gallery.plan.md
 - docs/04-report/SUPPLEMENTARY_PLAN_2026-03-08.md §1.2, §8
+
+---
+
+## Phase 5: 전략 → 컨셉 → 콘텐츠 → 배포 (Week 5–6)
+
+**목표**: OmniVibe Pro 본래 컨셉 — AI가 전략부터 배포까지 자동화
+
+```
+전략 수립 → 컨셉 기획 → 멀티포맷 생산 → 멀티채널 배포
+   ↑                                        ↓
+   └──── GraphRAG 성과 피드백 ←──────────────┘
+```
+
+### Skills Pipeline
+- pre: /health
+- plan: superpowers:brainstorming
+- design: superpowers:writing-plans
+- implement: superpowers:executing-plans + superpowers:test-driven-development
+- verify: superpowers:verification-before-completion
+- review: superpowers:requesting-code-review
+- post: /health → ship
+
+### Tasks
+
+| Task | 내용 | 병렬 | 의존 | 상태 |
+|------|------|------|------|------|
+| 5.1 | 전략 수립 엔진: AI Director → 채널별 전략 → 콘텐츠 캘린더 (Google Sheets 연동) | [5.1] | - | pending |
+| 5.2 | 컨셉 기획기: 전략 → AI Writer 스크립트 → 스토리보드 시각화 (ConceptBoard DnD) | - | 5.1 | pending |
+| 5.3 | 멀티포맷 콘텐츠 생산: Remotion(영상) + PDF(프레젠테이션) + AI(썸네일) + edge-tts(나레이션) | - | 5.2 | pending |
+| 5.4 | 멀티채널 배포: YouTube/Instagram/TikTok/블로그 예약 발행 + 성과 추적 → GraphRAG 피드백 | - | 5.3 | pending |
+
+### Dependencies
+- 5.1 → 5.2 → 5.3 → 5.4 (순차 파이프라인)
+- Remotion 프로모 영상 파이프라인 (이번 세션에서 구축) → 5.3에 통합
+
+### Success Criteria
+- [ ] 비즈니스 목표 입력 → 채널별 전략 JSON + 주간 캘린더 자동 생성
+- [ ] 전략 → 컨셉 → 스크립트 3단계 자동 흐름 + 스토리보드 카드 편집
+- [ ] 컨셉 → 영상 MP4 + 프레젠테이션 PDF + 썸네일 자동 생산
+- [ ] 멀티채널 예약 발행 + 성과 → GraphRAG → 다음 전략 최적화 루프
+- [ ] edge-tts 나레이션 자동 삽입 (한국어 8종 음성)
+
+### References
+- Phase 3에서 구축한 Remotion + edge-tts 파이프라인
+- backend/app/agents/director_agent.py (기존 Director Agent)
+- backend/app/services/writer_agent.py (기존 Writer Agent)
+- backend/app/services/content_performance_tracker.py (기존 성과 추적)
