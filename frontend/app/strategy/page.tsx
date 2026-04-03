@@ -115,7 +115,7 @@ export default function StrategyPage() {
     setError(null)
 
     try {
-      const endpoint = preview ? '/api/v1/strategy/preview' : '/api/v1/strategy/generate'
+      const endpoint = preview ? '/api/strategy?preview=true' : '/api/strategy'
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
