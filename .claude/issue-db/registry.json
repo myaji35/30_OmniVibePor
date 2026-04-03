@@ -123,7 +123,7 @@
       "id": "ISS-009",
       "title": "멀티포맷 콘텐츠 생산: 영상 + 프레젠테이션 + 썸네일",
       "type": "GENERATE_CODE",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P1",
       "assign_to": "agent-harness",
       "depth": 0,
@@ -152,7 +152,7 @@
       "id": "ISS-010",
       "title": "멀티채널 배포: 예약 발행 + 성과 추적",
       "type": "GENERATE_CODE",
-      "status": "CREATED",
+      "status": "READY",
       "priority": "P1",
       "assign_to": "agent-harness",
       "depth": 0,
@@ -202,7 +202,7 @@
   },
   "stats": {
     "total_issues": 10,
-    "completed": 6,
+    "completed": 7,
     "failed": 0,
     "evolved": 0
   }
