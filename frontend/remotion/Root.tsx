@@ -7,6 +7,7 @@ import { PromoVideo } from './promo/PromoVideo';
 import { ChopdPromo } from './promo/ChopdPromo';
 import { InsureGraphPromo } from './promo/InsureGraphPromo';
 import { BobotSafetyPromo } from './promo/BobotSafetyPromo';
+import { LowVisionPromo, LOWVISION_TOTAL } from './promo/LowVisionPromo';
 import { EN, KO } from './promo/i18n';
 import type { VideoTemplateProps } from './types';
 
@@ -104,6 +105,15 @@ export const RemotionRoot: React.FC = () => {
         id="bobot-safety"
         component={BobotSafetyPromo}
         durationInFrames={Math.ceil(113 * 30)}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+      {/* 저시력인협회 — 나피디 홍보 영상 (85s) */}
+      <Composition
+        id="lowvision"
+        component={LowVisionPromo}
+        durationInFrames={LOWVISION_TOTAL}
         fps={30}
         width={1920}
         height={1080}
