@@ -7,6 +7,7 @@
 
 import { useState, useCallback } from 'react'
 import { Check, X, Zap, Star, Building2, ArrowRight } from 'lucide-react'
+import AppShell from '@/components/AppShell'
 
 const PLANS = [
   {
@@ -145,7 +146,8 @@ export default function PricingPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-[#F3F2F2]">
+    <AppShell>
+    <div className="min-h-screen bg-[#0f1117]">
       {/* 헤더 */}
       <div className="bg-[#16325C] text-white py-16 px-4">
         <div className="max-w-5xl mx-auto text-center">
@@ -317,5 +319,6 @@ export default function PricingPage() {
         </div>
       </div>
     </div>
+    </AppShell>
   )
 }

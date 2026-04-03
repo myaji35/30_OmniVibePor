@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import AppShell from "@/components/AppShell";
 import {
   Play,
   Pause,
@@ -1604,15 +1605,17 @@ function StudioPageContent() {
 // Suspense로 감싼 메인 컴포넌트
 export default function StudioPage() {
   return (
-    <Suspense fallback={
-      <div className="flex h-screen bg-[#0f1117] text-white items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-16 h-16 border-4 border-brand-primary-500 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-gray-400 font-medium">Loading Studio...</p>
+    <AppShell>
+      <Suspense fallback={
+        <div className="flex h-[calc(100vh-64px)] bg-[#0f1117] text-white items-center justify-center">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-16 h-16 border-4 border-brand-primary-500 border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-gray-400 font-medium">Loading Studio...</p>
+          </div>
         </div>
-      </div>
-    }>
-      <StudioPageContent />
-    </Suspense>
+      }>
+        <StudioPageContent />
+      </Suspense>
+    </AppShell>
   );
 }

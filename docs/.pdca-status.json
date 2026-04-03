@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-04-03T03:24:41.387Z",
+  "lastUpdated": "2026-04-03T03:31:37.622Z",
   "activeFeatures": [
     "template-start",
     "generate",
@@ -53,7 +53,12 @@
     "presentation_generator.py",
     "produce",
     "publish",
-    "tests"
+    "tests",
+    "subtitle-editor",
+    "presentation",
+    "script-editor",
+    "storyboard",
+    "test-websocket"
   ],
   "primaryFeature": "template-start",
   "features": {
@@ -124,9 +129,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-17T04:04:04.353Z",
-        "lastUpdated": "2026-03-07T12:09:34.089Z"
+        "lastUpdated": "2026-04-03T03:30:32.322Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/components/studio/StudioPreview.tsx"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/studio/page.tsx"
     },
     "slds": {
       "phase": "do",
@@ -163,7 +168,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-17T04:07:23.741Z",
-        "lastUpdated": "2026-04-03T02:24:52.242Z"
+        "lastUpdated": "2026-04-03T03:31:37.622Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/page.tsx"
     },
@@ -412,7 +417,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-28T20:24:56.949Z",
-        "lastUpdated": "2026-02-28T20:24:56.949Z"
+        "lastUpdated": "2026-04-03T03:28:56.972Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/production/page.tsx"
     },
@@ -569,7 +574,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-04-02T22:19:12.038Z",
-        "lastUpdated": "2026-04-02T22:19:12.038Z"
+        "lastUpdated": "2026-04-03T03:27:36.090Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/pricing/page.tsx"
     },
@@ -741,6 +746,71 @@
         "lastUpdated": "2026-04-03T02:07:08.955Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/tests/conftest.py"
+    },
+    "subtitle-editor": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-03T03:26:21.675Z",
+        "lastUpdated": "2026-04-03T03:26:21.675Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/subtitle-editor/page.tsx"
+    },
+    "presentation": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-03T03:26:35.729Z",
+        "lastUpdated": "2026-04-03T03:26:35.729Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/presentation/page.tsx"
+    },
+    "script-editor": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-03T03:27:50.047Z",
+        "lastUpdated": "2026-04-03T03:28:01.212Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/script-editor/page.tsx"
+    },
+    "storyboard": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-03T03:28:12.548Z",
+        "lastUpdated": "2026-04-03T03:28:44.074Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/storyboard/page.tsx"
+    },
+    "test-websocket": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-03T03:29:12.883Z",
+        "lastUpdated": "2026-04-03T03:29:58.904Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/test-websocket/page.tsx"
     }
   },
   "pipeline": {
@@ -751,7 +821,7 @@
   "session": {
     "startedAt": "2026-02-17T03:58:39.163Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-04-03T03:24:41.387Z"
+    "lastActivity": "2026-04-03T03:31:37.622Z"
   },
   "history": [
     {
@@ -2659,6 +2729,144 @@
     {
       "timestamp": "2026-04-03T03:24:41.387Z",
       "feature": "publish",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:26:21.675Z",
+      "feature": "subtitle-editor",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:26:35.729Z",
+      "feature": "presentation",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:27:01.858Z",
+      "feature": "pricing",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:27:24.982Z",
+      "feature": "pricing",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:27:36.090Z",
+      "feature": "pricing",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:27:50.047Z",
+      "feature": "script-editor",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:28:01.212Z",
+      "feature": "script-editor",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:28:12.548Z",
+      "feature": "storyboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:28:29.145Z",
+      "feature": "storyboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:28:44.074Z",
+      "feature": "storyboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:28:56.972Z",
+      "feature": "production",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:29:12.883Z",
+      "feature": "test-websocket",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:29:47.653Z",
+      "feature": "test-websocket",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:29:58.904Z",
+      "feature": "test-websocket",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:30:22.372Z",
+      "feature": "studio",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:30:32.322Z",
+      "feature": "studio",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:30:54.082Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:31:00.897Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:31:08.612Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:31:15.658Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:31:23.604Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:31:30.495Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T03:31:37.622Z",
+      "feature": "frontend",
       "phase": "do",
       "action": "updated"
     }

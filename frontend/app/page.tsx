@@ -444,7 +444,7 @@ export default function Home() {
                 { href: '/strategy', label: '전략 수립', icon: '📊' },
                 { href: '/concept', label: '컨셉 기획', icon: '💡' },
                 { href: '/produce', label: '콘텐츠 생산', icon: '🎬' },
-                { href: '/publish', label: '멀티채널 배포', icon: '📡' },
+                { href: '/publish', label: '공유 & 추적', icon: '📊' },
                 { href: '/gallery', label: '템플릿 갤러리', icon: '🎨' },
                 { href: '/pricing', label: '가격', icon: '💰' },
                 { href: '/dashboard', label: '대시보드', icon: '📋' },
@@ -581,7 +581,7 @@ export default function Home() {
       <section className="py-16 relative z-10">
         <div className="container mx-auto px-5 md:px-10">
           <FadeIn className="mb-10">
-            <h3 className="text-2xl md:text-3xl font-bold text-white text-center mb-3">AI가 전략부터 배포까지</h3>
+            <h3 className="text-2xl md:text-3xl font-bold text-white text-center mb-3">AI가 전략부터 완성까지</h3>
             <p className="text-base text-gray-400 text-center">4단계 자동화 파이프라인</p>
           </FadeIn>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
@@ -589,7 +589,7 @@ export default function Home() {
               { step: '01', label: '전략 수립', desc: 'AI가 채널별 전략과 주간 캘린더를 자동 생성', href: '/strategy', color: '#6366F1' },
               { step: '02', label: '컨셉 기획', desc: '스크립트 자동 생성 + 스토리보드 시각화', href: '/concept', color: '#F59E0B' },
               { step: '03', label: '콘텐츠 생산', desc: '영상 · 프레젠테이션 · 나레이션 자동 제작', href: '/produce', color: '#00FF88' },
-              { step: '04', label: '멀티채널 배포', desc: '예약 발행 + 성과 추적 → AI 학습', href: '/publish', color: '#22C55E' },
+              { step: '04', label: '공유 & 추적', desc: '영상 내보내기 + 성과 기록 → AI 학습', href: '/publish', color: '#22C55E' },
             ].map((item, i) => (
               <FadeIn key={item.step} delay={i * 0.1}>
                 <a href={item.href} className="group block p-5 md:p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-white/[0.15] hover:bg-white/[0.04] transition-all text-center">
@@ -602,7 +602,7 @@ export default function Home() {
           </div>
           {/* 화살표 연결선 (데스크톱만) */}
           <div className="hidden md:flex justify-center mt-6 gap-2">
-            {['전략', '→', '컨셉', '→', '생산', '→', '배포', '→', 'GraphRAG 피드백 ↩'].map((t, i) => (
+            {['전략', '→', '컨셉', '→', '생산', '→', '추적', '→', 'GraphRAG 피드백 ↩'].map((t, i) => (
               <span key={i} className={`text-sm ${t.includes('→') || t.includes('↩') ? 'text-white/20' : 'text-white/50 font-semibold'}`}>{t}</span>
             ))}
           </div>
@@ -635,7 +635,7 @@ export default function Home() {
         <div className="container mx-auto px-5 md:px-10">
           <FadeIn className="mb-12">
             <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">핵심 기능</h3>
-            <p className="text-base text-gray-400">영상 제작부터 멀티채널 배포까지 모든 도구</p>
+            <p className="text-base text-gray-400">영상 콘텐츠 기획부터 제작까지 모든 도구</p>
           </FadeIn>
 
           {/* 카테고리: 전략 & 기획 */}
@@ -688,12 +688,12 @@ export default function Home() {
             </div>
           </div>
 
-          {/* 카테고리: 관리 & 배포 */}
+          {/* 카테고리: 관리 & 추적 */}
           <div>
-            <h4 className="text-xs font-bold text-cyan-400 uppercase tracking-wider mb-4">관리 & 배포</h4>
+            <h4 className="text-xs font-bold text-cyan-400 uppercase tracking-wider mb-4">관리 & 추적</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                { href: "/publish", title: "멀티채널 배포", desc: "예약 발행 + 성과 → GraphRAG", icon: Share2, color: "#06B6D4" },
+                { href: "/publish", title: "공유 & 추적", desc: "영상 내보내기 + 성과 기록 → GraphRAG", icon: Share2, color: "#06B6D4" },
                 { href: "/gallery", title: "템플릿 갤러리", desc: "영상 템플릿 컬렉션", icon: LayoutGrid, color: "#10B981" },
                 { href: "/studio", title: "통합 스튜디오", desc: "전체 워크플로우 허브", icon: MonitorPlay, color: "#A855F7" },
                 { href: "/dashboard", title: "대시보드", desc: "KPI + 캠페인 현황", icon: Activity, color: "#60A5FA" },

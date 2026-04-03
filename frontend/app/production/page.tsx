@@ -11,13 +11,14 @@
 import React from 'react';
 import { ProductionProvider } from '@/lib/contexts/ProductionContext';
 import ProductionDashboard from '@/components/ProductionDashboard';
+import AppShell from '@/components/AppShell';
 
 export default function ProductionPage() {
   return (
-    <ProductionProvider>
-      <div className="min-h-screen bg-[#0f1117]">
+    <AppShell>
+      <ProductionProvider>
         <ProductionDashboard />
-      </div>
-    </ProductionProvider>
+      </ProductionProvider>
+    </AppShell>
   );
 }

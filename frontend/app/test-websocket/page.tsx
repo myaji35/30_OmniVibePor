@@ -13,6 +13,7 @@
 'use client'
 
 import { useState } from 'react'
+import AppShell from '@/components/AppShell'
 import { ProgressBar } from '@/components/ProgressBar'
 
 export default function TestWebSocketPage() {
@@ -51,7 +52,8 @@ export default function TestWebSocketPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <AppShell>
+    <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       <div className="container mx-auto px-4 py-12">
         {/* Header */}
         <div className="text-center mb-12">
@@ -230,5 +232,6 @@ export default function TestWebSocketPage() {
         </div>
       </div>
     </div>
+    </AppShell>
   )
 }

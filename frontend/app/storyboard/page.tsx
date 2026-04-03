@@ -6,6 +6,7 @@ import StoryboardGrid from '@/components/StoryboardGrid'
 import StoryboardBlockEditor from '@/components/StoryboardBlockEditor'
 import { Sparkles, Download, Play, ArrowLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import AppShell from '@/components/AppShell'
 
 export default function StoryboardPage() {
   const router = useRouter()
@@ -99,7 +100,8 @@ export default function StoryboardPage() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-[#0a0a0a] text-white">
+    <AppShell>
+    <div className="flex flex-col bg-[#0a0a0a] text-white min-h-[calc(100vh-64px)]">
       {/* 헤더 */}
       <header className="flex items-center justify-between px-6 py-4 border-b border-gray-800">
         <div className="flex items-center gap-4">
@@ -221,5 +223,6 @@ export default function StoryboardPage() {
         )}
       </div>
     </div>
+    </AppShell>
   )
 }
