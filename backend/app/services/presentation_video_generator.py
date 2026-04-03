@@ -170,6 +170,7 @@ class PresentationVideoGenerator:
             "-c:v", "copy",
             "-c:a", "aac",
             "-b:a", "192k",
+            "-movflags", "+faststart",
             "-shortest",
             output_path
         ]
@@ -258,6 +259,7 @@ class PresentationVideoGenerator:
             "-c:v", "copy",
             "-c:a", "aac",
             "-b:a", "192k",
+            "-movflags", "+faststart",
             "-shortest",
             output_path
         ]
