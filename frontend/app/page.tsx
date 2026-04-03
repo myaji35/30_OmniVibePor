@@ -538,14 +538,14 @@ export default function Home() {
                 ))}
               </div>
 
-              {/* 플랫폼 지원 뱃지 */}
+              {/* 출력 포맷 뱃지 */}
               <div className="animate-fade-in flex items-center gap-3 mt-10" style={{ animationDelay: "0.62s" }}>
-                <span className="text-xs text-gray-400 uppercase tracking-widest">지원 플랫폼</span>
+                <span className="text-xs text-gray-400">출력 포맷</span>
                 <div className="flex gap-2">
                   {[
-                    { label: "YouTube", color: "bg-red-500/20 text-red-400 border-red-500/20" },
-                    { label: "Instagram", color: "bg-pink-500/20 text-pink-400 border-pink-500/20" },
-                    { label: "TikTok", color: "bg-white/10 text-white/60 border-white/10" },
+                    { label: "MP4 영상", color: "bg-purple-500/20 text-purple-400 border-purple-500/20" },
+                    { label: "프레젠테이션", color: "bg-blue-500/20 text-blue-400 border-blue-500/20" },
+                    { label: "AI 나레이션", color: "bg-emerald-500/20 text-emerald-400 border-emerald-500/20" },
                   ].map(({ label, color }) => (
                     <span key={label} className={`text-xs font-bold px-2.5 py-1 rounded-full border ${color}`}>{label}</span>
                   ))}
