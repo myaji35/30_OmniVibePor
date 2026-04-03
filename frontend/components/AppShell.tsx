@@ -52,10 +52,11 @@ const NAV_GROUPS = [
     label: '관리',
     collapsible: true,
     items: [
-      { href: '/gallery',   label: '템플릿 갤러리', icon: Image },
-      { href: '/publish',   label: '공유 & 추적',   icon: Share2 },
-      { href: '/schedule',  label: '일정 관리',     icon: CalendarDays },
-      { href: '/pricing',   label: '가격',          icon: DollarSign },
+      { href: '/gallery',          label: '템플릿 갤러리', icon: Image },
+      { href: '/brand-templates', label: '브랜드 템플릿', icon: Settings },
+      { href: '/publish',         label: '공유 & 추적',   icon: Share2 },
+      { href: '/schedule',        label: '일정 관리',     icon: CalendarDays },
+      { href: '/pricing',         label: '가격',          icon: DollarSign },
     ],
   },
 ]
