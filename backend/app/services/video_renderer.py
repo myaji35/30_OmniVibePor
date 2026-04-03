@@ -662,6 +662,8 @@ class VideoRenderer:
             "-c:v", "libx264",
             "-preset", "medium",
             "-crf", "23",
+            "-pix_fmt", "yuv420p",
+            "-movflags", "+faststart",
             "-y",
             output_path
         ])
@@ -865,6 +867,8 @@ class VideoRenderer:
                 "-c:v", "libx264",
                 "-preset", "medium",
                 "-crf", "23",
+                "-pix_fmt", "yuv420p",
+                "-movflags", "+faststart",
                 "-y",
                 output_path
             ]
@@ -944,9 +948,13 @@ class VideoRenderer:
                 "-c:v", "libx264",
                 "-preset", "medium",
                 "-crf", "23",
+                "-pix_fmt", "yuv420p",
+                "-profile:v", "high",
+                "-level:v", "4.1",
                 "-c:a", "aac",
                 "-b:a", spec["audio_bitrate"],
                 "-ar", "48000",  # 샘플레이트 48kHz
+                "-movflags", "+faststart",
                 "-y",
                 output_path
             ]

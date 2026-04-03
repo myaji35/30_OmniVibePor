@@ -172,6 +172,7 @@ import logging
             "-vf", "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2",  # 1920x1080 패딩
             "-c:a", "aac",  # AAC 오디오 코덱
             "-shortest",  # 짧은 쪽에 맞춤
+            "-movflags", "+faststart",
             "-y",  # 덮어쓰기
             str(clip_path)
         ]

@@ -243,6 +243,7 @@ class PresentationVideoGenerator:
 
         xfade_cmd.extend([
             "-pix_fmt", "yuv420p",
+            "-movflags", "+faststart",
             "-threads", "0",  # Use all available CPU cores
             str(temp_video_path)
         ])
@@ -309,6 +310,7 @@ class PresentationVideoGenerator:
 
         cmd.extend([
             "-pix_fmt", "yuv420p",
+            "-movflags", "+faststart",
             "-r", "30",
             "-threads", "0",  # Use all available CPU cores
             output_path
