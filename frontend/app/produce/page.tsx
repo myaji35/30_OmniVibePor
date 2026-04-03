@@ -72,25 +72,21 @@ function ProduceContent() {
       let endpoint = ''
       if (format === 'presentation') endpoint = `/api/produce?type=presentation`
       else if (format === 'narration') endpoint = `/api/produce?type=narration`
+      else if (format === 'video') endpoint = `/api/render-auto`
       else {
-        setError('영상 렌더링은 /render 페이지에서 진행하세요')
+        setError('알 수 없는 포맷')
         setLoading(null)
         return
       }
 
+      const payload = format === 'video'
+        ? { script, brandName: brand || 'OmniVibe Pro', primaryColor: '#6366F1' }
+        : { script, brand_name: brand || 'OmniVibe Pro', channel, format, title: title || undefined, theme, voice, voice_rate: '-5%' }
+
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          script,
-          brand_name: brand || 'OmniVibe Pro',
-          channel,
-          format,
-          title: title || undefined,
-          theme,
-          voice,
-          voice_rate: '-5%',
-        }),
+        body: JSON.stringify(payload),
       })
 
       if (!res.ok) {
@@ -102,7 +98,7 @@ function ProduceContent() {
       setResults(prev => [{
         type: format as any,
         filename: data.filename,
-        download_url: data.download_url,
+        download_url: data.download_url || data.downloadUrl,
         srt_url: data.srt_url,
         size_human: data.size_human || data.sizeHuman,
         slide_count: data.slide_count,
@@ -215,12 +211,13 @@ function ProduceContent() {
                 {loading === 'narration' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mic className="w-4 h-4" />}
                 나레이션 (TTS)
               </button>
-              <a href="/render"
+              <button onClick={() => produce('video')} disabled={loading === 'video'}
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-bold
                   bg-[#00FF88]/10 border border-[#00FF88]/20 text-[#00FF88]
-                  hover:bg-[#00FF88]/20 transition-all">
-                <Film className="w-4 h-4" /> 영상 렌더링
-              </a>
+                  hover:bg-[#00FF88]/20 transition-all disabled:opacity-50">
+                {loading === 'video' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Film className="w-4 h-4" />}
+                {loading === 'video' ? '영상 생성 중...' : 'AI 영상 생성'}
+              </button>
             </div>
           </div>
         </div>

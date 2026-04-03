@@ -135,6 +135,21 @@
       "type": "GENERATE_CODE", "status": "CREATED", "priority": "P2", "assign_to": "agent-harness", "depends_on": ["ISS-020"]
     }
   ],
+    {
+      "id": "ISS-024",
+      "title": "[P0] 스크립트→영상 자동 생성 — 템플릿 매핑 + Remotion 동적 렌더",
+      "type": "GENERATE_CODE", "status": "READY", "priority": "P0",
+      "assign_to": "agent-harness", "depends_on": [],
+      "payload": {
+        "description": "사용자가 스크립트(hook/body/cta)를 입력하면 Remotion 템플릿에 자동 매핑하여 영상 생성. TSX 코딩 없이 영상 제작 가능.",
+        "scope": [
+          "frontend/app/api/render-auto/route.ts",
+          "frontend/remotion/templates/AutoTemplate.tsx",
+          "frontend/app/produce/page.tsx"
+        ]
+      }
+    }
+  ],
   "hooks": { "on_create": [], "on_start": [], "on_complete": [], "on_fail": [], "on_learn": [] },
   "knowledge": {
     "success_patterns": [

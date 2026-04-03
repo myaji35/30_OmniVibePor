@@ -1,6 +1,7 @@
 import React from 'react';
 import { Composition } from 'remotion';
 import { YouTubeTemplate } from './templates/YouTubeTemplate';
+import { AutoTemplate } from './templates/AutoTemplate';
 import { InstagramTemplate } from './templates/InstagramTemplate';
 import { TikTokTemplate } from './templates/TikTokTemplate';
 import { PromoVideo } from './promo/PromoVideo';
@@ -36,6 +37,18 @@ const DEFAULT_PROPS: VideoTemplateProps = {
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      {/* Auto Template — 스크립트→영상 자동 생성 */}
+      <Composition
+        id="auto"
+        component={AutoTemplate}
+        durationInFrames={900}
+        fps={30}
+        width={1920}
+        height={1080}
+        defaultProps={DEFAULT_PROPS}
+        calculateMetadata={async ({ props }: { props: VideoTemplateProps }) => calculateDuration(props)}
+      />
+
       {/* YouTube Template (1920x1080) */}
       <Composition
         id="youtube"
