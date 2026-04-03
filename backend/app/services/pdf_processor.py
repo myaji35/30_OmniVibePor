@@ -204,11 +204,33 @@ class PDFProcessor:
             text = pytesseract.image_to_string(image, lang=lang).strip()
             word_count = len(text.split()) if text else 0
 
-            return {
+            result = {
                 "text": text,
                 "confidence": round(avg_confidence, 2),
                 "word_count": word_count
             }
+
+            # GPT-4 Vision 보정 (신뢰도 낮을 때 자동 실행)
+            try:
+                from app.services.ocr_vision_corrector import get_ocr_corrector
+                corrector = get_ocr_corrector()
+                import asyncio
+                corrected = asyncio.get_event_loop().run_until_complete(
+                    corrector.correct_ocr(
+                        image_path=str(image_path),
+                        tesseract_text=text,
+                        tesseract_confidence=avg_confidence,
+                    )
+                )
+                if corrected["corrected"]:
+                    result["text"] = corrected["text"]
+                    result["confidence"] = corrected["confidence"]
+                    result["word_count"] = len(corrected["text"].split()) if corrected["text"] else 0
+                    logger.info(f"OCR Vision corrected: {image_path}")
+            except Exception as vision_err:
+                logger.debug(f"Vision correction skipped: {vision_err}")
+
+            return result
 
         except Exception as e:
             logger.warning(f"OCR 텍스트 추출 실패: {image_path} - {e}")
