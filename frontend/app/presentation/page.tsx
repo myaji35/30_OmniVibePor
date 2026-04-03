@@ -20,7 +20,7 @@ export default function PresentationPage() {
   };
 
   return (
-    <AppShell>
+    <AppShell title="프리젠테이션 모드">
       <PresentationMode
         projectId={projectId}
         presentationId={presentationId}

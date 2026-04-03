@@ -173,9 +173,22 @@ class TTSService:
 _tts_service_instance = None
 
 
-def get_tts_service() -> TTSService:
-    """TTS 서비스 싱글톤 인스턴스"""
+def get_tts_service():
+    """TTS 서비스 싱글톤 — TTS_ENGINE 설정에 따라 엔진 선택
+
+    - "openai"    → OpenAI TTS (유료, $0.015/1000자)
+    - "cosyvoice" → CosyVoice2 Docker (무료, 오픈소스)
+    """
     global _tts_service_instance
     if _tts_service_instance is None:
-        _tts_service_instance = TTSService()
+        engine = settings.TTS_ENGINE if hasattr(settings, "TTS_ENGINE") else "openai"
+
+        if engine == "cosyvoice":
+            from app.services.cosyvoice_tts_service import CosyVoiceTTSService
+            _tts_service_instance = CosyVoiceTTSService()
+            logging.getLogger(__name__).info("TTS engine: CosyVoice2 (free)")
+        else:
+            _tts_service_instance = TTSService()
+            logging.getLogger(__name__).info("TTS engine: OpenAI")
+
     return _tts_service_instance

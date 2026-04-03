@@ -72,6 +72,10 @@ class Settings(BaseSettings):
     INSTAGRAM_ACCESS_TOKEN: str | None = None
     FACEBOOK_ACCESS_TOKEN: str | None = None
 
+    # TTS Engine (openai | cosyvoice)
+    TTS_ENGINE: str = "cosyvoice"
+    COSYVOICE_URL: str = "http://cosyvoice:9880"
+
     # Unsplash (이미지 검색)
     UNSPLASH_ACCESS_KEY: str | None = None
 

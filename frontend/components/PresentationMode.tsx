@@ -34,6 +34,12 @@ import {
   type GenerateAudioRequest,
   type GenerateVideoRequest,
 } from "@/lib/types/presentation";
+import {
+  getDemoPresentation,
+  DEMO_VOICE_CONFIG,
+  type VoiceConfig,
+} from "@/data/demo-presentation";
+import SlidePlayer from "@/components/SlidePlayer";
 
 // ==================== Constants ====================
 
@@ -74,6 +80,11 @@ export default function PresentationMode({
   const [error, setError] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
 
+  // Demo mode
+  const [isDemoMode, setIsDemoMode] = useState(false);
+  const [demoStep, setDemoStep] = useState<string | null>(null);
+  const [voiceConfig, setVoiceConfig] = useState<VoiceConfig>(DEMO_VOICE_CONFIG);
+
   // Narration editing
   const [editingSlideIndex, setEditingSlideIndex] = useState<number | null>(null);
   const [editedScript, setEditedScript] = useState<string>("");
@@ -81,12 +92,12 @@ export default function PresentationMode({
   // File input ref
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Load presentation data
+  // Load presentation data (skip in demo mode)
   useEffect(() => {
-    if (presentationId) {
+    if (presentationId && !isDemoMode) {
       loadPresentation(presentationId);
     }
-  }, [presentationId]);
+  }, [presentationId, isDemoMode]);
 
   // ==================== API Functions ====================
 
@@ -314,6 +325,90 @@ export default function PresentationMode({
     setEditedScript("");
   };
 
+  // ==================== Demo Mode ====================
+
+  const handleStartDemo = () => {
+    setIsDemoMode(true);
+    setError(null);
+    setDemoStep("uploading");
+    setIsLoading(true);
+
+    // Simulate upload delay
+    setTimeout(() => {
+      const demoData = getDemoPresentation(PresentationStatus.UPLOADED);
+      setPresentationId(demoData.presentation_id);
+      setPresentation(demoData);
+      setSelectedSlideIndex(0);
+      setDemoStep(null);
+      setIsLoading(false);
+    }, 1500);
+  };
+
+  const handleDemoGenerateScript = () => {
+    setIsLoading(true);
+    setDemoStep("generating_script");
+
+    setTimeout(() => {
+      const demoData = getDemoPresentation(PresentationStatus.SCRIPT_GENERATED);
+      setPresentation(demoData);
+      setDemoStep(null);
+      setIsLoading(false);
+    }, 2000);
+  };
+
+  const handleDemoGenerateAudio = () => {
+    setIsLoading(true);
+    setDemoStep("generating_audio");
+
+    setTimeout(() => {
+      const demoData = getDemoPresentation(PresentationStatus.AUDIO_GENERATED);
+      setPresentation(demoData);
+      setDemoStep(null);
+      setIsLoading(false);
+    }, 2500);
+  };
+
+  const handleDemoAnalyzeTiming = () => {
+    setIsLoading(true);
+    setDemoStep("analyzing_timing");
+
+    setTimeout(() => {
+      const demoData = getDemoPresentation(PresentationStatus.TIMING_ANALYZED);
+      setPresentation(demoData);
+      setDemoStep(null);
+      setIsLoading(false);
+    }, 1500);
+  };
+
+  const handleDemoGenerateVideo = () => {
+    setIsLoading(true);
+    setDemoStep("rendering_video");
+
+    setTimeout(() => {
+      const demoData = getDemoPresentation(PresentationStatus.VIDEO_READY);
+      setPresentation(demoData);
+      setDemoStep(null);
+      setIsLoading(false);
+    }, 3000);
+  };
+
+  const handleResetDemo = () => {
+    setIsDemoMode(false);
+    setPresentationId(null);
+    setPresentation(null);
+    setSelectedSlideIndex(0);
+    setDemoStep(null);
+    setError(null);
+  };
+
+  const demoStepLabels: Record<string, string> = {
+    uploading: "PDF 슬라이드 분석 중...",
+    generating_script: "AI 나레이션 스크립트 생성 중...",
+    generating_audio: "ElevenLabs 남성 TTS 생성 + Whisper 검증 중...",
+    analyzing_timing: "슬라이드-오디오 타이밍 동기화 중...",
+    rendering_video: "FFmpeg 영상 렌더링 중...",
+  };
+
   // ==================== Helpers ====================
 
   const formatTime = (seconds?: number | null): string => {
@@ -344,6 +439,12 @@ export default function PresentationMode({
   const canAnalyzeTiming = presentation?.status === PresentationStatus.AUDIO_GENERATED;
   const canGenerateVideo = presentation?.status === PresentationStatus.TIMING_ANALYZED;
 
+  // Demo mode overrides
+  const onGenerateScript = isDemoMode ? handleDemoGenerateScript : handleGenerateScript;
+  const onGenerateAudio = isDemoMode ? handleDemoGenerateAudio : handleGenerateAudio;
+  const onAnalyzeTiming = isDemoMode ? handleDemoAnalyzeTiming : handleAnalyzeTiming;
+  const onGenerateVideo = isDemoMode ? handleDemoGenerateVideo : handleGenerateVideo;
+
   const selectedSlide = presentation?.slides[selectedSlideIndex];
 
   // ==================== Render ====================
@@ -355,8 +456,17 @@ export default function PresentationMode({
         <div className="bg-[#2a2a2a] border border-gray-800 rounded-lg p-6">
           <div className="flex justify-between items-start">
             <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">프리젠테이션 모드</h1>
-              <p className="text-gray-400 mt-1">PDF를 업로드하여 나레이션 영상을 생성하세요</p>
+              <div className="flex items-center gap-3">
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">프리젠테이션 모드</h1>
+                {isDemoMode && (
+                  <span className="px-2 py-0.5 bg-blue-600 text-white text-xs font-bold rounded">DEMO</span>
+                )}
+              </div>
+              <p className="text-gray-400 mt-1">
+                {isDemoMode
+                  ? "신선식품 B2B 스케일업 아키텍처 — 남성 보이스 데모"
+                  : "PDF를 업로드하여 나레이션 영상을 생성하세요"}
+              </p>
             </div>
 
             {presentation && (
@@ -422,23 +532,45 @@ export default function PresentationMode({
                 프리젠테이션 PDF를 업로드하면 자동으로 슬라이드를 분석합니다
               </p>
 
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isLoading}
-                className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 mx-auto transition-colors"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    업로드 중... {uploadProgress}%
-                  </>
-                ) : (
-                  <>
-                    <Upload className="w-5 h-5" />
-                    PDF 선택
-                  </>
-                )}
-              </button>
+              <div className="flex items-center gap-4 justify-center">
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isLoading}
+                  className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
+                >
+                  {isLoading && !isDemoMode ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      업로드 중... {uploadProgress}%
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-5 h-5" />
+                      PDF 선택
+                    </>
+                  )}
+                </button>
+
+                <span className="text-gray-500">또는</span>
+
+                <button
+                  onClick={handleStartDemo}
+                  disabled={isLoading}
+                  className="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:from-blue-700 hover:to-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all"
+                >
+                  {isLoading && isDemoMode ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      {demoStep && demoStepLabels[demoStep]}
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-5 h-5" />
+                      데모 체험 (신선식품 B2B)
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -468,7 +600,7 @@ export default function PresentationMode({
                       {/* Thumbnail */}
                       <div className="w-16 h-12 bg-gray-800 rounded flex-shrink-0 overflow-hidden">
                         <img
-                          src={`${API_BASE_URL}${slide.image_path}`}
+                          src={isDemoMode ? slide.image_path : `${API_BASE_URL}${slide.image_path}`}
                           alt={`Slide ${slide.slide_number}`}
                           className="w-full h-full object-cover"
                           onError={(e) => {
@@ -526,7 +658,7 @@ export default function PresentationMode({
                 <div className="bg-[#1a1a1a] rounded-lg overflow-hidden flex items-center justify-center h-96">
                   {selectedSlide && (
                     <img
-                      src={`${API_BASE_URL}${selectedSlide.image_path}`}
+                      src={isDemoMode ? selectedSlide.image_path : `${API_BASE_URL}${selectedSlide.image_path}`}
                       alt={`Slide ${selectedSlide.slide_number}`}
                       className="max-w-full max-h-full object-contain"
                       onError={(e) => {
@@ -616,41 +748,57 @@ export default function PresentationMode({
                 <div className="grid grid-cols-2 gap-4">
                   {/* Generate Script */}
                   <button
-                    onClick={handleGenerateScript}
+                    onClick={onGenerateScript}
                     disabled={!canGenerateScript || isLoading}
                     className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors"
                   >
-                    <FileText className="w-5 h-5" />
+                    {isLoading && demoStep === "generating_script" ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <FileText className="w-5 h-5" />
+                    )}
                     스크립트 생성
                   </button>
 
                   {/* Generate Audio */}
                   <button
-                    onClick={handleGenerateAudio}
+                    onClick={onGenerateAudio}
                     disabled={!canGenerateAudio || isLoading}
                     className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors"
                   >
-                    <Volume2 className="w-5 h-5" />
-                    오디오 생성
+                    {isLoading && demoStep === "generating_audio" ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <Volume2 className="w-5 h-5" />
+                    )}
+                    오디오 생성 (남성)
                   </button>
 
                   {/* Analyze Timing */}
                   <button
-                    onClick={handleAnalyzeTiming}
+                    onClick={onAnalyzeTiming}
                     disabled={!canAnalyzeTiming || isLoading}
                     className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors"
                   >
-                    <Clock className="w-5 h-5" />
+                    {isLoading && demoStep === "analyzing_timing" ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <Clock className="w-5 h-5" />
+                    )}
                     타이밍 분석
                   </button>
 
                   {/* Generate Video */}
                   <button
-                    onClick={handleGenerateVideo}
+                    onClick={onGenerateVideo}
                     disabled={!canGenerateVideo || isLoading}
                     className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors"
                   >
-                    <Video className="w-5 h-5" />
+                    {isLoading && demoStep === "rendering_video" ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <Video className="w-5 h-5" />
+                    )}
                     영상 생성
                   </button>
                 </div>
@@ -658,37 +806,79 @@ export default function PresentationMode({
                 {isLoading && (
                   <div className="mt-4 flex items-center justify-center gap-2 text-gray-400">
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>처리 중...</span>
+                    <span>{(demoStep && demoStepLabels[demoStep]) || "처리 중..."}</span>
+                  </div>
+                )}
+
+                {/* Demo Voice Config */}
+                {isDemoMode && (
+                  <div className="mt-4 flex items-center justify-between px-4 py-3 bg-blue-900/20 border border-blue-700/30 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <Volume2 className="w-4 h-4 text-blue-400" />
+                      <span className="text-sm text-blue-300">
+                        보이스: <span className="font-medium text-white">{voiceConfig.voiceLabel}</span>
+                      </span>
+                      <span className="text-sm text-blue-300">
+                        톤: <span className="font-medium text-white">{voiceConfig.tone}</span>
+                      </span>
+                      <span className="text-sm text-blue-300">
+                        총 시간: <span className="font-medium text-white">4분 10초</span>
+                      </span>
+                    </div>
+                    <button
+                      onClick={handleResetDemo}
+                      className="px-3 py-1 text-sm text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg flex items-center gap-1 transition-colors"
+                    >
+                      <RefreshCw className="w-3 h-3" />
+                      초기화
+                    </button>
                   </div>
                 )}
               </div>
 
-              {/* Video Ready */}
-              {presentation.status === PresentationStatus.VIDEO_READY &&
-                presentation.video_path && (
-                  <div className="bg-green-900/20 border border-green-700 rounded-lg p-6">
+              {/* Video Ready — Slide Player + MP4 Download */}
+              {presentation.status === PresentationStatus.VIDEO_READY && (
+                <div className="space-y-4">
+                  {/* Completion Banner */}
+                  <div className="bg-green-900/20 border border-green-700 rounded-lg p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <Check className="w-8 h-8 text-green-400" />
+                        <Check className="w-6 h-6 text-green-400" />
                         <div>
                           <h3 className="font-semibold text-green-300">영상 생성 완료!</h3>
-                          <p className="text-green-400 text-sm mt-1">
-                            프리젠테이션 영상이 성공적으로 생성되었습니다
+                          <p className="text-green-400 text-xs mt-0.5">
+                            프리뷰에서 확인 후 MP4로 다운로드하세요
                           </p>
                         </div>
                       </div>
 
-                      <a
-                        href={`${API_BASE_URL}${presentation.video_path}`}
-                        download
-                        className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2 transition-colors"
-                      >
-                        <Download className="w-5 h-5" />
-                        다운로드
-                      </a>
+                      {presentation.video_path && (
+                        <a
+                          href={isDemoMode ? "#" : `${API_BASE_URL}${presentation.video_path}`}
+                          download={!isDemoMode}
+                          onClick={isDemoMode ? (e) => { e.preventDefault(); alert("데모 모드에서는 MP4 다운로드가 제공되지 않습니다.\n실제 백엔드 연동 시 FFmpeg 렌더링 후 다운로드됩니다."); } : undefined}
+                          className="px-5 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2 transition-colors text-sm"
+                        >
+                          <Download className="w-4 h-4" />
+                          MP4 다운로드
+                        </a>
+                      )}
                     </div>
                   </div>
-                )}
+
+                  {/* Slide Player */}
+                  <SlidePlayer
+                    slides={presentation.slides}
+                    localImages={isDemoMode}
+                    apiBaseUrl={API_BASE_URL}
+                    audioSrc={
+                      presentation.audio_path && !isDemoMode
+                        ? `${API_BASE_URL}${presentation.audio_path}`
+                        : null
+                    }
+                  />
+                </div>
+              )}
             </div>
           </div>
         )}
