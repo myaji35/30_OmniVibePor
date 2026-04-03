@@ -1,11 +1,20 @@
 """PDF to Slides 변환 서비스"""
 import logging
-from typing import List, Dict
+from typing import List, Dict, Optional
 from pathlib import Path
 import asyncio
 import hashlib
 import time
 from pdf2image import convert_from_path
+
+# OCR (optional)
+try:
+    import pytesseract
+    from PIL import Image
+    OCR_AVAILABLE = True
+except ImportError:
+    OCR_AVAILABLE = False
+
 # Logfire는 optional
 try:
     import logfire
@@ -177,6 +186,43 @@ class PDFToSlidesService:
         self.logger.info(f"Saved PDF: {file_path} ({len(file_data) / 1024:.2f} KB)")
 
         return str(file_path)
+
+    async def extract_text_from_slides(
+        self,
+        image_paths: List[str],
+        lang: str = "kor+eng"
+    ) -> List[Optional[str]]:
+        """
+        슬라이드 이미지에서 OCR로 텍스트 추출
+
+        Args:
+            image_paths: 슬라이드 이미지 파일 경로 리스트
+            lang: Tesseract 언어 코드 (kor+eng)
+
+        Returns:
+            슬라이드별 추출 텍스트 리스트
+        """
+        if not OCR_AVAILABLE:
+            self.logger.warning("pytesseract not installed, skipping OCR")
+            return [None] * len(image_paths)
+
+        texts = []
+        for i, img_path in enumerate(image_paths, start=1):
+            try:
+                text = await asyncio.to_thread(
+                    pytesseract.image_to_string,
+                    Image.open(img_path),
+                    lang=lang
+                )
+                # 불필요한 공백/줄바꿈 정리
+                cleaned = " ".join(text.split())
+                texts.append(cleaned if cleaned else None)
+                self.logger.info(f"OCR slide {i}: {len(cleaned)} chars")
+            except Exception as e:
+                self.logger.warning(f"OCR failed for slide {i}: {e}")
+                texts.append(None)
+
+        return texts
 
 
 # 싱글톤 인스턴스

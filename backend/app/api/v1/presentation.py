@@ -1,5 +1,7 @@
 """Presentation API 엔드포인트"""
+import asyncio
 import logging
+from pathlib import Path
 from fastapi import APIRouter, HTTPException, UploadFile, File, Form, BackgroundTasks
 from fastapi.responses import FileResponse
 from typing import Optional, List
@@ -94,6 +96,12 @@ async def upload_presentation(
             dpi=dpi
         )
 
+        # OCR 텍스트 추출
+        ocr_texts = await pdf_service.extract_text_from_slides(
+            image_paths=image_paths,
+            lang=lang
+        )
+
         # 슬라이드 정보 생성
         slides = []
         for i, image_path in enumerate(image_paths, start=1):
@@ -101,7 +109,7 @@ async def upload_presentation(
                 SlideInfo(
                     slide_number=i,
                     image_path=image_path,
-                    ocr_text=None  # OCR은 선택적으로 나중에 추가 가능
+                    ocr_text=ocr_texts[i - 1] if i - 1 < len(ocr_texts) else None
                 )
             )
 
@@ -161,10 +169,14 @@ async def generate_script(
         from app.services.slide_to_script_converter import SlideData, ToneType
         slide_models = []
         for s in presentation_data["slides_data"]:
+            ocr_text = s.get("ocr_text") or ""
+            # OCR 텍스트가 있으면 활용, 없으면 더미
+            title = ocr_text[:50] if ocr_text else f"슬라이드 {s['slide_number']}"
+            content = ocr_text if ocr_text else f"슬라이드 {s['slide_number']} 내용"
             slide_models.append(SlideData(
                 slide_number=s["slide_number"],
-                title=f"슬라이드 {s['slide_number']}",
-                content=s.get("ocr_text") or f"슬라이드 {s['slide_number']} 내용",
+                title=title,
+                content=content,
             ))
 
         converter = SlideToScriptConverter()
@@ -359,77 +371,81 @@ async def generate_video(
     presentation_id: str,
     request: GenerateVideoRequest
 ):
-    """
-    5. 프리젠테이션 영상 생성 (비동기)
-
-    **워크플로우**:
-    1. Celery 작업 큐에 등록
-    2. 백그라운드에서 FFmpeg 영상 생성
-    3. 상태는 /presentations/{id}로 확인
-
-    **출력**: celery_task_id, 예상 완료 시간
-    """
+    """5. FFmpeg 영상 생성 (동기 — 인메모리)"""
     try:
+        import subprocess
+        import tempfile
+
         logger.info(f"Starting video generation for presentation: {presentation_id}")
 
-        # Neo4j에서 프리젠테이션 조회
-        neo4j_client = get_neo4j_client()
-        query = """
-        MATCH (p:Presentation {presentation_id: $presentation_id})
-        RETURN p
-        """
-        result = neo4j_client.execute_query(
-            query=query,
-            parameters={"presentation_id": presentation_id}
-        )
-
-        if not result or not result[0]:
+        if presentation_id not in _presentations:
             raise HTTPException(status_code=404, detail="Presentation not found")
 
-        presentation_data = result[0]["p"]
+        pdata = _presentations[presentation_id]
 
-        # 필수 데이터 확인
-        if not presentation_data.get("audio_path"):
-            raise HTTPException(
-                status_code=400,
-                detail="Audio not generated. Generate audio first."
-            )
+        if not pdata.get("audio_path"):
+            raise HTTPException(status_code=400, detail="Audio not generated.")
 
-        if not presentation_data.get("slides_data"):
-            raise HTTPException(
-                status_code=400,
-                detail="No slides available."
-            )
+        slides = pdata["slides_data"]
+        audio_path = pdata["audio_path"]
+        output_dir = Path("./outputs/video")
+        output_dir.mkdir(parents=True, exist_ok=True)
+        output_path = output_dir / f"{presentation_id}.mp4"
 
-        # Celery 작업 실행
-        video_generator = get_video_generator()
-        estimated_time = video_generator.estimate_generation_time(
-            total_slides=presentation_data["total_slides"]
+        # FFmpeg concat 파일 생성 (슬라이드별 duration)
+        concat_file = tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False)
+        for slide in slides:
+            img_path = Path(slide["image_path"]).resolve()
+            duration = slide.get("duration") or 15.0
+            concat_file.write(f"file '{img_path}'\n")
+            concat_file.write(f"duration {duration}\n")
+        # FFmpeg needs last image repeated
+        if slides:
+            last_img = Path(slides[-1]["image_path"]).resolve()
+            concat_file.write(f"file '{last_img}'\n")
+        concat_file.close()
+
+        # FFmpeg: 슬라이드 이미지 + 오디오 → MP4
+        cmd = [
+            "ffmpeg", "-y",
+            "-f", "concat", "-safe", "0", "-i", concat_file.name,
+            "-i", str(Path(audio_path).resolve()),
+            "-c:v", "libx264", "-pix_fmt", "yuv420p",
+            "-vf", "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:black",
+            "-c:a", "aac", "-b:a", "192k",
+            "-shortest",
+            "-movflags", "+faststart",
+            str(output_path)
+        ]
+
+        logger.info(f"Running FFmpeg: {' '.join(cmd[:6])}...")
+        result = await asyncio.to_thread(
+            subprocess.run, cmd,
+            capture_output=True, text=True, timeout=300
         )
 
-        task = generate_presentation_video_task.delay(
-            presentation_id=presentation_id,
-            slides=presentation_data["slides_data"],
-            audio_path=presentation_data["audio_path"],
-            output_filename=f"{presentation_id}.mp4",
-            transition_effect=request.transition_effect.value,
-            transition_duration=request.transition_duration,
-            bgm_path=request.bgm_path,
-            bgm_volume=request.bgm_volume
-        )
+        # Cleanup temp file
+        Path(concat_file.name).unlink(missing_ok=True)
 
-        logger.info(
-            f"Video generation task created: {presentation_id}, "
-            f"task_id: {task.id}, "
-            f"estimated_time: {estimated_time}s"
-        )
+        if result.returncode != 0:
+            logger.error(f"FFmpeg failed: {result.stderr[-500:]}")
+            raise HTTPException(status_code=500, detail=f"FFmpeg error: {result.stderr[-200:]}")
+
+        # 인메모리 업데이트
+        import datetime
+        _presentations[presentation_id]["video_path"] = str(output_path)
+        _presentations[presentation_id]["status"] = PresentationStatus.VIDEO_READY.value
+        _presentations[presentation_id]["updated_at"] = datetime.datetime.now().isoformat()
+
+        file_size = output_path.stat().st_size / 1024 / 1024
+        logger.info(f"Video generated: {output_path} ({file_size:.1f}MB)")
 
         return GenerateVideoResponse(
             presentation_id=presentation_id,
-            video_path=None,
-            celery_task_id=task.id,
-            status=PresentationStatus.VIDEO_RENDERING,
-            estimated_completion_time=estimated_time
+            video_path=str(output_path),
+            celery_task_id="local_ffmpeg",
+            status=PresentationStatus.VIDEO_READY,
+            estimated_completion_time=0
         )
 
     except HTTPException:
