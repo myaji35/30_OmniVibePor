@@ -306,6 +306,33 @@ export default function DashboardPage() {
                   </div>
                 )}
               </div>
+
+              {/* 생성 콘텐츠 히스토리 */}
+              <div className={`${CARD} p-5`} style={CARD_S}>
+                <div className="flex items-center justify-between mb-3">
+                  <SLabel>생성 콘텐츠</SLabel>
+                  <Link href="/publish" className="text-[11px] text-purple-400 hover:text-purple-300 flex items-center gap-1">
+                    전체 <ArrowRight className="w-3 h-3" />
+                  </Link>
+                </div>
+                <div className="space-y-2">
+                  {[
+                    { type: '영상', icon: Film, color: '#A855F7', path: '/render' },
+                    { type: '나레이션', icon: TrendingUp, color: '#22C55E', path: '/audio' },
+                    { type: '스크립트', icon: Bell, color: '#3B82F6', path: '/concept' },
+                  ].map(item => (
+                    <Link key={item.type} href={item.path}
+                      className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-white/[0.03] transition-all">
+                      <div className="w-6 h-6 rounded flex items-center justify-center"
+                        style={{ background: `${item.color}15` }}>
+                        <item.icon className="w-3 h-3" style={{ color: item.color }} />
+                      </div>
+                      <span className="text-xs text-white/60 flex-1">{item.type}</span>
+                      <span className="text-[10px] text-white/25 font-mono">{stats.totalVideos || 0}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
