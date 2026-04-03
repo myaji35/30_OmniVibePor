@@ -48,7 +48,7 @@
       "id": "ISS-006",
       "title": "성능 최적화: API P95 < 3s, 렌더링 < 2min",
       "type": "GENERATE_CODE",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P1",
       "assign_to": "agent-harness",
       "depth": 0,
@@ -202,7 +202,7 @@
   },
   "stats": {
     "total_issues": 10,
-    "completed": 9,
+    "completed": 10,
     "failed": 0,
     "evolved": 0
   }
