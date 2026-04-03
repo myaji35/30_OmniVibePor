@@ -113,7 +113,7 @@ export default function PublishPage() {
     } finally {
       setPublishing(false)
     }
-  }, [title, channel, contentUrl, description, scheduleAt, fetchData])
+  }, [title, outputType, contentUrl, description, scheduleAt, fetchData])
 
   const handleFeedback = useCallback(async () => {
     try {
@@ -132,7 +132,7 @@ export default function PublishPage() {
       setShowFeedback(false)
       setPublishResult('성과 데이터가 GraphRAG에 저장되었습니다')
     } catch { /* ignore */ }
-  }, [feedbackId, channel, feedbackViews, feedbackLikes, feedbackScore])
+  }, [feedbackId, outputType, feedbackViews, feedbackLikes, feedbackScore])
 
   return (
     <AppShell>
