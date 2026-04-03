@@ -106,7 +106,7 @@ export default function PresentationMode({
       setIsLoading(true);
       setError(null);
 
-      const response = await axios.get(`${API_BASE_URL}/api/v1/presentation/${id}`);
+      const response = await axios.get(`${API_BASE_URL}/api/v1/presentations/${id}`);
       setPresentation(response.data);
     } catch (err: any) {
       setError(err.response?.data?.detail || "프리젠테이션을 불러오는데 실패했습니다.");
@@ -137,7 +137,7 @@ export default function PresentationMode({
       formData.append("lang", "kor+eng");
 
       const response = await axios.post(
-        `${API_BASE_URL}/api/v1/presentation/upload`,
+        `${API_BASE_URL}/api/v1/presentations/upload`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -176,7 +176,7 @@ export default function PresentationMode({
       };
 
       const response = await axios.post(
-        `${API_BASE_URL}/api/v1/presentation/${presentationId}/generate-script`,
+        `${API_BASE_URL}/api/v1/presentations/${presentationId}/generate-script`,
         request
       );
 
@@ -201,7 +201,7 @@ export default function PresentationMode({
       };
 
       const response = await axios.post(
-        `${API_BASE_URL}/api/v1/presentation/${presentationId}/generate-audio`,
+        `${API_BASE_URL}/api/v1/presentations/${presentationId}/generate-audio`,
         request
       );
 
@@ -223,7 +223,7 @@ export default function PresentationMode({
       setError(null);
 
       const response = await axios.post(
-        `${API_BASE_URL}/api/v1/presentation/${presentationId}/analyze-timing`,
+        `${API_BASE_URL}/api/v1/presentations/${presentationId}/analyze-timing`,
         {}
       );
 
@@ -250,7 +250,7 @@ export default function PresentationMode({
       };
 
       const response = await axios.post(
-        `${API_BASE_URL}/api/v1/presentation/${presentationId}/generate-video`,
+        `${API_BASE_URL}/api/v1/presentations/${presentationId}/generate-video`,
         request
       );
 
@@ -267,7 +267,7 @@ export default function PresentationMode({
   const pollVideoStatus = async (id: string) => {
     const interval = setInterval(async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/v1/presentation/${id}`);
+        const response = await axios.get(`${API_BASE_URL}/api/v1/presentations/${id}`);
         const data: Presentation = response.data;
 
         setPresentation(data);

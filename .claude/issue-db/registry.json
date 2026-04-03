@@ -1,14 +1,15 @@
 {
   "version": "3.0.0",
-  "updated_at": "2026-04-03T11:40:00",
+  "updated_at": "2026-04-03T18:30:00",
   "architecture": "supervisor",
   "scale_mode": "full",
-  "current_phase": "Stabilization",
+  "current_phase": "Phase 6 — Presentation Pipeline + Brand Templates",
   "phase_summary": {
     "Phase 1-3": "DONE",
     "Phase 4": "DONE (E2E 20/20, 번들 84KB)",
     "Phase 5": "DONE (전략→컨셉→생산→배포)",
-    "Stabilization": "IN_PROGRESS — 검토 보고서 기반 이슈 해결"
+    "Stabilization": "DONE (ISS-011~024)",
+    "Phase 6": "IN_PROGRESS — PDF→영상 E2E 완성, 브랜드 템플릿 구현 중"
   },
   "issues": [
     { "id": "ISS-001", "status": "DONE", "title": "VREW SubtitleTimeline + Whisper API" },
@@ -104,8 +105,7 @@
         "problem": "랜딩 파이프라인 04 배포, Feature '멀티채널 배포' 등 SNS 배포 표현 잔존",
         "fix": "영상 콘텐츠 제작/공유 중심으로 통일"
       }
-    }
-  ],
+    },
     {
       "id": "ISS-017", "title": "[P0] /strategy 캘린더 → /concept 자동 이동 링크",
       "type": "GENERATE_CODE", "status": "READY", "priority": "P0", "assign_to": "agent-harness", "depends_on": []
@@ -133,8 +133,7 @@
     {
       "id": "ISS-023", "title": "[P2] 생성 콘텐츠 히스토리 대시보드 연동",
       "type": "GENERATE_CODE", "status": "CREATED", "priority": "P2", "assign_to": "agent-harness", "depends_on": ["ISS-020"]
-    }
-  ],
+    },
     {
       "id": "ISS-024",
       "title": "[P0] 스크립트→영상 자동 생성 — 템플릿 매핑 + Remotion 동적 렌더",
@@ -147,6 +146,69 @@
           "frontend/remotion/templates/AutoTemplate.tsx",
           "frontend/app/produce/page.tsx"
         ]
+      }
+    },
+    {
+      "id": "ISS-025",
+      "title": "[P0] 브랜드 템플릿 CRUD API + 인메모리 저장소",
+      "type": "GENERATE_CODE", "status": "READY", "priority": "P0",
+      "assign_to": "agent-harness", "depends_on": [],
+      "payload": {
+        "description": "BrandTemplate 모델 + CRUD API. 인트로/아웃트로 스크립트, 보이스 설정, 로고 이미지 저장. 프로젝트별 기본 템플릿 지정.",
+        "scope": [
+          "backend/app/models/brand_template.py",
+          "backend/app/api/v1/brand_templates.py"
+        ]
+      }
+    },
+    {
+      "id": "ISS-026",
+      "title": "[P0] 인트로/아웃트로 TTS 생성 + FFmpeg 합성",
+      "type": "GENERATE_CODE", "status": "CREATED", "priority": "P0",
+      "assign_to": "agent-harness", "depends_on": ["ISS-025"],
+      "payload": {
+        "description": "generate-video API에서 template_id 참조. 인트로 TTS → 인트로 이미지+오디오 → 본편 → 아웃트로 순으로 FFmpeg concat. {{presentation_title}} 등 변수 치환.",
+        "scope": ["backend/app/api/v1/presentation.py"]
+      }
+    },
+    {
+      "id": "ISS-027",
+      "title": "[P0] 프론트엔드 브랜드 템플릿 관리 UI",
+      "type": "GENERATE_CODE", "status": "CREATED", "priority": "P0",
+      "assign_to": "agent-harness", "depends_on": ["ISS-025"],
+      "payload": {
+        "description": "설정 > 브랜드 템플릿 페이지. 인트로/아웃트로 스크립트 편집, 미리보기, 기본 템플릿 지정.",
+        "scope": ["frontend/app/settings/brand-templates/page.tsx"]
+      }
+    },
+    {
+      "id": "ISS-028",
+      "title": "[P1] PDF 업로드 시 템플릿 선택 드롭다운",
+      "type": "GENERATE_CODE", "status": "CREATED", "priority": "P1",
+      "assign_to": "agent-harness", "depends_on": ["ISS-027"],
+      "payload": {
+        "description": "PresentationMode 업로드 섹션에 '템플릿 선택' 드롭다운 추가. upload API에 template_id 전달.",
+        "scope": ["frontend/components/PresentationMode.tsx"]
+      }
+    },
+    {
+      "id": "ISS-029",
+      "title": "[P1] SlidePlayer 인트로/아웃트로 포함 프리뷰",
+      "type": "GENERATE_CODE", "status": "CREATED", "priority": "P1",
+      "assign_to": "agent-harness", "depends_on": ["ISS-026"],
+      "payload": {
+        "description": "SlidePlayer에서 인트로(첫 번째)+아웃트로(마지막) 슬라이드를 가상으로 추가하여 전체 영상 프리뷰 가능하게.",
+        "scope": ["frontend/components/SlidePlayer.tsx"]
+      }
+    },
+    {
+      "id": "ISS-030",
+      "title": "[P2] OCR 텍스트 품질 개선 — GPT-4 Vision 보정",
+      "type": "GENERATE_CODE", "status": "CREATED", "priority": "P2",
+      "assign_to": "agent-harness", "depends_on": [],
+      "payload": {
+        "description": "Tesseract OCR 결과를 GPT-4 Vision으로 보정. 슬라이드 이미지를 직접 분석하여 정확한 텍스트 추출.",
+        "scope": ["backend/app/services/pdf_to_slides_service.py"]
       }
     }
   ],
@@ -169,10 +231,11 @@
     ]
   },
   "stats": {
-    "total_issues": 16,
+    "total_issues": 30,
     "completed": 10,
+    "ready": 7,
+    "created": 13,
     "failed": 0,
-    "evolved": 0,
-    "stabilization_issues": 6
+    "phase6_issues": "ISS-025~030 (Brand Templates)"
   }
 }

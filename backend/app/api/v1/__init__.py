@@ -39,6 +39,7 @@ from .whisper_timing import router as whisper_timing_router
 from .auth import router as auth_router
 from .billing import router as billing_router
 from .webhooks import router as webhooks_router
+from .brand_templates import router as brand_templates_router
 
 router = APIRouter()
 
@@ -79,3 +80,4 @@ router.include_router(whisper_timing_router, prefix="/whisper", tags=["Whisper T
 router.include_router(cache_router, prefix="/cache", tags=["Cache Management"])
 router.include_router(billing_router, tags=["Billing & Subscription"])
 router.include_router(webhooks_router, tags=["Webhooks"])
+router.include_router(brand_templates_router, prefix="/brand-templates", tags=["Brand Templates"])
