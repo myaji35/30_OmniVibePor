@@ -83,7 +83,7 @@ function PipelineBar({ steps, visible }: { steps: { label: string; pct: number; 
     <div className="space-y-2.5">
       {steps.map((s, i) => (
         <div key={s.label} className="flex items-center gap-3">
-          <span className="text-[10px] text-slate-400 w-16 text-right shrink-0 font-mono">{s.label}</span>
+          <span className="text-sm text-slate-400 w-16 text-right shrink-0 font-mono">{s.label}</span>
           <div className="flex-1 h-2 bg-slate-700/60 rounded-full overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-1000 relative overflow-hidden"
@@ -99,7 +99,7 @@ function PipelineBar({ steps, visible }: { steps: { label: string; pct: number; 
               )}
             </div>
           </div>
-          <span className="text-[10px] font-bold w-8 shrink-0" style={{ color: s.color }}>{s.pct}%</span>
+          <span className="text-sm font-bold w-8 shrink-0" style={{ color: s.color }}>{s.pct}%</span>
         </div>
       ))}
     </div>
@@ -169,7 +169,7 @@ function MiniPlayer({ visible }: { visible: boolean }) {
       <div className="flex gap-1 p-2 border-b border-white/[0.06]">
         {HERO_SAMPLES.map((s, i) => (
           <button key={i} onClick={() => setActive(i)}
-            className="flex-1 text-[9px] font-bold py-1.5 rounded-lg transition-all relative overflow-hidden"
+            className="flex-1 text-xs font-bold py-1.5 rounded-lg transition-all relative overflow-hidden"
             style={{
               color: active === i ? "#fff" : "#64748b",
               background: active === i ? "rgba(99,102,241,0.25)" : "transparent",
@@ -199,13 +199,13 @@ function MiniPlayer({ visible }: { visible: boolean }) {
         <div className="absolute top-2 left-2 flex items-center gap-1.5 px-2 py-0.5 rounded-full pointer-events-none"
           style={{ background: "rgba(0,0,0,0.65)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.15)" }}>
           <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
-          <span className="text-[9px] font-bold text-white">Remotion</span>
+          <span className="text-xs font-bold text-white">Remotion</span>
         </div>
         {/* 하단 정보 */}
         <div className="absolute bottom-0 left-0 right-0 p-2 pointer-events-none"
           style={{ background: "linear-gradient(to top, rgba(0,0,0,0.75), transparent)" }}>
-          <p className="text-[10px] font-bold text-white">{sample.title}</p>
-          <p className="text-[9px] text-white/50">by {sample.author}</p>
+          <p className="text-sm font-bold text-white">{sample.title}</p>
+          <p className="text-xs text-white/50">by {sample.author}</p>
         </div>
       </div>
     </div>
@@ -265,12 +265,12 @@ function StudioMockup() {
             <div className="w-3 h-3 rounded-full bg-amber-400/70 shadow-[0_0_6px_rgba(251,191,36,0.5)]" />
             <div className="w-3 h-3 rounded-full bg-emerald-400/70 shadow-[0_0_6px_rgba(52,211,153,0.5)]" />
           </div>
-          <div className="flex-1 bg-white/[0.07] rounded-md h-5 text-[10px] text-slate-400 flex items-center px-3 font-mono">
+          <div className="flex-1 bg-white/[0.07] rounded-md h-5 text-sm text-slate-400 flex items-center px-3 font-mono">
             omnivibepro.com/studio
           </div>
           <div className="flex items-center gap-1.5">
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
-            <span className="text-[9px] text-emerald-400 font-bold font-mono">LIVE</span>
+            <span className="text-xs text-emerald-400 font-bold font-mono">LIVE</span>
           </div>
         </div>
 
@@ -286,7 +286,7 @@ function StudioMockup() {
               <div key={label} className="rounded-xl p-3 relative overflow-hidden"
                 style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", boxShadow: `inset 0 1px 0 rgba(255,255,255,0.06)` }}>
                 <div className="absolute inset-0 rounded-xl pointer-events-none" style={{ background: `radial-gradient(ellipse at top left, ${glow} 0%, transparent 70%)` }} />
-                <p className="text-[9px] text-slate-400 mb-1 relative">{label}</p>
+                <p className="text-xs text-slate-400 mb-1 relative">{label}</p>
                 <p className="text-xl font-black font-mono relative" style={{ color }}>
                   <CountUp target={value} suffix={suffix} visible={visible} />
                 </p>
@@ -298,8 +298,8 @@ function StudioMockup() {
           <div className="rounded-xl p-4"
             style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)" }}>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">AI Pipeline</p>
-              <span className="text-[9px] font-bold px-2.5 py-1 rounded-full animate-pulse"
+              <p className="text-sm font-black text-slate-300 uppercase tracking-widest">AI Pipeline</p>
+              <span className="text-xs font-bold px-2.5 py-1 rounded-full animate-pulse"
                 style={{ color: "#a78bfa", background: "rgba(167,139,250,0.15)", border: "1px solid rgba(167,139,250,0.3)" }}>
                 ⚡ 처리 중
               </span>
@@ -310,7 +310,7 @@ function StudioMockup() {
           {/* Recent jobs */}
           <div className="rounded-xl p-3"
             style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)" }}>
-            <p className="text-[9px] text-slate-400 uppercase tracking-widest mb-2.5 font-black">최근 작업</p>
+            <p className="text-xs text-slate-400 uppercase tracking-widest mb-2.5 font-black">최근 작업</p>
             <div className="space-y-2">
               {[
                 { name: "Q1_전략_브리핑.pdf", status: "완료", statusColor: "#34d399", bg: "rgba(52,211,153,0.1)", dot: "#34d399" },
@@ -320,9 +320,9 @@ function StudioMockup() {
                 <div key={name} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: dot, boxShadow: pulse ? `0 0 6px ${dot}` : "none" }} />
-                    <span className="text-slate-300 font-mono text-[10px]">{name}</span>
+                    <span className="text-slate-300 font-mono text-sm">{name}</span>
                   </div>
-                  <span className="text-[9px] font-bold px-2 py-0.5 rounded-full" style={{ color: statusColor, background: bg }}>
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ color: statusColor, background: bg }}>
                     {status}
                   </span>
                 </div>
@@ -390,14 +390,16 @@ export default function Home() {
           </div>
           <div className="flex flex-col">
             <h1 className="text-base font-black font-outfit premium-gradient-text tracking-tighter leading-none mb-0.5">OMNIVIBE</h1>
-            <span className="text-[9px] font-black text-white/30 tracking-[0.4em] uppercase">Control Center</span>
+            <span className="text-xs font-black text-white/30 tracking-wider uppercase">Control Center</span>
           </div>
         </div>
 
-        <div className="hidden md:flex items-center gap-8 text-[11px] font-semibold text-white/60 uppercase tracking-widest">
+        <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-white/60 tracking-wide">
           <a href="#features" className="hover:text-white/90 transition-colors">기능</a>
           <a href="#studio" className="hover:text-white/90 transition-colors">스튜디오</a>
           <a href="/gallery" className="hover:text-white/90 transition-colors">템플릿</a>
+          <a href="/strategy" className="hover:text-white/90 transition-colors">전략</a>
+          <a href="/pricing" className="hover:text-white/90 transition-colors">가격</a>
         </div>
 
         <div className="flex items-center gap-3">
@@ -405,16 +407,16 @@ export default function Home() {
             <>
               <div className="flex items-center gap-3 px-5 py-2.5 bg-white/[0.03] border border-white/5 rounded-xl">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">{user?.name} 대표님</span>
+                <span className="text-sm font-black text-white/60 uppercase tracking-widest">{user?.name} 대표님</span>
               </div>
-              <button onClick={logout} className="px-5 py-2.5 bg-white/5 hover:bg-red-500/20 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
+              <button onClick={logout} className="px-5 py-2.5 bg-white/5 hover:bg-red-500/20 border border-white/10 rounded-xl text-sm font-black uppercase tracking-widest transition-all">
                 Logout
               </button>
             </>
           ) : (
             <button
               onClick={() => setShowAuthModal(true)}
-              className="flex items-center gap-2 px-6 py-2.5 bg-brand-primary-600 hover:bg-brand-primary-500 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-purple-500/20 active:scale-95"
+              className="flex items-center gap-2 px-6 py-2.5 bg-brand-primary-600 hover:bg-brand-primary-500 rounded-xl text-sm font-black uppercase tracking-widest transition-all shadow-lg shadow-purple-500/20 active:scale-95"
             >
               <LogIn className="w-3.5 h-3.5" />
               로그인
@@ -444,12 +446,12 @@ export default function Home() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-primary-400 opacity-75" />
                   <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand-primary-400" />
                 </span>
-                <span className="text-[10px] font-black text-brand-primary-400 uppercase tracking-[0.3em]">AI Video Synthesis Engine v2.0</span>
+                <span className="text-sm font-black text-brand-primary-400 uppercase tracking-wide">AI Video Synthesis Engine v2.0</span>
               </div>
 
               {/* 헤드라인 */}
               <h2
-                className="animate-fade-in text-5xl md:text-6xl font-black font-outfit tracking-tighter leading-[0.92] mb-6 uppercase italic"
+                className="animate-fade-in text-5xl md:text-7xl font-black font-outfit tracking-tighter leading-[0.95] mb-8"
                 style={{ animationDelay: "0.2s" }}
               >
                 <span className="text-white">영상 제작의</span>
@@ -458,9 +460,9 @@ export default function Home() {
               </h2>
 
               {/* 서브카피 */}
-              <p className="animate-fade-in text-base text-gray-400 leading-relaxed mb-10" style={{ animationDelay: "0.32s" }}>
+              <p className="animate-fade-in text-lg text-gray-300 leading-relaxed mb-10" style={{ animationDelay: "0.32s" }}>
                 PDF 하나면 충분합니다. AI가 스크립트를 쓰고,<br />
-                <span className="text-gray-300">목소리를 복제하고, 영상을 완성합니다.</span>
+                <span className="text-white/80">목소리를 복제하고, 영상을 완성합니다.</span>
               </p>
 
               {/* CTA 버튼 */}
@@ -484,7 +486,7 @@ export default function Home() {
               </div>
 
               {/* 신뢰 텍스트 */}
-              <div className="animate-fade-in flex flex-wrap gap-5 text-xs text-gray-600" style={{ animationDelay: "0.52s" }}>
+              <div className="animate-fade-in flex flex-wrap gap-5 text-xs text-gray-400" style={{ animationDelay: "0.52s" }}>
                 {["PDF 업로드만으로 시작", "99% Zero-Fault 오디오", "20개 영상 템플릿 무료"].map((text) => (
                   <span key={text} className="flex items-center gap-1.5">
                     <Check className="w-3 h-3 text-brand-primary-500" />
@@ -495,14 +497,14 @@ export default function Home() {
 
               {/* 플랫폼 지원 뱃지 */}
               <div className="animate-fade-in flex items-center gap-3 mt-10" style={{ animationDelay: "0.62s" }}>
-                <span className="text-[9px] text-gray-700 uppercase tracking-widest">지원 플랫폼</span>
+                <span className="text-xs text-gray-400 uppercase tracking-widest">지원 플랫폼</span>
                 <div className="flex gap-2">
                   {[
                     { label: "YouTube", color: "bg-red-500/20 text-red-400 border-red-500/20" },
                     { label: "Instagram", color: "bg-pink-500/20 text-pink-400 border-pink-500/20" },
                     { label: "TikTok", color: "bg-white/10 text-white/60 border-white/10" },
                   ].map(({ label, color }) => (
-                    <span key={label} className={`text-[9px] font-bold px-2.5 py-1 rounded-full border ${color}`}>{label}</span>
+                    <span key={label} className={`text-xs font-bold px-2.5 py-1 rounded-full border ${color}`}>{label}</span>
                   ))}
                 </div>
               </div>
@@ -521,10 +523,10 @@ export default function Home() {
         <div className="container mx-auto px-10">
           <FadeIn>
             <div className="flex items-center justify-center gap-10 flex-wrap">
-              <span className="text-[10px] text-gray-700 uppercase tracking-widest">AI 파이프라인</span>
+              <span className="text-sm text-gray-400 uppercase tracking-widest">AI 파이프라인</span>
               {["ElevenLabs TTS", "OpenAI Whisper", "GPT-4 Writer", "Remotion Render", "Neo4j GraphRAG"].map((tech, i) => (
                 <FadeIn key={tech} delay={i * 0.06}>
-                  <span className="text-xs text-gray-600 font-mono">{tech}</span>
+                  <span className="text-xs text-gray-400 font-mono">{tech}</span>
                 </FadeIn>
               ))}
             </div>
@@ -538,7 +540,7 @@ export default function Home() {
           <FadeIn className="mb-16">
             <div className="flex items-center gap-6">
               <div className="w-10 h-[2px] bg-brand-primary-500" />
-              <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.5em]">Neural Processing Units</h3>
+              <h3 className="text-sm font-black text-gray-500 uppercase tracking-wider">Neural Processing Units</h3>
             </div>
           </FadeIn>
 
@@ -551,7 +553,10 @@ export default function Home() {
               { href: "/production", title: "디렉터", desc: "비주얼 씬 어셈블리", icon: Layout, color: "border-red-500/20" },
               { href: "/presentation", title: "덱 엔진", desc: "PDF → 영상 변환", icon: BookOpen, color: "border-orange-500/20" },
               { href: "/gallery", title: "템플릿 갤러리", desc: "20개 영상 템플릿", icon: LayoutGrid, color: "border-emerald-500/20" },
-              { href: "http://localhost:8000/docs", title: "API 문서", desc: "뉴럴 API 명세서", icon: BookOpen, color: "border-white/10", external: true },
+              { href: "/strategy", title: "전략 수립", desc: "AI 채널별 전략 + 캘린더", icon: Activity, color: "border-indigo-500/20" },
+              { href: "/concept", title: "컨셉 기획", desc: "스크립트 → 스토리보드", icon: Sparkles, color: "border-amber-500/20" },
+              { href: "/produce", title: "콘텐츠 생산", desc: "영상 + 프레젠테이션 + 나레이션", icon: Film, color: "border-green-500/20" },
+              { href: "/publish", title: "멀티채널 배포", desc: "예약 발행 + 성과 추적", icon: Share2, color: "border-cyan-500/20" },
             ].map((node, i) => (
               <FadeIn key={node.href + i} delay={i * 0.07}>
                 <a
@@ -564,10 +569,10 @@ export default function Home() {
                     <node.icon className={`w-6 h-6 ${node.highlight ? "text-brand-primary-400" : "text-gray-500 group-hover:text-white"} transition-colors`} />
                   </div>
                   <div>
-                    <h3 className="text-xl font-black font-outfit text-white tracking-tight italic uppercase mb-1">{node.title}</h3>
-                    <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest">{node.desc}</p>
+                    <h3 className="text-xl font-bold text-white tracking-tight mb-1.5">{node.title}</h3>
+                    <p className="text-sm text-gray-400">{node.desc}</p>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-gray-700 group-hover:text-white group-hover:translate-x-1 transition-all mt-auto" />
+                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-white group-hover:translate-x-1 transition-all mt-auto" />
                 </a>
               </FadeIn>
             ))}
@@ -581,7 +586,7 @@ export default function Home() {
           <FadeIn className="mb-12">
             <div className="flex items-center gap-6">
               <div className="w-10 h-[2px] bg-brand-accent-500" />
-              <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.5em]">System Architecture</h3>
+              <h3 className="text-sm font-black text-gray-500 uppercase tracking-wider">System Architecture</h3>
             </div>
           </FadeIn>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -593,11 +598,11 @@ export default function Home() {
               <FadeIn key={sys.title} delay={i * 0.1}>
                 <a href={sys.href} target="_blank" className="p-6 bg-black/40 border border-white/5 rounded-[1.5rem] flex items-center gap-6 hover:bg-black/60 hover:border-white/10 transition-all">
                   <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center">
-                    <sys.icon className="w-5 h-5 text-gray-600" />
+                    <sys.icon className="w-5 h-5 text-gray-400" />
                   </div>
                   <div>
-                    <h4 className="text-base font-black text-white tracking-tighter uppercase italic">{sys.title}</h4>
-                    <span className="text-[9px] font-black text-gray-700 uppercase tracking-widest">{sys.desc}</span>
+                    <h4 className="text-base font-bold text-white">{sys.title}</h4>
+                    <span className="text-sm text-gray-400">{sys.desc}</span>
                   </div>
                 </a>
               </FadeIn>
@@ -612,14 +617,14 @@ export default function Home() {
       {/* Footer */}
       <footer className="py-16 border-t border-white/5 bg-black/20 relative z-10">
         <div className="container mx-auto px-10 flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="flex items-center gap-4 opacity-40">
+          <div className="flex items-center gap-4 opacity-50">
             <Zap className="w-4 h-4" />
-            <span className="text-[9px] font-black uppercase tracking-[0.4em]">OmniVibe Pro Protocol 2026</span>
+            <span className="text-sm font-semibold text-white/50">OmniVibe Pro · 2026</span>
           </div>
-          <div className="flex items-center gap-8 text-[9px] font-black text-white/20 uppercase tracking-[0.3em]">
-            <a href="#" className="hover:text-brand-primary-400 transition-colors">Privacy</a>
-            <a href="#" className="hover:text-brand-primary-400 transition-colors">Compliance</a>
-            <a href="#" className="hover:text-brand-primary-400 transition-colors">Infrastructure</a>
+          <div className="flex items-center gap-8 text-sm text-white/30">
+            <a href="#" className="hover:text-white/60 transition-colors">개인정보처리방침</a>
+            <a href="#" className="hover:text-white/60 transition-colors">이용약관</a>
+            <a href="/pricing" className="hover:text-white/60 transition-colors">가격</a>
           </div>
         </div>
       </footer>
