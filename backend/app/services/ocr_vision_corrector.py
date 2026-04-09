@@ -1,4 +1,8 @@
-"""OCR Vision Corrector — GPT-4 Vision으로 Tesseract OCR 결과 보정"""
+"""OCR Vision Corrector — GPT-4 Vision으로 Tesseract OCR 결과 보정
+
+ISS-044: model + temperature + max_tokens는 llm_profile.TASK_PRESETS['vision_correction']
+에서 단일 관리. system_prompt만 vision 특화 텍스트 사용 (멀티모달 messages는 직접 구성).
+"""
 import base64
 import logging
 from pathlib import Path
@@ -7,6 +11,10 @@ from typing import Optional
 from openai import AsyncOpenAI
 
 from app.core.config import get_settings
+from app.services.llm_profile import (
+    TASK_PRESETS,
+    get_model_name,
+)
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -74,11 +82,17 @@ class OCRVisionCorrector:
             ext = img_path.suffix.lower().lstrip(".")
             mime = {"png": "image/png", "jpg": "image/jpeg", "jpeg": "image/jpeg"}.get(ext, "image/png")
 
+            # llm_profile 단일 SoT — task='vision_correction'
+            # model + temperature + max_tokens는 모듈에서 결정 (ISS-044)
+            vision_preset = TASK_PRESETS["vision_correction"]
             response = await self.client.chat.completions.create(
-                model="gpt-4o",
+                model=vision_preset.model,
+                temperature=vision_preset.temperature,
+                max_tokens=vision_preset.max_tokens,
                 messages=[
                     {
                         "role": "system",
+                        # vision 특화 system prompt (멀티모달 컨텍스트)
                         "content": (
                             "이 슬라이드 이미지에서 모든 텍스트를 정확하게 추출하세요. "
                             "제목, 본문, 목록, 도표 내 텍스트, 차트 레이블을 모두 포함합니다. "
@@ -104,8 +118,7 @@ class OCRVisionCorrector:
                         ],
                     },
                 ],
-                max_tokens=2000,
-                temperature=0.1,
+                # max_tokens, temperature는 위 vision_preset에서 이미 적용됨 (ISS-044)
             )
 
             corrected_text = response.choices[0].message.content.strip()

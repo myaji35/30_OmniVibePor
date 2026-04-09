@@ -22,6 +22,7 @@ from tenacity import retry, stop_after_attempt, wait_exponential
 
 from app.core.config import get_settings
 from app.services.cost_tracker import get_cost_tracker
+from app.services.ffmpeg_profile import ios_safe_subtitle_burn_args
 
 settings = get_settings()
 
@@ -377,15 +378,15 @@ class SubtitleService:
                 custom_style
             )
 
-            # FFmpeg 명령 구성
+            # FFmpeg 명령 구성 — 자막 burn-in
+            # iOS 호환 표준은 ffmpeg_profile.ios_safe_subtitle_burn_args에서 관리
             cmd = [
                 "ffmpeg",
                 "-i", video_path,
                 "-vf", subtitle_filter,
-                "-c:a", "copy",  # 오디오는 그대로 복사
-                "-y",  # 덮어쓰기
-                output_path
             ]
+            cmd.extend(ios_safe_subtitle_burn_args())
+            cmd.extend(["-y", output_path])
 
             self.logger.debug(f"FFmpeg command: {' '.join(cmd)}")
 

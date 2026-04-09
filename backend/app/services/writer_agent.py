@@ -23,6 +23,7 @@ from app.core.config import get_settings
 from app.services.google_sheets_service import get_sheets_service
 from app.services.neo4j_client import get_neo4j_client
 from app.services.duration_calculator import get_duration_calculator, Language
+from app.services.llm_profile import llm_safe_langchain_chat_kwargs
 
 settings = get_settings()
 logger = logging.getLogger(__name__)
@@ -73,12 +74,13 @@ class WriterAgent:
         self.sheets_service = get_sheets_service()
         self.neo4j_client = get_neo4j_client()
 
-        # Claude (Anthropic) LLM 초기화
+        # Claude (Anthropic) LLM 초기화 — llm_profile 단일 SoT
+        # task='slide_to_script': Claude 3 Haiku, temp=0.7, max_tokens=4096 (ISS-044)
         self.llm = ChatAnthropic(
-            model="claude-3-haiku-20240307",  # Claude 3 Haiku (빠르고 경제적)
-            temperature=0.7,
-            anthropic_api_key=settings.ANTHROPIC_API_KEY,
-            max_tokens=4096
+            **llm_safe_langchain_chat_kwargs(
+                "slide_to_script",
+                api_key=settings.ANTHROPIC_API_KEY,
+            )
         )
 
         # LangGraph 워크플로우 구축

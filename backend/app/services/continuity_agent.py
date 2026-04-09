@@ -23,6 +23,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from app.core.config import get_settings
 from app.services.neo4j_client import get_neo4j_client
 from app.services.resource_manager import get_resource_manager, Resource
+from app.services.llm_profile import llm_safe_langchain_chat_kwargs
 
 settings = get_settings()
 logger = logging.getLogger(__name__)
@@ -109,12 +110,13 @@ class ContinuityAgent:
         self.neo4j_client = get_neo4j_client()
         self.resource_manager = get_resource_manager()
 
-        # Claude (Anthropic) LLM 초기화
+        # Claude (Anthropic) LLM 초기화 — llm_profile 단일 SoT
+        # task='continuity': Claude 3 Haiku, temp=0.3 (콘티 일관성), max_tokens=4096 (ISS-044)
         self.llm = ChatAnthropic(
-            model="claude-3-haiku-20240307",
-            temperature=0.3,  # 콘티는 일관성이 중요하므로 낮게
-            anthropic_api_key=settings.ANTHROPIC_API_KEY,
-            max_tokens=4096
+            **llm_safe_langchain_chat_kwargs(
+                "continuity",
+                api_key=settings.ANTHROPIC_API_KEY,
+            )
         )
 
         # LangGraph 워크플로우 구축

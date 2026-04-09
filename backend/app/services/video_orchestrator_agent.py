@@ -27,6 +27,7 @@ from app.services.lipsync_service import get_lipsync_service
 from app.services.stt_service import get_stt_service
 from app.services.neo4j_client import get_neo4j_client
 from app.services.cost_tracker import get_cost_tracker, APIService
+from app.services.ffmpeg_profile import ios_safe_subtitle_burn_args
 
 settings = get_settings()
 logger = logging.getLogger(__name__)
@@ -583,14 +584,14 @@ class VideoDirectorAgent:
                     self.video_dir / f"{state['project_id']}_final.mp4"
                 )
 
-                # FFmpeg로 자막 오버레이
+                # FFmpeg로 자막 오버레이 (iOS 호환 표준은 ffmpeg_profile에서 관리)
                 cmd = [
                     "ffmpeg", "-y",
                     "-i", video_path,
                     "-vf", f"subtitles={srt_path}",
-                    "-c:a", "copy",
-                    output_path
                 ]
+                cmd.extend(ios_safe_subtitle_burn_args())
+                cmd.append(output_path)
 
                 self.logger.info(f"Running FFmpeg: {' '.join(cmd)}")
 

@@ -91,23 +91,31 @@ class AudioCorrectionLoop:
 
     def calculate_similarity(self, original: str, transcribed: str) -> float:
         """
-        텍스트 유사도 계산
+        텍스트 유사도 계산 (ISS-062 Zero-Fault Similarity Bug Fix)
 
         Args:
-            original: 원본 텍스트
+            original: 원본 텍스트 (사용자 입력, 정규화 전)
             transcribed: STT로 변환된 텍스트
 
         Returns:
             유사도 (0.0-1.0)
+
+        Note:
+            이 함수는 "원본 텍스트"를 기준으로 비교합니다.
+            TTS는 normalized_text(숫자 한글 변환)로 생성되지만,
+            STT가 그 오디오를 들으면 대부분 "2024년", "1월", "25살" 같이
+            원본 숫자 표현으로 다시 전사합니다. 따라서 비교는 original vs transcribed
+            가 정답이며, tts_text(이천이십사년) vs transcribed(2024년)로 비교하면
+            항상 mismatch가 발생합니다.
         """
-        # 정규화 (대소문자, 공백, 구두점 제거)
+        # 정규화 (대소문자, 공백, 구두점, 따옴표 제거)
         def normalize(text: str) -> str:
             # 소문자 변환
             text = text.lower()
-            # 구두점 제거
-            text = re.sub(r'[^\w\s]', '', text)
+            # 따옴표·콤마·구두점 모두 제거 (\w\s 외 제거)
+            text = re.sub(r"[^\w\s]", " ", text)
             # 연속 공백 제거
-            text = re.sub(r'\s+', ' ', text)
+            text = re.sub(r"\s+", " ", text)
             return text.strip()
 
         normalized_original = normalize(original)
@@ -232,11 +240,13 @@ class AudioCorrectionLoop:
                         language=language
                     )
 
-                    # 4. 유사도 계산 (정규화된 텍스트와 비교)
-                    similarity = self.calculate_similarity(tts_text, transcribed)
+                    # 4. 유사도 계산 (ISS-062 fix: 원본 텍스트 vs STT 결과 비교)
+                    # tts_text는 normalized("이천이십사년")이지만 STT는 "2024년"으로 전사되므로,
+                    # original text와 transcribed를 직접 비교해야 정확한 유사도가 나옴
+                    similarity = self.calculate_similarity(text, transcribed)
 
-                    # 5. 분석
-                    mismatch_analysis = self.analyze_mismatch(tts_text, transcribed)
+                    # 5. 분석 (동일 원본 기준)
+                    mismatch_analysis = self.analyze_mismatch(text, transcribed)
 
                     iteration_info = {
                         "attempt": attempt,
@@ -255,6 +265,32 @@ class AudioCorrectionLoop:
                     if similarity > best_similarity:
                         best_similarity = similarity
                         best_audio = audio_bytes
+
+                    # ISS-062: 조기 종료 — 1차 시도가 너무 낮으면 구조적 문제 판단
+                    # STT/TTS 품질이 아니라 텍스트 자체의 비교 불일치라 재시도 의미 없음
+                    if attempt == 1 and similarity < 0.60:
+                        self.logger.warning(
+                            f"⚠️ 1차 유사도 {similarity:.2%} < 60% — 구조적 mismatch 판단, 재시도 중단"
+                        )
+                        # best로 바로 저장하고 partial_success 반환
+                        if save_file:
+                            audio_path = await self.tts.save_audio(audio_bytes=audio_bytes, text=text)
+                        else:
+                            audio_path = None
+                        return {
+                            "status": "partial_success",
+                            "audio_path": audio_path,
+                            "attempts": attempt,
+                            "final_similarity": similarity,
+                            "original_text": text,
+                            "normalized_text": tts_text,
+                            "normalization_mappings": normalization_mappings,
+                            "transcribed_text": transcribed,
+                            "iterations": iterations,
+                            "warning": "구조적 mismatch로 재시도 중단 (시간·비용 절감). 오디오는 저장됨.",
+                            "task_id": None,
+                            "user_id": None,
+                        }
 
                     # 5. 임계값 체크
                     if similarity >= self.accuracy_threshold:

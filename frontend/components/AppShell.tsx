@@ -8,7 +8,7 @@ import {
   Volume2, FileText, Monitor, Rocket, Image, Upload,
   Presentation, CalendarDays, Settings, ChevronDown,
   ChevronRight, Menu, X, LogIn, CreditCard,
-  Target, Lightbulb, Film, Share2, DollarSign
+  Target, Lightbulb, Film, Share2, DollarSign, BookOpen
 } from 'lucide-react'
 import { useAuth } from '@/lib/contexts/AuthContext'
 import AuthModal from './AuthModal'
@@ -57,6 +57,7 @@ const NAV_GROUPS = [
       { href: '/publish',         label: '공유 & 추적',   icon: Share2 },
       { href: '/schedule',        label: '일정 관리',     icon: CalendarDays },
       { href: '/pricing',         label: '가격',          icon: DollarSign },
+      { href: '/manual',          label: '사용자 매뉴얼', icon: BookOpen },
     ],
   },
 ]

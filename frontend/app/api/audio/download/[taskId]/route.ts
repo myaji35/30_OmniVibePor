@@ -2,13 +2,18 @@ import { NextRequest, NextResponse } from 'next/server'
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'
 
+// ISS-062: Next.js fetch 캐싱 방지 (파일 응답이라 캐시되면 안 됨)
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function GET(
   _request: NextRequest,
   { params }: { params: { taskId: string } }
 ) {
   try {
     const response = await fetch(
-      `${BACKEND_URL}/api/v1/audio/download/${params.taskId}`
+      `${BACKEND_URL}/api/v1/audio/download/${params.taskId}`,
+      { cache: 'no-store' }
     )
 
     if (!response.ok) {

@@ -18,6 +18,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from app.services.duration_calculator import get_duration_calculator, Language
+from app.services.llm_profile import llm_safe_langchain_chat_kwargs
 
 logger = logging.getLogger(__name__)
 
@@ -102,18 +103,19 @@ class SlideToScriptConverter:
 
     def __init__(
         self,
-        model_name: str = "claude-3-haiku-20240307",
+        model_name: Optional[str] = None,
         language: str = "ko"
     ):
         """
         Args:
-            model_name: 사용할 LLM 모델 (Claude Haiku 권장)
+            model_name: 사용할 LLM 모델 (None이면 llm_profile task='slide_to_script' 기본값)
             language: 언어 코드 (ko, en, ja, zh)
         """
+        # llm_profile 단일 SoT — task='slide_to_script': Claude Haiku temp=0.7 (ISS-044)
+        # model_name override는 호환성 유지를 위해 보존
         self.llm = ChatAnthropic(
-            model=model_name,
-            temperature=0.7,  # 창의적이면서도 일관성 유지
-            max_tokens=4096
+            **llm_safe_langchain_chat_kwargs("slide_to_script"),
+            **({"model": model_name} if model_name else {}),
         )
         self.language = Language(language)
         self.duration_calculator = get_duration_calculator(self.language)

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Mic2, Wand2, Download, RotateCcw, CheckCircle2, XCircle, Loader2 } from 'lucide-react'
 import AppShell from '@/components/AppShell'
 import AudioProgressTracker from '../components/AudioProgressTracker'
@@ -58,10 +58,16 @@ export default function AudioPage() {
   const [loading, setLoading] = useState(false)
   const [taskId, setTaskId] = useState<string | null>(null)
   const [taskStatus, setTaskStatus] = useState<TaskStatus | null>(null)
-  const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null)
+  // ISS-062: useRef로 stale closure 회피. setState는 비동기라 setInterval 콜백에서 최신 값을 못 읽음.
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
   const generateAudio = async () => {
     if (!text.trim()) { alert('텍스트를 입력해주세요'); return }
+    // 이전 polling 정리
+    if (pollingIntervalRef.current) {
+      clearInterval(pollingIntervalRef.current)
+      pollingIntervalRef.current = null
+    }
     setLoading(true)
     setTaskStatus(null)
     try {
@@ -77,17 +83,23 @@ export default function AudioPage() {
   }
 
   const startPolling = (id: string) => {
-    const interval = setInterval(() => checkTaskStatus(id), 2000)
-    setPollingInterval(interval)
+    // 즉시 1회 조회 후 interval 시작 (첫 2초 wait 제거)
+    checkTaskStatus(id)
+    const interval = setInterval(() => checkTaskStatus(id), 1500)  // 2초 → 1.5초로 단축
+    pollingIntervalRef.current = interval
   }
 
   const checkTaskStatus = async (id: string) => {
     try {
-      const res = await fetch(`/api/audio/status/${id}`)
+      // cache-busting timestamp로 프록시 캐싱 방어
+      const res = await fetch(`/api/audio/status/${id}?t=${Date.now()}`, { cache: 'no-store' })
       const data: TaskStatus = await res.json()
       setTaskStatus(data)
       if (data.status === 'SUCCESS' || data.status === 'FAILURE') {
-        if (pollingInterval) { clearInterval(pollingInterval); setPollingInterval(null) }
+        if (pollingIntervalRef.current) {
+          clearInterval(pollingIntervalRef.current)
+          pollingIntervalRef.current = null
+        }
         setLoading(false)
       }
     } catch { /* ignore */ }

@@ -132,6 +132,8 @@ const HERO_SAMPLES = [
 function MiniPlayer({ visible }: { visible: boolean }) {
   const [active, setActive] = useState(0);
   const [progress, setProgress] = useState(0);
+  // 사용자가 한 번이라도 클릭(또는 탭 변경) 했으면 iframe 마운트 — autoplay 차단 우회
+  const [isPlaying, setIsPlaying] = useState(false);
   const INTERVAL_MS = 8000; // 8초마다 자동 넘김
 
   // 자동 캐러셀 + 진행 바
@@ -158,9 +160,13 @@ function MiniPlayer({ visible }: { visible: boolean }) {
   if (!visible) return null;
 
   const sample = HERO_SAMPLES[active];
-  // autoplay=1 mute=1 controls=0 loop=1
-  const embedUrl = `https://www.youtube.com/embed/${sample.youtubeId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${sample.youtubeId}&modestbranding=1&rel=0&showinfo=0`;
+  // 사용자가 직접 재생 버튼을 누르기 전에는 thumbnail만 보여줌 (autoplay 차단 회피)
+  // 클릭 후 iframe 마운트 → 사용자 제스처 기반이라 autoplay 보장됨
+  const embedUrl = `https://www.youtube.com/embed/${sample.youtubeId}?autoplay=1&mute=1&controls=1&loop=1&playlist=${sample.youtubeId}&modestbranding=1&rel=0&showinfo=0&playsinline=1&enablejsapi=1`;
+  const thumbnailUrl = `https://i.ytimg.com/vi/${sample.youtubeId}/hqdefault.jpg`;
 
+  // 활성 탭이 바뀌면 다시 thumbnail 모드로 (각 탭 클릭이 user gesture로 카운트되도록)
+  // 단 사용자가 한 번이라도 play를 누른 후에는 자동 재생 유지
   return (
     <div className="rounded-xl overflow-hidden"
       style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.08)" }}>
@@ -168,7 +174,7 @@ function MiniPlayer({ visible }: { visible: boolean }) {
       {/* 탭 + 진행 바 */}
       <div className="flex gap-1 p-2 border-b border-white/[0.06]">
         {HERO_SAMPLES.map((s, i) => (
-          <button key={i} onClick={() => setActive(i)}
+          <button key={i} onClick={() => { setActive(i); setIsPlaying(true); }}
             className="flex-1 text-xs font-bold py-1.5 rounded-lg transition-all relative overflow-hidden"
             style={{
               color: active === i ? "#fff" : "#64748b",
@@ -185,24 +191,60 @@ function MiniPlayer({ visible }: { visible: boolean }) {
         ))}
       </div>
 
-      {/* YouTube iframe */}
+      {/* YouTube iframe (사용자가 클릭한 후에만 마운트) */}
       <div className="relative aspect-video bg-black">
-        <iframe
-          key={sample.youtubeId}
-          src={embedUrl}
-          className="w-full h-full"
-          allow="autoplay; encrypted-media"
-          allowFullScreen
-          style={{ border: "none" }}
-        />
+        {isPlaying ? (
+          <iframe
+            key={sample.youtubeId}
+            src={embedUrl}
+            className="w-full h-full"
+            // YouTube embed 표준 권장 allow 풀세트
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            referrerPolicy="strict-origin-when-cross-origin"
+            style={{ border: "none" }}
+            title={sample.title}
+          />
+        ) : (
+          // Thumbnail + Play 버튼 — 사용자 제스처 보장 (autoplay 차단 우회)
+          <button
+            type="button"
+            onClick={() => setIsPlaying(true)}
+            className="absolute inset-0 w-full h-full cursor-pointer group"
+            aria-label={`${sample.title} 재생`}
+          >
+            <img
+              src={thumbnailUrl}
+              alt={sample.title}
+              className="absolute inset-0 w-full h-full object-cover"
+              onError={(e) => {
+                // hqdefault 실패 시 maxresdefault → mqdefault 순으로 fallback
+                const img = e.currentTarget;
+                if (img.src.includes("hqdefault")) {
+                  img.src = `https://i.ytimg.com/vi/${sample.youtubeId}/mqdefault.jpg`;
+                } else if (img.src.includes("mqdefault")) {
+                  img.src = `https://i.ytimg.com/vi/${sample.youtubeId}/default.jpg`;
+                }
+              }}
+            />
+            {/* Play 아이콘 오버레이 */}
+            <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/50 transition-colors">
+              <div className="w-16 h-16 rounded-full bg-white/95 flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
+                <svg className="w-7 h-7 ml-1 text-black" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </div>
+            </div>
+          </button>
+        )}
         {/* 상단 뱃지 */}
-        <div className="absolute top-2 left-2 flex items-center gap-1.5 px-2 py-0.5 rounded-full pointer-events-none"
+        <div className="absolute top-2 left-2 flex items-center gap-1.5 px-2 py-0.5 rounded-full pointer-events-none z-10"
           style={{ background: "rgba(0,0,0,0.65)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.15)" }}>
           <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
           <span className="text-xs font-bold text-white">Remotion</span>
         </div>
         {/* 하단 정보 */}
-        <div className="absolute bottom-0 left-0 right-0 p-2 pointer-events-none"
+        <div className="absolute bottom-0 left-0 right-0 p-2 pointer-events-none z-10"
           style={{ background: "linear-gradient(to top, rgba(0,0,0,0.75), transparent)" }}>
           <p className="text-sm font-bold text-white">{sample.title}</p>
           <p className="text-xs text-white/50">by {sample.author}</p>

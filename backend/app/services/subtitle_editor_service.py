@@ -20,6 +20,10 @@ from contextlib import nullcontext
 
 from app.core.config import get_settings
 from app.services.neo4j_client import Neo4jClient
+from app.services.ffmpeg_profile import (
+    ios_safe_subtitle_burn_args,
+    ios_safe_full_encode_args,
+)
 from app.models.neo4j_models import (
     SubtitleStyleUpdateRequest,
     SubtitleStyleResponse
@@ -354,17 +358,14 @@ Style: Default,{style['font_family']},{style['font_size']},{primary_color},{prim
             # ASS 파일 경로 이스케이프 (Windows 호환성)
             ass_path_escaped = ass_path.replace('\\', '/').replace(':', r'\:')
 
-            # FFmpeg 명령
+            # FFmpeg 명령 (iOS 호환 표준은 ffmpeg_profile.ios_safe_subtitle_burn_args에서 관리)
             cmd = [
                 'ffmpeg',
                 '-i', video_path,
                 '-vf', f"ass={ass_path_escaped}",
-                '-c:a', 'copy',  # 오디오 복사
-                '-c:v', 'libx264',  # H.264 비디오 코덱
-                '-preset', 'fast',
-                '-y',  # 덮어쓰기
-                output_path
             ]
+            cmd.extend(ios_safe_subtitle_burn_args(preset='fast'))
+            cmd.extend(['-y', output_path])
 
             self.logger.debug(f"FFmpeg command: {' '.join(cmd)}")
 
@@ -486,19 +487,17 @@ Style: Default,{style['font_family']},{style['font_size']},{primary_color},{prim
         # ASS 경로 이스케이프
         ass_path_escaped = ass_path.replace('\\', '/').replace(':', r'\:')
 
-        # FFmpeg 명령
+        # FFmpeg 명령 — 미리보기 (자막 burn + trim, 빠른 인코딩)
+        # iOS 호환 표준은 ffmpeg_profile.ios_safe_subtitle_burn_args에서 관리
         cmd = [
             'ffmpeg',
             '-ss', str(start_time),  # 시작 시간
             '-i', video_path,
             '-t', str(duration),  # 길이
             '-vf', f"ass={ass_path_escaped}",
-            '-c:a', 'copy',
-            '-c:v', 'libx264',
-            '-preset', 'ultrafast',  # 빠른 인코딩
-            '-y',
-            output_path
         ]
+        cmd.extend(ios_safe_subtitle_burn_args(preset='ultrafast'))
+        cmd.extend(['-y', output_path])
 
         self.logger.debug(f"Preview FFmpeg command: {' '.join(cmd)}")
 
