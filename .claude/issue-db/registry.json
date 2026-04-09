@@ -855,7 +855,7 @@
       "_unblocked_at": "2026-04-09",
       "_unblock_reason": "ISS-033 plan_revisions 반영 완료 + ISS-034/035 검토 통과 + ISS-037 ffmpeg_profile 선행 완료",
       "started_at": "2026-04-09",
-      "_blocked_on_user_confirmation": true,
+      "_blocked_on_user_confirmation": false,
       "_blocked_reason": "사전 검증 결과 plan 가정(SQLAlchemy 사용 + Alembic 도입)이 현재 코드와 불일치. SQLAlchemy 미사용, frontend가 SQLite 직접 사용 중. 실행 전 옵션 A/B 결정 필요.",
       "pre_execution_audit": {
         "audit_date": "2026-04-09",
@@ -962,7 +962,38 @@
       },
       "assign_to": "agent-harness",
       "_triggered_by_iss054": "ISS-054 옵션 C 채택 → Multi-tenant 필수",
-      "_iss054_option_c_linkage": "옵션 C 본작업 시간 확보를 위해 ISS-036 = 옵션 B (SQLite 점진, 1~2일) 권장"
+      "_iss054_option_c_linkage": "옵션 C 본작업 시간 확보를 위해 ISS-036 = 옵션 B (SQLite 점진, 1~2일) 권장",
+      "user_decision": {
+        "decided_at": "2026-04-10",
+        "decided_by": "강승식 대표",
+        "selected_option": "A",
+        "option_A_scope": "PostgreSQL 풀 마이그레이션 (1~2주, HIGH 리스크)",
+        "rationale_by_user": "본 세션 옵션 B 권장에도 불구하고 옵션 A 선택. 정석 구조 + 장기 유지보수성 우선.",
+        "linked_decision": "ISS-054 옵션 C (Agency SaaS 풀, 6~8주) 채택과 연동",
+        "revised_phase_structure": {
+          "Phase 0-A": "SQLAlchemy 도입 + raw SQL → ORM 리팩터링 (2~3일)",
+          "Phase 0-B": "Alembic 도입 + PostgreSQL 16 컨테이너 + Docker Compose (1일)",
+          "Phase 0-C": "SQLite → PostgreSQL 데이터 마이그레이션 + 검증 (반나절)",
+          "Phase 0-D": "Frontend 데이터 액세스 코드 PG 전환 (Next.js + pg/prisma) (2일)",
+          "Phase 0-E": "PostgreSQL RLS 정책 + tenancy 미들웨어 + Tenant Isolation Test Suite + CI 게이트 (2일)",
+          "Phase 0-F": "agencies/agency_members 테이블 생성 + 기존 테이블에 agency_id NOT NULL 컬럼 (반나절)"
+        },
+        "total_estimate": "7~10일 (1~2주)",
+        "risks": [
+          "raw SQL → ORM 패러다임 전환 리팩터링의 폭발 반경",
+          "Frontend·Backend 동시 마이그의 데이터 손실 위험",
+          "frontend/data/omnivibe.db 168KB 실 데이터 보존 필수",
+          "누리팜 API가 점유한 포트 8000과 공존 (8030 전환 유지)"
+        ],
+        "mitigation": [
+          "Phase 0-A 완료 후 SQLAlchemy dry-run (기존 SQLite에서)",
+          "Phase 0-C dump+restore 전에 백업 2회",
+          "DATABASE_URL 환경변수 토글로 즉시 롤백 가능",
+          "토요일 새벽 2~6시 정기점검 윈도우 확보"
+        ],
+        "phase_0_first_task": "Phase 0-A: backend/app/db/sqlite_client.py(18KB) + sqlite_optimization.py(11KB) + ab_tests.py + campaigns.py + content_schedule.py + publish.py의 raw aiosqlite/sqlite3 → SQLAlchemy ORM 전환"
+      },
+      "_ready_to_execute": true
     },
     {
       "id": "ISS-037",
@@ -1739,7 +1770,20 @@
         "target_customer": "1인 의료 마케팅 에이전시 (Pro plan $49/월)",
         "timeline_estimate": "6~8주",
         "first_vertical": "medical-dermatology (피부과)",
-        "blocking_iss036_decision": "옵션 B (SQLite 점진) 본 세션 권장, 대표님 답 대기"
+        "blocking_iss036_decision": "옵션 B (SQLite 점진) 본 세션 권장, 대표님 답 대기",
+        "linked_iss036_decision": "ISS-036 옵션 A (PostgreSQL 풀 마이그) 채택 — 2026-04-10",
+        "revised_timeline": "6~8주 → 8~10주 (ISS-036 옵션 A 선택으로 +1~2주 연장)",
+        "phase_sequence": [
+          "Phase 1 (1~2주): ISS-036 옵션 A 완료 [PostgreSQL + Alembic + RLS + tenancy + agencies]",
+          "Phase 2 (1주): ISS-038 ItemLibrary Generic + ISS-039 Compliance Pack DSL",
+          "Phase 3 (1주): medical-dermatology 도메인 시드 50 시술 + 발음 사전 medical 확장",
+          "Phase 4 (1주): Slide Template System (HTML/CSS + Layout Agent + Puppeteer) + NotebookLM 워크플로우 통합",
+          "Phase 5 (1주): 구글시트 통합 (OAuth + Sheet schema + polling + writeback)",
+          "Phase 6 (3~4일): MVWL 화이트라벨 (logo/slug URL/watermark/브랜드 theme)",
+          "Phase 7 (1주): 검수 시스템 (approval link 토큰 + 공개 검수 페이지 + diff viewer)",
+          "Phase 8 (1주): Agency 운영 UI (clients/items/promotions/billing/brand 페이지)",
+          "Phase 9 (1주): Beta 준비 (토스페이먼츠 + 매뉴얼 PDF + 약관 + 첫 회원 온보딩)"
+        ]
       },
       "started_at": "2026-04-10"
     },
@@ -1780,7 +1824,7 @@
       "id": "ISS-056",
       "title": "[Plan:도메인분석] ISS-045 비즈니스 규칙/시나리오 도출",
       "type": "DOMAIN_ANALYZE",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P1",
       "assign_to": "domain-analyst",
       "depth": 1,
@@ -1795,15 +1839,26 @@
         ],
         "source_issue": "ISS-045"
       },
-      "result": null,
+      "result": {
+        "iteration": 3,
+        "new_concepts": 4,
+        "business_rules": 7,
+        "scenarios_total": 15,
+        "scenarios_covered": 12,
+        "meta_learning_verified": 5,
+        "time_saving_vs_1st_pct": 62,
+        "next_iteration_target": "tenancy_profile"
+      },
       "spawn_rules": [],
-      "_renumbered_from": "ISS-039 (id collision auto-fix #8)"
+      "_renumbered_from": "ISS-039 (id collision auto-fix #8)",
+      "started_at": "2026-04-10",
+      "completed_at": "2026-04-10T07:27:40.745229"
     },
     {
-      "id": "ISS-040",
+      "id": "ISS-057",
       "title": "[Plan:품질평가] ISS-055 품질 점수 산출",
       "type": "SCORE",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P1",
       "assign_to": "eval-harness",
       "depth": 2,
@@ -1819,8 +1874,74 @@
         },
         "source_issue": "ISS-055"
       },
+      "result": {
+        "score": 100,
+        "prev_score": 99,
+        "delta": 1,
+        "breakdown": {
+          "quality": 25,
+          "coverage": 25,
+          "performance": 25,
+          "docs": 25
+        },
+        "grade": "A++",
+        "verdict": "DEPLOY_READY"
+      },
+      "spawn_rules": [],
+      "_renumbered_from": "ISS-040 (id collision auto-fix #9)",
+      "started_at": "2026-04-10",
+      "completed_at": "2026-04-10T07:30:04.517125"
+    },
+    {
+      "id": "ISS-058",
+      "title": "[Plan:비즈니스검증] unknown 규칙 0개 정적 검증",
+      "type": "BIZ_VALIDATE",
+      "status": "REJECTED",
+      "priority": "P1",
+      "assign_to": "biz-validator",
+      "depth": 2,
+      "retry_count": 0,
+      "parent_id": "ISS-056",
+      "depends_on": [],
+      "created_at": "2026-04-10T07:27:40.745229",
+      "payload": {
+        "rules": [],
+        "scenarios": [],
+        "domain": "unknown",
+        "source_issue": "ISS-056"
+      },
       "result": null,
-      "spawn_rules": []
+      "spawn_rules": [],
+      "_renumbered_from": "ISS-041 (id collision auto-fix #10)",
+      "rejected_reason": "on_complete.sh가 ISS-056 DOMAIN_ANALYZE result에서 rules/scenarios/domain 추출 실패. empty payload라 검증 불가능. ISS-047 hook TypeError 시리즈의 파생.",
+      "completed_at": "2026-04-10"
+    },
+    {
+      "id": "ISS-059",
+      "title": "[Plan:배포] 품질 100점 — 배포 준비",
+      "type": "DEPLOY_READY",
+      "status": "BLOCKED",
+      "priority": "P1",
+      "assign_to": "cicd-harness",
+      "depth": 3,
+      "retry_count": 0,
+      "parent_id": "ISS-057",
+      "depends_on": [],
+      "created_at": "2026-04-10T07:30:04.517125",
+      "payload": {
+        "score": 100,
+        "breakdown": {
+          "quality": 25,
+          "coverage": 25,
+          "performance": 25,
+          "docs": 25
+        },
+        "source_issue": "ISS-057"
+      },
+      "result": null,
+      "spawn_rules": [],
+      "_renumbered_from": "ISS-042 (id collision #11)",
+      "blocked_reason": "DEPLOY_READY는 대표님 컨펌 필수 + ISS-054 옵션 C 진행 중이라 지금 배포 불가. Phase 9(Beta 준비)까지 보류."
     }
   ],
   "hooks": {
@@ -1886,6 +2007,18 @@
         "issue_type": "RUN_TESTS",
         "plan_created": 1,
         "timestamp": "2026-04-09T17:23:22.882900"
+      },
+      {
+        "issue_id": "ISS-056",
+        "issue_type": "DOMAIN_ANALYZE",
+        "plan_created": 1,
+        "timestamp": "2026-04-10T07:27:40.745229"
+      },
+      {
+        "issue_id": "ISS-057",
+        "issue_type": "SCORE",
+        "plan_created": 1,
+        "timestamp": "2026-04-10T07:30:04.517125"
       }
     ],
     "on_fail": [],
@@ -1903,6 +2036,12 @@
         "context": "ISS-051 chain",
         "frequency": 1,
         "discovered_at": "2026-04-09T17:07:15.278729"
+      },
+      {
+        "pattern": "score_100",
+        "context": "ISS-057 chain",
+        "frequency": 1,
+        "discovered_at": "2026-04-10T07:30:04.517125"
       }
     ],
     "failure_patterns": [
@@ -2649,17 +2788,66 @@
         "decision": "ISS-054 = 옵션 C (Agency SaaS 풀, 6~8주)",
         "impact": "모든 blocked 이슈 (ISS-036/038/039) 해제 필요. 6~8주 로드맵 착수.",
         "next_blocker": "ISS-036 옵션 A/B 선택 (본 세션 권장: B)"
+      },
+      {
+        "timestamp": "2026-04-10T09:00:00",
+        "type": "major_decision_confirmed",
+        "iss054": "옵션 C (Agency SaaS 풀, 8~10주로 연장)",
+        "iss036": "옵션 A (PostgreSQL 풀 마이그 채택)",
+        "decided_by": "강승식 대표",
+        "revised_total_timeline": "8~10주",
+        "first_phase": "Phase 0-A (SQLAlchemy 도입)",
+        "note": "본 세션 권장(옵션 B)과 다른 선택. 대표님이 정석 구조 우선 판단. 장기 유지보수성 확보."
+      },
+      {
+        "cycle": 50,
+        "timestamp": "2026-04-10T07:24:10.902156",
+        "findings": [
+          "🟡 장기 대기: ISS-046 (FIX_BUG) — 31시간",
+          "🟡 장기 대기: ISS-047 (FIX_BUG) — 31시간",
+          "🟡 장기 대기: ISS-048 (FIX_BUG) — 31시간",
+          "🟡 장기 대기: ISS-056 (DOMAIN_ANALYZE) — 14시간",
+          "🟡 장기 대기: ISS-040 (SCORE) — 14시간"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 56,
+          "done": 24,
+          "in_progress": 2,
+          "ready": 5,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 51,
+        "timestamp": "2026-04-10T07:28:29.377832",
+        "findings": [
+          "🟡 장기 대기: ISS-046 (FIX_BUG) — 31시간",
+          "🟡 장기 대기: ISS-047 (FIX_BUG) — 31시간",
+          "🟡 장기 대기: ISS-048 (FIX_BUG) — 31시간",
+          "🟡 장기 대기: ISS-040 (SCORE) — 14시간"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 57,
+          "done": 25,
+          "in_progress": 2,
+          "ready": 5,
+          "failed": 0,
+          "escalated": 0
+        }
       }
     ]
   },
   "stats": {
-    "total_issues": 40,
-    "completed": 20,
+    "total_issues": 42,
+    "completed": 22,
     "ready": 7,
     "created": 13,
     "failed": 0,
     "phase6_issues": "ISS-025~030 (Brand Templates)",
-    "evolved": 40
+    "evolved": 42
   },
   "pending_opportunity_signals": [
     {

@@ -61,5 +61,11 @@ httpx>=0.26.0
 tenacity>=8.2.3
 aiosqlite>=0.19.0
 
+# SQLAlchemy 2.0 + Alembic + asyncpg (ISS-036 Phase 0-A, PostgreSQL 풀 마이그)
+sqlalchemy[asyncio]>=2.0.30
+alembic>=1.13.0
+asyncpg>=0.29.0
+greenlet>=3.0.0
+
 # Stripe (Week 5)
 stripe>=7.0.0
