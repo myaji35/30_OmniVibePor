@@ -1523,7 +1523,7 @@
       "id": "ISS-046",
       "title": "[P3] BUG_FIX — on_complete.sh ID 충돌 (max_id 추적 누락)",
       "type": "FIX_BUG",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P3",
       "depends_on": [],
       "created_at": "2026-04-09",
@@ -1550,7 +1550,14 @@
           ]
         }
       },
-      "assign_to": "agent-harness"
+      "assign_to": "agent-harness",
+      "started_at": "2026-04-10",
+      "completed_at": "2026-04-10T07:39:04.240034",
+      "result": {
+        "resolution": "fixed",
+        "files_changed": 1,
+        "cumulative_collisions_fixed": 11
+      }
     },
     {
       "id": "ISS-047",
@@ -1942,6 +1949,49 @@
       "spawn_rules": [],
       "_renumbered_from": "ISS-042 (id collision #11)",
       "blocked_reason": "DEPLOY_READY는 대표님 컨펌 필수 + ISS-054 옵션 C 진행 중이라 지금 배포 불가. Phase 9(Beta 준비)까지 보류."
+    },
+    {
+      "id": "ISS-060",
+      "title": "[Plan:테스트] ISS-046 변경사항 검증",
+      "type": "RUN_TESTS",
+      "status": "READY",
+      "priority": "P1",
+      "assign_to": "test-harness",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": "ISS-046",
+      "depends_on": [],
+      "created_at": "2026-04-10T07:39:04.240034",
+      "payload": {
+        "files": [
+          ".claude/hooks/on_complete.sh"
+        ],
+        "source_issue": "ISS-046",
+        "scope": "changed"
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-061",
+      "title": "[Plan:도메인분석] ISS-046 비즈니스 규칙/시나리오 도출",
+      "type": "DOMAIN_ANALYZE",
+      "status": "READY",
+      "priority": "P1",
+      "assign_to": "domain-analyst",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": "ISS-046",
+      "depends_on": [],
+      "created_at": "2026-04-10T07:39:04.240034",
+      "payload": {
+        "files": [
+          ".claude/hooks/on_complete.sh"
+        ],
+        "source_issue": "ISS-046"
+      },
+      "result": null,
+      "spawn_rules": []
     }
   ],
   "hooks": {
@@ -2019,6 +2069,12 @@
         "issue_type": "SCORE",
         "plan_created": 1,
         "timestamp": "2026-04-10T07:30:04.517125"
+      },
+      {
+        "issue_id": "ISS-046",
+        "issue_type": "FIX_BUG",
+        "plan_created": 2,
+        "timestamp": "2026-04-10T07:39:04.240034"
       }
     ],
     "on_fail": [],
@@ -2837,17 +2893,35 @@
           "failed": 0,
           "escalated": 0
         }
+      },
+      {
+        "cycle": 52,
+        "timestamp": "2026-04-10T07:36:25.448448",
+        "findings": [
+          "🟡 장기 대기: ISS-046 (FIX_BUG) — 32시간",
+          "🟡 장기 대기: ISS-047 (FIX_BUG) — 32시간",
+          "🟡 장기 대기: ISS-048 (FIX_BUG) — 32시간"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 58,
+          "done": 26,
+          "in_progress": 2,
+          "ready": 3,
+          "failed": 0,
+          "escalated": 0
+        }
       }
     ]
   },
   "stats": {
-    "total_issues": 42,
-    "completed": 22,
+    "total_issues": 60,
+    "completed": 23,
     "ready": 7,
     "created": 13,
     "failed": 0,
     "phase6_issues": "ISS-025~030 (Brand Templates)",
-    "evolved": 42
+    "evolved": 43
   },
   "pending_opportunity_signals": [
     {
