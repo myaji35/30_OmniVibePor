@@ -1,4 +1,7 @@
-"""FFmpeg 기반 영상 편집 서비스"""
+"""FFmpeg 기반 영상 편집 서비스
+
+iOS 호환 표준 ffmpeg 옵션은 ffmpeg_profile 모듈에서 단일 관리됨 (ISS-037).
+"""
 from typing import List, Dict, Tuple
 from pathlib import Path
 import asyncio
@@ -14,6 +17,11 @@ except ImportError:
 
 from app.core.config import get_settings
 from app.services.stt_service import get_stt_service
+from app.services.ffmpeg_profile import (
+    ios_safe_audio_encoder_args,
+    ios_safe_concat_demuxer_args,
+    ios_safe_full_encode_args,
+)
 
 settings = get_settings()
 
@@ -160,22 +168,26 @@ import logging
         # temp 디렉토리 생성
         clip_path.parent.mkdir(parents=True, exist_ok=True)
 
-        # FFmpeg 명령어
+        # 단일 클립 생성 (이미지 루프 + 오디오)
+        # iOS 호환 표준 풀세트는 ffmpeg_profile.ios_safe_full_encode_args에서 관리
         cmd = [
             "ffmpeg",
-            "-loop", "1",  # 이미지 루프
-            "-i", image_path,  # 입력 이미지
-            "-i", audio_path,  # 입력 음성
-            "-c:v", "libx264",  # H.264 코덱
-            "-t", str(duration),  # 길이
-            "-pix_fmt", "yuv420p",  # 픽셀 포맷
-            "-vf", "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2",  # 1920x1080 패딩
-            "-c:a", "aac",  # AAC 오디오 코덱
-            "-shortest",  # 짧은 쪽에 맞춤
-            "-movflags", "+faststart",
-            "-y",  # 덮어쓰기
-            str(clip_path)
+            "-loop", "1",
+            "-i", image_path,
+            "-i", audio_path,
+            "-t", str(duration),
+            "-vf", "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1",
         ]
+        cmd.extend(
+            ios_safe_full_encode_args(
+                use_hw_acceleration=False,
+                preset="medium",
+                crf="23",
+                include_audio=True,
+                audio_async_filter=True,
+            )
+        )
+        cmd.extend(["-shortest", "-y", str(clip_path)])
 
         try:
             await asyncio.to_thread(
@@ -222,16 +234,15 @@ import logging
             for clip in video_clips:
                 f.write(f"file '{Path(clip).absolute()}'\n")
 
-        # FFmpeg concat
+        # FFmpeg concat demuxer (재인코딩 없이 결합 — 클립들이 ios_safe 표준이라는 전제)
         cmd = [
             "ffmpeg",
             "-f", "concat",
             "-safe", "0",
             "-i", str(concat_file),
-            "-c", "copy",  # 재인코딩 없이 결합
-            "-y",
-            str(output_path)
         ]
+        cmd.extend(ios_safe_concat_demuxer_args())
+        cmd.extend(["-y", str(output_path)])
 
         try:
             await asyncio.to_thread(
@@ -273,6 +284,8 @@ import logging
         output_filename = f"video_with_bgm_{timestamp}.mp4"
         output_path = self.output_dir / output_filename
 
+        # BGM amix (비디오 copy + 오디오 재인코딩)
+        # ※ aout은 amix filter 결과이므로 -af aresample 미적용 (이중 필터 방지)
         cmd = [
             "ffmpeg",
             "-i", video_path,  # 원본 영상
@@ -280,10 +293,9 @@ import logging
             "-filter_complex",
             f"[1:a]volume={music_volume}[bgm];[0:a][bgm]amix=inputs=2:duration=first",
             "-c:v", "copy",  # 영상 재인코딩 안 함
-            "-c:a", "aac",
-            "-y",
-            str(output_path)
         ]
+        cmd.extend(ios_safe_audio_encoder_args(include_async_filter=False))
+        cmd.extend(["-movflags", "+faststart", "-y", str(output_path)])
 
         try:
             await asyncio.to_thread(

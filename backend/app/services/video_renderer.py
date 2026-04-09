@@ -5,6 +5,8 @@ FFmpeg 기반 고품질 영상 렌더링 시스템:
 - 오디오 믹싱 (나레이션 + BGM)
 - 자막 오버레이
 - 플랫폼별 최적화 (YouTube, Instagram, TikTok)
+
+iOS 호환 표준 ffmpeg 옵션은 ffmpeg_profile 모듈에서 단일 관리됨 (ISS-037).
 """
 
 from typing import List, Optional, Dict, Any, Literal
@@ -18,6 +20,15 @@ import ffmpeg
 import os
 
 from app.core.config import get_settings
+from app.services.ffmpeg_profile import (
+    IOS_SAFE_AUDIO_SAMPLE_RATE,
+    ios_safe_audio_encoder_args,
+    ios_safe_audio_mux_args,
+    ios_safe_concat_demuxer_args,
+    ios_safe_subtitle_burn_args,
+    ios_safe_video_encoder_args,
+    ios_safe_video_output_args,
+)
 
 settings = get_settings()
 
@@ -548,16 +559,16 @@ class VideoRenderer:
 
             concat_file.close()
 
-            # FFmpeg concat 실행
+            # FFmpeg concat demuxer (재인코딩 없이 빠른 결합)
+            # 결합 대상 클립들이 모두 ios_safe 표준으로 인코딩되어 있어야 함
             cmd = [
                 "ffmpeg",
                 "-f", "concat",
                 "-safe", "0",
                 "-i", concat_file.name,
-                "-c", "copy",  # 재인코딩 없이 복사 (빠름)
-                "-y",  # 덮어쓰기
-                output_path
             ]
+            cmd.extend(ios_safe_concat_demuxer_args())
+            cmd.extend(["-y", output_path])
 
             self.logger.debug(f"Running: {' '.join(cmd)}")
 
@@ -655,18 +666,14 @@ class VideoRenderer:
         for clip in clips:
             cmd.extend(["-i", clip])
 
-        # 필터 및 출력
+        # 필터 및 출력 (iOS 호환 표준은 ffmpeg_profile에서 관리)
         cmd.extend([
             "-filter_complex", filter_complex,
             "-map", final_output,
-            "-c:v", "libx264",
-            "-preset", "medium",
-            "-crf", "23",
-            "-pix_fmt", "yuv420p",
-            "-movflags", "+faststart",
-            "-y",
-            output_path
         ])
+        cmd.extend(ios_safe_video_encoder_args(preset="medium", crf="23"))
+        cmd.extend(ios_safe_video_output_args(threads=None))
+        cmd.extend(["-y", output_path])
 
         self.logger.debug(f"Running: {' '.join(cmd)}")
 
@@ -727,19 +734,20 @@ class VideoRenderer:
                 # BGM 없으면 단순 오디오 병합
                 self.logger.info("🎵 Adding narration audio (no BGM)...")
 
+                # iOS 호환 표준은 ffmpeg_profile.ios_safe_audio_mux_args에서 관리
                 cmd = [
                     "ffmpeg",
                     "-i", video_path,
                     "-i", audio_path,
-                    "-c:v", "copy",  # 영상 재인코딩 안 함
-                    "-c:a", "aac",
-                    "-b:a", "192k",
+                ]
+                cmd.extend(ios_safe_audio_mux_args())
+                cmd.extend([
                     "-map", "0:v:0",  # 영상은 첫 번째 입력
                     "-map", "1:a:0",  # 오디오는 두 번째 입력
                     "-shortest",  # 짧은 쪽에 맞춤
                     "-y",
                     output_path
-                ]
+                ])
 
                 self.logger.debug(f"Running: {' '.join(cmd)}")
 
@@ -769,6 +777,8 @@ class VideoRenderer:
                     f"[a1][a2]amix=inputs=2:duration=first[aout]"
                 )
 
+                # BGM 믹스: 비디오는 copy, 오디오는 amix 후 AAC 48kHz
+                # ※ aout은 amix filter 결과이므로 -af aresample은 적용하지 않음 (이중 필터 방지)
                 cmd = [
                     "ffmpeg",
                     "-i", video_path,
@@ -778,12 +788,15 @@ class VideoRenderer:
                     "-map", "0:v:0",
                     "-map", "[aout]",
                     "-c:v", "copy",
-                    "-c:a", "aac",
-                    "-b:a", "192k",
+                ]
+                # 오디오는 async 필터 제외 (filter_complex amix가 이미 처리)
+                cmd.extend(ios_safe_audio_encoder_args(include_async_filter=False))
+                cmd.extend([
+                    "-movflags", "+faststart",
                     "-shortest",
                     "-y",
                     output_path
-                ]
+                ])
 
                 self.logger.debug(f"Running: {' '.join(cmd)}")
 
@@ -859,19 +872,15 @@ class VideoRenderer:
                 f"MarginV={style_config['margin_v']}"
             )
 
+            # 자막 burn-in: 비디오 재인코딩 필수, 오디오 copy
+            # iOS 호환 표준은 ffmpeg_profile.ios_safe_subtitle_burn_args에서 관리
             cmd = [
                 "ffmpeg",
                 "-i", video_path,
                 "-vf", f"subtitles={subtitle_path_escaped}:force_style='{force_style}'",
-                "-c:a", "copy",  # 오디오 재인코딩 안 함
-                "-c:v", "libx264",
-                "-preset", "medium",
-                "-crf", "23",
-                "-pix_fmt", "yuv420p",
-                "-movflags", "+faststart",
-                "-y",
-                output_path
             ]
+            cmd.extend(ios_safe_subtitle_burn_args())
+            cmd.extend(["-y", output_path])
 
             self.logger.debug(f"Running: {' '.join(cmd)}")
 
@@ -939,25 +948,25 @@ class VideoRenderer:
                 f"pad={spec['width']}:{spec['height']}:(ow-iw)/2:(oh-ih)/2"
             )
 
+            # 플랫폼별 fps/bitrate는 spec이 우선 (iOS 호환 profile/level/pix_fmt는 표준 유지)
             cmd = [
                 "ffmpeg",
                 "-i", video_path,
                 "-vf", scale_filter,
-                "-r", str(spec["fps"]),
                 "-b:v", spec["bitrate"],
-                "-c:v", "libx264",
-                "-preset", "medium",
-                "-crf", "23",
-                "-pix_fmt", "yuv420p",
-                "-profile:v", "high",
-                "-level:v", "4.1",
-                "-c:a", "aac",
-                "-b:a", spec["audio_bitrate"],
-                "-ar", "48000",  # 샘플레이트 48kHz
-                "-movflags", "+faststart",
-                "-y",
-                output_path
             ]
+            cmd.extend(ios_safe_video_encoder_args(preset="medium", crf="23"))
+            # platform spec fps로 override (ios_safe 기본 30 대신)
+            cmd.extend(ios_safe_video_output_args(include_fps=False, threads=None))
+            cmd.extend(["-r", str(spec["fps"])])
+            # 오디오 인코더 (platform spec bitrate)
+            cmd.extend(
+                ios_safe_audio_encoder_args(
+                    bitrate=spec["audio_bitrate"],
+                    include_async_filter=False,  # 단일 영상 변환이라 불필요
+                )
+            )
+            cmd.extend(["-y", output_path])
 
             self.logger.debug(f"Running: {' '.join(cmd)}")
 

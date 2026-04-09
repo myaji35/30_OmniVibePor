@@ -1,0 +1,157 @@
+{
+  "_comment": "brand-guardian가 작성하고 대표님(2026-04-09)이 옵션 A(외부/내부 표면 이원화)로 확정. 모든 UI 산출물은 surfaces 규칙을 따를 것. brand-guardian가 자동 검증한다.",
+  "project": "OmniVibe Pro",
+  "owner": "Gagahoho, Inc.",
+  "tagline": "PDF 하나로 영상 한 편이 완성된다",
+  "agenda": "영상 제작을 모르는 사람도 자신의 메시지를 손에 든 자료(PDF·스크립트·아이디어)만으로 완성된 한국어 영상으로 받아내게 만든다. '영상 제작의 모든 것을 자동화'라는 약속을 Zero-Fault 오디오와 한 번에 끝나는 자동 파이프라인으로 증명한다.",
+  "north_star_metric": "사용자가 PDF 업로드부터 다운로드 가능한 MP4까지 걸리는 시간 (목표: 5분 이내, 사람 손 0회 개입)",
+  "brand_voice": "확신에 찬 자동화 엔지니어. 약속은 짧고, 결과는 숫자로. 마케팅 미사여구 대신 '99%', '5분', 'PDF 한 장'처럼 검증 가능한 수치로 말한다. 한국어가 모국어이며 존댓말은 쓰지 않고 단정한 평어체.",
+  "voice_examples": [
+    "PDF 하나면 충분합니다.",
+    "AI가 스크립트를 쓰고, 목소리를 복제하고, 영상을 완성합니다.",
+    "99% Zero-Fault 오디오.",
+    "TSX 코딩 불필요.",
+    "스크립트→영상, 한 번에."
+  ],
+  "voice_anti_examples": [
+    "혁신적인 솔루션으로 여러분의 비즈니스를 한 단계 도약시켜 드립니다",
+    "차세대 AI 기술을 활용하여",
+    "최고의 사용자 경험을 제공합니다",
+    "Empower your creativity with cutting-edge AI"
+  ],
+  "emotional_tone": [
+    "확신",
+    "안도(이제 손으로 안 해도 된다)",
+    "기술적 자부심",
+    "야간 스튜디오의 집중감"
+  ],
+  "design_metaphors": [
+    "심야 편집실의 콘솔(다크 + 네온 액센트)",
+    "파이프라인 진행률 바 (각 단계가 흐르는 빛으로 채워짐)",
+    "스튜디오 모니터 목업 (작업이 눈앞에서 진행되는 감각)",
+    "하나의 PDF가 영상으로 변환되는 변환의 순간"
+  ],
+  "surfaces": {
+    "external_marketing": {
+      "where": "frontend/app/page.tsx, /pricing, /gallery, 랜딩·홍보 영상",
+      "mode": "다크 + 보라·인디고 네온 그라디언트, Outfit 디스플레이 폰트, 큰 헤드라인·CountUp·shimmer 애니메이션",
+      "purpose": "확신과 야망 전달, 전환(가입·체험)"
+    },
+    "internal_workspace": {
+      "where": "frontend/app/dashboard, /strategy, /produce, /publish, SLDS 기반 작업 화면",
+      "mode": "Salesforce Lightning Design System 라이트 테마, Salesforce Blue(#00A1E0), 카드·3-Column·Compact Header",
+      "purpose": "오랜 작업 시간에도 피로 없이 정확한 의사결정"
+    }
+  },
+  "hero_color": "#a855f7",
+  "hero_gradient": "linear-gradient(135deg, #a855f7 0%, #6366f1 100%)",
+  "secondary_colors": [
+    "#6366f1",
+    "#0f1117",
+    "#00A1E0",
+    "#16325C",
+    "#F3F2F2",
+    "#4BCA81",
+    "#EA001E"
+  ],
+  "color_roles": {
+    "brand_primary": "#a855f7 (외부 마케팅의 정체성)",
+    "brand_secondary": "#6366f1 (그라디언트 종착점, CTA)",
+    "background_dark": "#0f1117 (외부 랜딩 베이스)",
+    "background_light": "#F3F2F2 (내부 작업 베이스, SLDS)",
+    "workspace_blue": "#00A1E0 (내부 작업 액션, SLDS)",
+    "text_heading_dark_bg": "rgba(255,255,255,0.92)",
+    "text_heading_light_bg": "#16325C",
+    "success": "#4BCA81",
+    "warning": "#FFB75D",
+    "error": "#EA001E"
+  },
+  "typography": {
+    "display": "Outfit (font-outfit), Black 900, tracking-tighter, leading-[0.95]",
+    "body": "system-ui sans-serif (Pretendard / Apple SD Gothic Neo fallback), Regular ~ Semibold",
+    "mono": "ui-monospace, SFMono-Regular (파이프라인 진행률 라벨에 사용)",
+    "scale_rule": "헤드라인 5xl~7xl까지 자유, 본문 text-base, 메타 text-xs. 위계를 굵기로 더 강하게 표현"
+  },
+  "primary_action_per_screen": "MUST_EXIST",
+  "primary_action_examples": {
+    "/": "AI 전략부터 시작하기",
+    "/strategy": "전략 생성",
+    "/concept": "컨셉 확정",
+    "/produce": "영상 생성",
+    "/publish": "공유 / 예약 발행",
+    "/dashboard": "새 프로젝트 시작"
+  },
+  "user_decision_clarity": "0.5초 룰 — 첫 시선 0.5초 안에 다음 행동(주요 CTA) 식별 가능해야 함. 한 화면에 시각 무게가 가장 큰 요소는 반드시 다음 단계 액션이어야 한다.",
+  "pillars": [
+    {
+      "name": "Zero-Fault Audio",
+      "promise": "TTS → STT 검증 → 재생성 루프로 99% 정확도",
+      "evidence": "backend/app/services/audio_correction_loop.py, ElevenLabs + Whisper"
+    },
+    {
+      "name": "PDF-First Pipeline",
+      "promise": "사용자는 자료 한 장만 던진다. 나머지는 시스템이 한다.",
+      "evidence": "presentation_video_generator.py, OCR(GPT-4V), slide_to_script_converter.py, 브랜드 템플릿 자동 적용"
+    },
+    {
+      "name": "Korean-Native",
+      "promise": "한국어 더빙·자막·존댓말 모두 한국에서 통하는 톤으로",
+      "evidence": "git log 다수 — 'chopd 한글 더빙', '한국어 더빙 버전 Promo', '저시력인협회 홍보 영상'"
+    },
+    {
+      "name": "Self-Evolving Pipeline",
+      "promise": "GraphRAG에 성과를 학습시켜 다음 영상을 자동으로 더 잘 만든다.",
+      "evidence": "neo4j_client.py, content_performance_tracker.py, youtube_thumbnail_learner.py"
+    }
+  ],
+  "anti_patterns": [
+    "이모지를 본문 카피에 사용 (Feather/Lucide 라인 아이콘으로 대체)",
+    "랜딩에서 '혁신', '차세대', '솔루션' 같은 추상어 사용",
+    "한 화면에 동급 무게의 CTA가 2개 이상",
+    "다크 배경 위 text-white/50 이하 (가독성 규칙 위반)",
+    "투명도 28 또는 bg-*-100 같은 흐릿한 배지 (solid + white 텍스트가 표준)",
+    "border-gray-100/border-gray-200 미만의 거의 안 보이는 카드 테두리",
+    "input/select에 text-xs, py-2, border-gray-200 사용 (text-sm, py-2.5, border-gray-300이 표준)",
+    "label에 uppercase tracking-wider 사용 (text-gray-600 mb-1.5가 표준)",
+    "외부 랜딩에 SLDS Salesforce Blue 단독 사용 — 외부는 보라·인디고가 정체성",
+    "내부 작업 화면에 보라·인디고 그라디언트 단독 사용 — 내부는 SLDS 라이트",
+    "AI Slop 시그니처: 의미 없는 그라디언트 남발, 제너릭 stock 일러스트, 가운데 정렬만 반복하는 '카드 5개 그리드'"
+  ],
+  "ai_slop_detection": {
+    "rules": [
+      "헤드라인에 '혁신/차세대/스마트' 등 의미 없는 형용사 → red flag",
+      "동일 그라디언트를 3개 이상 카드에 반복 → red flag",
+      "본문 카피에 영어 마케팅 클리셰 직역 → red flag",
+      "버튼 라벨이 '시작하기'만 있고 무엇을 시작하는지 불명확 → red flag"
+    ]
+  },
+  "trust_proofs": [
+    "PDF 업로드만으로 시작",
+    "99% Zero-Fault 오디오",
+    "20개 영상 템플릿 무료",
+    "한국어 네이티브 TTS",
+    "Remotion 4.0 기반 코드형 렌더링"
+  ],
+  "_decisions": [
+    "2026-04-09 옵션 A 확정 — 외부 마케팅(다크/보라·인디고)과 내부 작업(SLDS 라이트/Salesforce Blue)의 표면 이원화를 의도된 정체성으로 인정. surfaces 필드가 단일 진실 소스(SoT). 두 표면 사이에는 '다리' 요소(공용 로고, Studio Mockup 등)로 동일한 세계로 인식되게 한다."
+  ],
+  "bridge_rules": [
+    "내부 작업 화면 상단 헤더/로고에는 외부 브랜드 색(보라 #a855f7) 액센트가 최소 1곳 이상 들어갈 것 — 사용자가 가입 후 이질감을 느끼지 않도록",
+    "외부 랜딩의 Studio Mockup은 실제 내부 작업 화면(SLDS 라이트)을 그대로 미리 보여줄 것 — 가입 후 '아 봤던 화면이다'가 되도록",
+    "공용 로고·아이콘 시스템은 두 표면 모두에서 동일 (Feather/Lucide 라인 아이콘, stroke-width 2)",
+    "공용 카피 톤(brand_voice)은 두 표면 모두에서 동일 — 색만 다르지 목소리는 같다"
+  ],
+  "claude_md_note": "CLAUDE.md의 'SLDS 엄격 준수' 표현은 내부 작업 화면(/dashboard, /strategy, /produce, /publish 등)에 한정해서 적용된다. 외부 마케팅(랜딩, /pricing, /gallery)은 surfaces.external_marketing 규칙을 따른다. 향후 CLAUDE.md를 업데이트할 때 이 분리를 명시할 것.",
+  "_sources": [
+    "frontend/app/page.tsx (랜딩 헤드라인·서브카피·신뢰 메시지·색상)",
+    "git log --oneline -50 (기능 흐름·우선순위·반복 키워드)",
+    ".claude/CLAUDE.md (SLDS 표준·가독성 규칙·아이콘 시스템)",
+    "CLAUDE.md (프로젝트 핵심 가치 제안·기술 스택)",
+    "backend/app/services/* (Zero-Fault Audio, PDF→Video, GraphRAG 증거)"
+  ],
+  "_status": "active",
+  "_drafted_at": "2026-04-09",
+  "_drafted_by": "brand-guardian (claude-opus-4-6)",
+  "_activated_at": "2026-04-09",
+  "_activated_by": "강승식 대표 (옵션 A 선택)"
+}

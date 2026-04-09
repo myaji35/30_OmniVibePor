@@ -1,4 +1,8 @@
-"""프리젠테이션 영상 생성 서비스 (FFmpeg)"""
+"""프리젠테이션 영상 생성 서비스 (FFmpeg)
+
+iOS 호환 표준 ffmpeg 옵션은 ffmpeg_profile 모듈에서 단일 관리됨 (ISS-037).
+직접 ["-c:v", "libx264", ...] 같은 하드코딩 금지.
+"""
 from typing import List, Dict, Any, Optional
 import asyncio
 from pathlib import Path
@@ -7,6 +11,14 @@ import subprocess
 from contextlib import nullcontext
 
 from app.core.config import get_settings
+from app.services.ffmpeg_profile import (
+    detect_hardware_acceleration,
+    ios_safe_audio_encoder_args,
+    ios_safe_audio_mux_args,
+    ios_safe_full_encode_args,
+    ios_safe_video_encoder_args,
+    ios_safe_video_output_args,
+)
 
 settings = get_settings()
 
@@ -162,18 +174,14 @@ class PresentationVideoGenerator:
         ]
         await self._run_ffmpeg(concat_cmd)
 
-        # 4. 오디오 합성
+        # 4. 오디오 합성 (iOS 호환 표준은 ffmpeg_profile.ios_safe_audio_mux_args에서 관리)
         final_cmd = [
             "ffmpeg", "-y",
             "-i", str(temp_video_path),
             "-i", audio_path,
-            "-c:v", "copy",
-            "-c:a", "aac",
-            "-b:a", "192k",
-            "-movflags", "+faststart",
-            "-shortest",
-            output_path
         ]
+        final_cmd.extend(ios_safe_audio_mux_args())
+        final_cmd.extend(["-shortest", output_path])
         await self._run_ffmpeg(final_cmd)
 
         # 임시 파일 삭제
@@ -222,47 +230,37 @@ class PresentationVideoGenerator:
 
         temp_video_path = temp_dir / "merged.mp4"
 
-        # Detect hardware acceleration
+        # Detect hardware acceleration (ffmpeg_profile 단일 관리)
         hw_accel = self._get_hardware_acceleration()
+        use_hw = hw_accel is not None
 
         xfade_cmd = [
             "ffmpeg", "-y",
             *inputs,
             "-filter_complex", filter_complex,
         ]
-
-        # Add hardware acceleration encoder if available
-        if hw_accel:
-            xfade_cmd.extend(hw_accel["encoder"])
-        else:
-            # Optimized software encoding
-            xfade_cmd.extend([
-                "-c:v", "libx264",
-                "-preset", "ultrafast",  # Faster encoding (20% improvement)
-                "-crf", "23",
-            ])
-
-        xfade_cmd.extend([
-            "-pix_fmt", "yuv420p",
-            "-movflags", "+faststart",
-            "-threads", "0",  # Use all available CPU cores
-            str(temp_video_path)
-        ])
+        # 비디오 인코더 (HW 가속 또는 SW ultrafast — 둘 다 iOS 호환 표준 강제됨)
+        xfade_cmd.extend(
+            ios_safe_video_encoder_args(
+                use_hw_acceleration=use_hw,
+                preset="ultrafast",  # xfade는 빠른 인코딩 우선
+                crf="23",
+            )
+        )
+        # 표준 출력 args (yuv420p, 30fps CFR, faststart)
+        xfade_cmd.extend(ios_safe_video_output_args())
+        xfade_cmd.append(str(temp_video_path))
 
         await self._run_ffmpeg(xfade_cmd)
 
-        # 4. 오디오 합성
+        # 4. 오디오 합성 (iOS 호환 표준은 ffmpeg_profile.ios_safe_audio_mux_args에서 관리)
         final_cmd = [
             "ffmpeg", "-y",
             "-i", str(temp_video_path),
             "-i", audio_path,
-            "-c:v", "copy",
-            "-c:a", "aac",
-            "-b:a", "192k",
-            "-movflags", "+faststart",
-            "-shortest",
-            output_path
         ]
+        final_cmd.extend(ios_safe_audio_mux_args())
+        final_cmd.extend(["-shortest", output_path])
         await self._run_ffmpeg(final_cmd)
 
         # 임시 파일 삭제
@@ -298,25 +296,19 @@ class PresentationVideoGenerator:
                    f"pad={self.DEFAULT_WIDTH}:{self.DEFAULT_HEIGHT}:(ow-iw)/2:(oh-ih)/2,setsar=1",
         ])
 
-        # Add hardware acceleration encoder if available
-        if hw_accel:
-            cmd.extend(hw_accel["encoder"])
-        else:
-            # Optimized software encoding
-            cmd.extend([
-                "-c:v", "libx264",
-                "-preset", "ultrafast",  # Faster encoding
-                "-crf", "23",
-                "-tune", "stillimage",  # Optimized for still images
-            ])
-
-        cmd.extend([
-            "-pix_fmt", "yuv420p",
-            "-movflags", "+faststart",
-            "-r", "30",
-            "-threads", "0",  # Use all available CPU cores
-            output_path
-        ])
+        # 비디오 인코더 (HW 가속 또는 SW ultrafast + stillimage tune)
+        # ffmpeg_profile이 iOS 호환 profile/level/fps/CFR을 강제 적용
+        use_hw = hw_accel is not None
+        cmd.extend(
+            ios_safe_video_encoder_args(
+                use_hw_acceleration=use_hw,
+                preset="ultrafast",
+                crf="23",
+                extra_tune="stillimage" if not use_hw else None,
+            )
+        )
+        cmd.extend(ios_safe_video_output_args())
+        cmd.append(output_path)
 
         await self._run_ffmpeg(cmd)
 
@@ -383,6 +375,8 @@ class PresentationVideoGenerator:
         output_path = str(Path(video_path).with_stem(f"{Path(video_path).stem}_with_bgm"))
 
         # 오디오 믹싱 (narration 1.0, bgm 설정값)
+        # ※ aout은 amix filter 결과이므로 -af aresample 미적용 (이중 필터 방지)
+        # iOS 호환 표준은 ffmpeg_profile.ios_safe_audio_encoder_args에서 관리
         cmd = [
             "ffmpeg", "-y",
             "-i", video_path,
@@ -394,10 +388,9 @@ class PresentationVideoGenerator:
             "-map", "0:v",
             "-map", "[aout]",
             "-c:v", "copy",
-            "-c:a", "aac",
-            "-b:a", "192k",
-            output_path
         ]
+        cmd.extend(ios_safe_audio_encoder_args(include_async_filter=False))
+        cmd.extend(["-movflags", "+faststart", output_path])
 
         await self._run_ffmpeg(cmd)
 
@@ -489,51 +482,15 @@ class PresentationVideoGenerator:
 
     def _get_hardware_acceleration(self) -> Optional[Dict[str, List[str]]]:
         """
-        Detect and return hardware acceleration options
+        하드웨어 가속 검출 — ffmpeg_profile.detect_hardware_acceleration()의 wrapper.
 
-        Returns:
-            Dictionary with 'input' and 'encoder' keys, or None if unavailable
+        ISS-037 이후 모든 iOS 호환 옵션은 ffmpeg_profile 모듈이 단일 관리한다.
+        이 wrapper는 기존 호출 사이트와의 호환성을 위해 유지된다.
         """
-        import platform
-        import subprocess
-
-        system = platform.system()
-
-        # macOS: VideoToolbox
-        if system == "Darwin":
-            try:
-                # Test if VideoToolbox is available
-                subprocess.run(
-                    ["ffmpeg", "-hide_banner", "-encoders"],
-                    capture_output=True,
-                    timeout=5
-                )
-                return {
-                    "input": [],  # No special input flags needed
-                    "encoder": ["-c:v", "h264_videotoolbox", "-b:v", "5M"]
-                }
-            except Exception:
-                pass
-
-        # Linux/Windows: NVENC (NVIDIA GPU)
-        elif system in ["Linux", "Windows"]:
-            try:
-                # Test if NVENC is available
-                result = subprocess.run(
-                    ["ffmpeg", "-hide_banner", "-encoders"],
-                    capture_output=True,
-                    timeout=5
-                )
-                if b"h264_nvenc" in result.stdout:
-                    return {
-                        "input": ["-hwaccel", "cuda"],
-                        "encoder": ["-c:v", "h264_nvenc", "-preset", "fast", "-b:v", "5M"]
-                    }
-            except Exception:
-                pass
-
-        self.logger.info("Hardware acceleration not available, using software encoding")
-        return None
+        result = detect_hardware_acceleration()
+        if result is None:
+            self.logger.info("Hardware acceleration not available, using software encoding")
+        return result
 
     def estimate_generation_time(self, total_slides: int) -> int:
         """
