@@ -51,7 +51,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 export default function AudioPage() {
   const [text, setText] = useState('')
-  const [voiceId, setVoiceId] = useState('pNInz6obpgDQGcFmaJgB')
+  const [voiceId, setVoiceId] = useState('ko-injoon')
   const [language, setLanguage] = useState('ko')
   const [accuracyThreshold, setAccuracyThreshold] = useState(0.95)
   const [maxAttempts, setMaxAttempts] = useState(5)
@@ -157,11 +157,19 @@ export default function AudioPage() {
                 <label className="block text-xs text-white/40 mb-1.5">음성 ID</label>
                 <select value={voiceId} onChange={(e) => setVoiceId(e.target.value)}
                   className={INPUT_CLS} style={INPUT_STYLE}>
-                  <option value="pNInz6obpgDQGcFmaJgB">Adam (남성, 다국어)</option>
-                  <option value="EXAVITQu4vr4xnSDxMaL">Sarah (여성, 다국어)</option>
-                  <option value="cgSgspJ2msm6clMCkdW9">Jessica (여성, 다국어)</option>
-                  <option value="iP95p4xoKVk53GoZ742B">Chris (남성, 다국어)</option>
-                  <option value="onwK4e9ZLuTAKqWW03F9">Daniel (남성, 다국어)</option>
+                  <optgroup label="한국어 네이티브">
+                    <option value="ko-injoon">인준 (남성, 차분)</option>
+                    <option value="ko-sunhi">선희 (여성, 밝음)</option>
+                    <option value="ko-hyunsu">현수 (남성, 다국어)</option>
+                  </optgroup>
+                  <optgroup label="다국어 (한국어 가능)">
+                    <option value="multi-andrew">Andrew (남성, 깊은 톤)</option>
+                    <option value="multi-ava">Ava (여성, 부드러움)</option>
+                    <option value="multi-brian">Brian (남성, 힘 있는 톤)</option>
+                    <option value="multi-emma">Emma (여성, 명확한 톤)</option>
+                    <option value="multi-vivienne">Vivienne (여성, 우아한 톤)</option>
+                    <option value="multi-florian">Florian (남성, 낮은 톤)</option>
+                  </optgroup>
                 </select>
               </div>
 

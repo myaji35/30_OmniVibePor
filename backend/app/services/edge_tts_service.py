@@ -20,19 +20,25 @@ import edge_tts
 
 logger = logging.getLogger(__name__)
 
-# 음성 매핑
+# 음성 매핑 — 키는 프론트엔드 select value, 값은 Edge-TTS ShortName
 VOICES = {
-    "ko-male": "ko-KR-InJoonNeural",
-    "ko-female": "ko-KR-SunHiNeural",
-    "en-male": "en-US-GuyNeural",
-    "en-female": "en-US-JennyNeural",
-    "ja-female": "ja-JP-NanamiNeural",
-    # ElevenLabs voice ID 호환 — 기본 한국어 남성으로 매핑
+    # 한국어 네이티브
+    "ko-injoon": "ko-KR-InJoonNeural",
+    "ko-sunhi": "ko-KR-SunHiNeural",
+    "ko-hyunsu": "ko-KR-HyunsuMultilingualNeural",
+    # 다국어 (한국어 가능) — 각각 톤이 다름
+    "multi-andrew": "en-US-AndrewMultilingualNeural",
+    "multi-ava": "en-US-AvaMultilingualNeural",
+    "multi-brian": "en-US-BrianMultilingualNeural",
+    "multi-emma": "en-US-EmmaMultilingualNeural",
+    "multi-vivienne": "fr-FR-VivienneMultilingualNeural",
+    "multi-florian": "de-DE-FlorianMultilingualNeural",
+    # 레거시 ElevenLabs ID 호환
     "pNInz6obpgDQGcFmaJgB": "ko-KR-InJoonNeural",
     "EXAVITQu4vr4xnSDxMaL": "ko-KR-SunHiNeural",
-    "cgSgspJ2msm6clMCkdW9": "ko-KR-SunHiNeural",
-    "iP95p4xoKVk53GoZ742B": "ko-KR-InJoonNeural",
-    "onwK4e9ZLuTAKqWW03F9": "ko-KR-InJoonNeural",
+    "cgSgspJ2msm6clMCkdW9": "ko-KR-HyunsuMultilingualNeural",
+    "iP95p4xoKVk53GoZ742B": "en-US-AndrewMultilingualNeural",
+    "onwK4e9ZLuTAKqWW03F9": "en-US-BrianMultilingualNeural",
 }
 
 DEFAULT_VOICE = "ko-KR-InJoonNeural"
