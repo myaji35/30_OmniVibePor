@@ -133,11 +133,12 @@ Firecrawl 실패/timeout/제한 시:
 
 ## 3. How (구현 단계)
 
-### Stage 0: MCP 도입 타당성 검증 (0.5일)
-- [ ] Firecrawl MCP 공식 문서 확인 (요금, rate limit, privacy, 한국 서버)
-- [ ] 무료 티어/유료 티어 월 원가 추산
-- [ ] 법적 이슈 검토: 제3자 웹사이트 크롤링 로봇 배제 표준 존중
-- [ ] 대안 비교: Playwright 자체 크롤 (self-hosted) vs Firecrawl SaaS
+### Stage 0: 도구 선정 (0.5일) ✅ 완료 (2026-04-10)
+- [x] Firecrawl 조사: Free 500크레딧, Hobby $16/월, MCP 공식 존재
+- [x] 네이버 API 조사: 공식 Place API 없음, Search API 최대 5건 제한
+- [x] **결정: Firecrawl 보류 → 자체 Playwright 크롤러 우선 개발**
+- [x] 이유: 외부 API 의존 최소화, 네이버 스마트플레이스 대응, 비용 $0
+- [ ] Firecrawl은 향후 글로벌 확장 시 MCP로 추가 (옵션 유지)
 
 ### Stage 1: Backend 추출 서비스 (1일)
 - [ ] `backend/app/services/brand_extractor_service.py` (NEW, Pattern A 5회차 후보)

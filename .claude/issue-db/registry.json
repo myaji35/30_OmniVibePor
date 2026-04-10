@@ -2974,19 +2974,26 @@
         ]
       },
       "result": {
-        "plan_file": "docs/01-plan/features/firecrawl-brand-onboarding.plan.md",
-        "stages": 5,
-        "estimated_days": "3.5-4",
-        "replaces": "ISS-066 manual wizard",
-        "key_innovation": "URL 1필드 → 자동 추출 → 90% 시간 절약",
-        "dependencies": [
-          "ISS-089 Phase 0-B blocking"
-        ],
-        "risks": 5,
-        "source": "YouTube T0CMHwVh0u4 Level 4"
+        "stage0_complete": true,
+        "firecrawl": {
+          "free_credits": 500,
+          "hobby_monthly": 16,
+          "mcp_available": true,
+          "korean_support": "unconfirmed",
+          "naver_smartplace": "likely incompatible"
+        },
+        "naver_api": {
+          "official_place_api": false,
+          "search_api_limit": 5,
+          "logo_extraction": false
+        },
+        "recommendation": "hybrid: firecrawl for general sites + playwright for naver",
+        "apify_alternative": "naver/kakao specialized actors available",
+        "cost_impact": "hobby $16/mo for 20 agencies",
+        "next_action": "firecrawl free 500 POC with 3 real clinics"
       },
       "spawn_rules": [],
-      "completed_at": "2026-04-10T08:35:14.152175"
+      "completed_at": "2026-04-10T09:51:13.736330"
     },
     {
       "id": "ISS-086",
@@ -3653,6 +3660,82 @@
       },
       "result": null,
       "spawn_rules": []
+    },
+    {
+      "id": "ISS-105",
+      "title": "[Plan:CEO검토] ISS-085 전략 검토",
+      "type": "PLAN_CEO_REVIEW",
+      "status": "READY",
+      "priority": "P1",
+      "assign_to": "plan-ceo-reviewer",
+      "depth": 2,
+      "retry_count": 0,
+      "parent_id": "ISS-085",
+      "depends_on": [],
+      "created_at": "2026-04-10T09:51:13.736330",
+      "payload": {
+        "source_issue": "ISS-085",
+        "source_plan": {
+          "stage0_complete": true,
+          "firecrawl": {
+            "free_credits": 500,
+            "hobby_monthly": 16,
+            "mcp_available": true,
+            "korean_support": "unconfirmed",
+            "naver_smartplace": "likely incompatible"
+          },
+          "naver_api": {
+            "official_place_api": false,
+            "search_api_limit": 5,
+            "logo_extraction": false
+          },
+          "recommendation": "hybrid: firecrawl for general sites + playwright for naver",
+          "apify_alternative": "naver/kakao specialized actors available",
+          "cost_impact": "hobby $16/mo for 20 agencies",
+          "next_action": "firecrawl free 500 POC with 3 real clinics"
+        },
+        "feature": "ISS-085"
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-106",
+      "title": "[Plan:Eng검토] ISS-085 실행가능성 검토",
+      "type": "PLAN_ENG_REVIEW",
+      "status": "READY",
+      "priority": "P1",
+      "assign_to": "plan-eng-reviewer",
+      "depth": 2,
+      "retry_count": 0,
+      "parent_id": "ISS-085",
+      "depends_on": [],
+      "created_at": "2026-04-10T09:51:13.736330",
+      "payload": {
+        "source_issue": "ISS-085",
+        "source_plan": {
+          "stage0_complete": true,
+          "firecrawl": {
+            "free_credits": 500,
+            "hobby_monthly": 16,
+            "mcp_available": true,
+            "korean_support": "unconfirmed",
+            "naver_smartplace": "likely incompatible"
+          },
+          "naver_api": {
+            "official_place_api": false,
+            "search_api_limit": 5,
+            "logo_extraction": false
+          },
+          "recommendation": "hybrid: firecrawl for general sites + playwright for naver",
+          "apify_alternative": "naver/kakao specialized actors available",
+          "cost_impact": "hobby $16/mo for 20 agencies",
+          "next_action": "firecrawl free 500 POC with 3 real clinics"
+        },
+        "feature": "ISS-085"
+      },
+      "result": null,
+      "spawn_rules": []
     }
   ],
   "hooks": {
@@ -3910,6 +3993,12 @@
         "issue_type": "DOMAIN_ANALYZE",
         "plan_created": 2,
         "timestamp": "2026-04-10T09:19:37.179654"
+      },
+      {
+        "issue_id": "ISS-085",
+        "issue_type": "FEATURE_PLAN",
+        "plan_created": 2,
+        "timestamp": "2026-04-10T09:51:13.736330"
       }
     ],
     "on_fail": [],
@@ -5177,17 +5266,102 @@
           "failed": 0,
           "escalated": 0
         }
+      },
+      {
+        "cycle": 77,
+        "timestamp": "2026-04-10T09:43:57.124337",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, agent-harness, design-critic, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 103,
+          "done": 59,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 78,
+        "timestamp": "2026-04-10T09:49:18.382271",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer, agent-harness, design-critic)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 103,
+          "done": 59,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 79,
+        "timestamp": "2026-04-10T09:49:30.793770",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, design-critic, plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 103,
+          "done": 59,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 80,
+        "timestamp": "2026-04-10T09:49:52.172446",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-ceo-reviewer, agent-harness, design-critic, plan-eng-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 103,
+          "done": 59,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 81,
+        "timestamp": "2026-04-10T09:50:55.483387",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-ceo-reviewer, agent-harness, plan-eng-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 103,
+          "done": 59,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
       }
     ]
   },
   "stats": {
-    "total_issues": 103,
-    "completed": 52,
+    "total_issues": 105,
+    "completed": 53,
     "ready": 7,
     "created": 13,
     "failed": 0,
     "phase6_issues": "ISS-025~030 (Brand Templates)",
-    "evolved": 66
+    "evolved": 71
   },
   "pending_opportunity_signals": [
     {
@@ -5269,13 +5443,13 @@
   "opus_budget_state": {
     "daily": {
       "date": "2026-04-10",
-      "cost_usd": 5.65,
-      "calls": 10
+      "cost_usd": 6.1,
+      "calls": 11
     },
     "monthly": {
       "month": "2026-04",
-      "cost_usd": 5.65,
-      "calls": 10
+      "cost_usd": 6.1,
+      "calls": 11
     },
     "demotion_active": false
   },
