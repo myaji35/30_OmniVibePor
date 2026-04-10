@@ -41,15 +41,14 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url)
     const clientId = searchParams.get('client_id')
 
-    if (!clientId) {
-      return NextResponse.json({
-        success: false,
-        error: 'client_id is required'
-      }, { status: 400 })
+    let campaigns
+    if (clientId) {
+      const { getCampaignsByClient } = await import('@/lib/db/service')
+      campaigns = await getCampaignsByClient(parseInt(clientId))
+    } else {
+      const { getAllCampaigns } = await import('@/lib/db/service')
+      campaigns = await getAllCampaigns()
     }
-
-    const { getCampaignsByClient } = await import('@/lib/db/service')
-    const campaigns = await getCampaignsByClient(parseInt(clientId))
 
     return NextResponse.json({
       success: true,
