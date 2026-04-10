@@ -3496,7 +3496,7 @@
       "id": "ISS-100",
       "title": "[Plan:테스트] ISS-089 변경사항 검증",
       "type": "RUN_TESTS",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P1",
       "assign_to": "test-harness",
       "depth": 2,
@@ -3515,14 +3515,20 @@
         "source_issue": "ISS-089",
         "scope": "changed"
       },
-      "result": null,
-      "spawn_rules": []
+      "result": {
+        "passed": true,
+        "total": 17,
+        "failed_count": 0,
+        "source_issue": "ISS-089"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T09:19:37.056626"
     },
     {
       "id": "ISS-101",
       "title": "[Plan:도메인분석] ISS-089 비즈니스 규칙/시나리오 도출",
       "type": "DOMAIN_ANALYZE",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P1",
       "assign_to": "domain-analyst",
       "depth": 2,
@@ -3539,6 +3545,111 @@
           "backend/alembic/versions/001_initial.py (NEW)"
         ],
         "source_issue": "ISS-089"
+      },
+      "result": {
+        "file": "backend/alembic/env.py + docker-compose.yml",
+        "rules": [
+          {
+            "id": "BR-PG-1",
+            "desc": "DATABASE_URL env var switches PG/SQLite"
+          },
+          {
+            "id": "BR-PG-2",
+            "desc": "port 5433 to coexist with infra PG on 5432"
+          },
+          {
+            "id": "BR-PG-3",
+            "desc": "all 7 models must be imported in env.py for autogenerate"
+          }
+        ],
+        "scenarios": 2,
+        "source_issue": "ISS-089"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T09:19:37.179654"
+    },
+    {
+      "id": "ISS-102",
+      "title": "[Plan:품질평가] ISS-100 품질 점수 산출",
+      "type": "SCORE",
+      "status": "BLOCKED",
+      "priority": "P1",
+      "assign_to": "eval-harness",
+      "depth": 3,
+      "retry_count": 0,
+      "parent_id": "ISS-100",
+      "depends_on": [],
+      "created_at": "2026-04-10T09:19:37.056626",
+      "payload": {
+        "test_result": {
+          "passed": true,
+          "total": 17,
+          "coverage": null
+        },
+        "source_issue": "ISS-100",
+        "block_reason": "ISS-089 derivative chain cap. Core tested 17/17."
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-103",
+      "title": "[Plan:비즈니스검증] unknown 규칙 3개 정적 검증",
+      "type": "BIZ_VALIDATE",
+      "status": "BLOCKED",
+      "priority": "P1",
+      "assign_to": "biz-validator",
+      "depth": 3,
+      "retry_count": 0,
+      "parent_id": "ISS-101",
+      "depends_on": [],
+      "created_at": "2026-04-10T09:19:37.179654",
+      "payload": {
+        "rules": [
+          {
+            "id": "BR-PG-1",
+            "desc": "DATABASE_URL env var switches PG/SQLite"
+          },
+          {
+            "id": "BR-PG-2",
+            "desc": "port 5433 to coexist with infra PG on 5432"
+          },
+          {
+            "id": "BR-PG-3",
+            "desc": "all 7 models must be imported in env.py for autogenerate"
+          }
+        ],
+        "scenarios": [
+          null,
+          null
+        ],
+        "domain": "unknown",
+        "source_issue": "ISS-101",
+        "block_reason": "ISS-089 derivative chain cap. Core tested 17/17."
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-104",
+      "title": "[Plan:시나리오실행] unknown 시나리오 2개 E2E 실행",
+      "type": "SCENARIO_PLAY",
+      "status": "BLOCKED",
+      "priority": "P1",
+      "assign_to": "scenario-player",
+      "depth": 3,
+      "retry_count": 0,
+      "parent_id": "ISS-101",
+      "depends_on": [],
+      "created_at": "2026-04-10T09:19:37.179654",
+      "payload": {
+        "scenarios": [
+          null,
+          null
+        ],
+        "domain": "unknown",
+        "source_issue": "ISS-101",
+        "block_reason": "ISS-089 derivative chain cap. Core tested 17/17."
       },
       "result": null,
       "spawn_rules": []
@@ -3787,6 +3898,18 @@
         "issue_type": "GENERATE_CODE",
         "plan_created": 2,
         "timestamp": "2026-04-10T09:18:23.210409"
+      },
+      {
+        "issue_id": "ISS-100",
+        "issue_type": "RUN_TESTS",
+        "plan_created": 1,
+        "timestamp": "2026-04-10T09:19:37.056626"
+      },
+      {
+        "issue_id": "ISS-101",
+        "issue_type": "DOMAIN_ANALYZE",
+        "plan_created": 2,
+        "timestamp": "2026-04-10T09:19:37.179654"
       }
     ],
     "on_fail": [],
@@ -4986,17 +5109,51 @@
           "failed": 0,
           "escalated": 0
         }
+      },
+      {
+        "cycle": 73,
+        "timestamp": "2026-04-10T09:18:44.563917",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer, agent-harness, design-critic)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 100,
+          "done": 57,
+          "in_progress": 2,
+          "ready": 2,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 74,
+        "timestamp": "2026-04-10T09:20:01.800639",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-eng-reviewer, design-critic, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 103,
+          "done": 59,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
       }
     ]
   },
   "stats": {
-    "total_issues": 100,
-    "completed": 50,
+    "total_issues": 103,
+    "completed": 52,
     "ready": 7,
     "created": 13,
     "failed": 0,
     "phase6_issues": "ISS-025~030 (Brand Templates)",
-    "evolved": 62
+    "evolved": 64
   },
   "pending_opportunity_signals": [
     {
@@ -5058,6 +5215,15 @@
       "source_type": "BIZ_VALIDATE",
       "result": {
         "biz_coverage": 100
+      }
+    },
+    {
+      "source_issue": "ISS-100",
+      "source_type": "RUN_TESTS",
+      "result": {
+        "passed": true,
+        "total": 17,
+        "coverage": null
       }
     }
   ],
