@@ -22,7 +22,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, List, Optional
 
-from sqlalchemy import DateTime, Integer, String, func
+from sqlalchemy import DateTime, Integer, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -42,6 +42,19 @@ class Client(Base):
     logo_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     industry: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     contact_email: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+
+    # ISS-085 Stage 2: 브랜드 추출 컬럼
+    website_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    address: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    phone: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    tagline: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    auto_extracted_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    extract_source: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    extract_raw_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    # Phase 0-E/F: tenancy
+    agency_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime, server_default=func.current_timestamp(), nullable=False
     )
@@ -51,9 +64,6 @@ class Client(Base):
         onupdate=func.current_timestamp(),
         nullable=False,
     )
-
-    # Phase 0-F에서 agency_id 컬럼 추가 예정:
-    # agency_id: Mapped[int] = mapped_column(Integer, ForeignKey("agencies.id"), nullable=False)
 
     campaigns: Mapped[List["Campaign"]] = relationship(
         "Campaign",
