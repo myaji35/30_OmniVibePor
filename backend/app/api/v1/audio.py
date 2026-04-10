@@ -179,7 +179,8 @@ async def download_audio(task_id: str):
             )
 
         result = task_result.result
-        audio_path = result.get("audio_path")
+        # Celery result가 중첩 구조일 수 있음: {result: {audio_path: ...}} 또는 {audio_path: ...}
+        audio_path = result.get("audio_path") or (result.get("result", {}) or {}).get("audio_path")
 
         if not audio_path:
             raise HTTPException(
@@ -187,8 +188,20 @@ async def download_audio(task_id: str):
                 detail="Audio file not found"
             )
 
+        # 상대경로 → 절대경로 변환
+        from pathlib import Path
+        abs_path = Path(audio_path)
+        if not abs_path.is_absolute():
+            abs_path = Path(__file__).resolve().parents[3] / audio_path
+
+        if not abs_path.exists():
+            raise HTTPException(
+                status_code=404,
+                detail=f"Audio file not found at {abs_path}"
+            )
+
         return FileResponse(
-            audio_path,
+            str(abs_path),
             media_type="audio/mpeg",
             filename=f"verified_audio_{task_id[:8]}.mp3"
         )
