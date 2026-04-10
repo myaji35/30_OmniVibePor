@@ -140,7 +140,7 @@ def get_rate_limit_headers(request: Request, limit: int, window: int = 3600) -> 
 
 # 엔드포인트별 Rate Limit 설정
 ENDPOINT_RATE_LIMITS = {
-    "/api/v1/audio/generate": {"limit": 10, "window": 3600},  # 10 req/hour
+    "/api/v1/audio/generate": {"limit": 100, "window": 3600},  # 100 req/hour (개발환경 완화)
     "/api/v1/presentations/generate-video": {"limit": 5, "window": 3600},  # 5 req/hour
     "/api/v1/voice/clone": {"limit": 5, "window": 3600},  # 5 req/hour
 }
