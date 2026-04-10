@@ -66,6 +66,24 @@ services:
       - celery_worker
     command: celery -A app.tasks.celery_app flower --port=5555
 
+  # PostgreSQL 16 (ISS-089 Phase 0-B)
+  postgres:
+    image: postgres:16-alpine
+    container_name: omnivibe-postgres
+    environment:
+      POSTGRES_USER: omnivibe
+      POSTGRES_PASSWORD: omnivibe2026
+      POSTGRES_DB: omnivibe_dev
+    volumes:
+      - omnivibe_pg_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"  # host 5433 → container 5432 (5432는 다른 PG 점유)
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U omnivibe"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   # Redis (작업 큐 + 캐시)
   redis:
     image: redis:7-alpine
@@ -91,6 +109,7 @@ services:
       - neo4j_logs:/logs
 
 volumes:
+  omnivibe_pg_data:
   redis_data:
   neo4j_data:
   neo4j_logs:

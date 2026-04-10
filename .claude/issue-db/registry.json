@@ -3103,7 +3103,7 @@
       "id": "ISS-089",
       "title": "[P0] GENERATE_CODE — ISS-036 Phase 0-B: Alembic + PostgreSQL 16 컨테이너 도입",
       "type": "GENERATE_CODE",
-      "status": "IN_PROGRESS",
+      "status": "DONE",
       "priority": "P0",
       "assign_to": "agent-harness",
       "depth": 1,
@@ -3134,8 +3134,30 @@
           "ISS-036 Phase 0-A"
         ]
       },
-      "result": null,
-      "spawn_rules": []
+      "result": {
+        "files_created": [
+          "backend/alembic/env.py",
+          "backend/alembic/versions/c363de7cafe1_001_initial_7_tables.py"
+        ],
+        "files_modified": [
+          "backend/docker-compose.yml",
+          "backend/alembic.ini"
+        ],
+        "pg_version": "16.13",
+        "pg_port": 5433,
+        "tables": 7,
+        "alembic_revision": "c363de7cafe1",
+        "acceptance": {
+          "pg_docker": true,
+          "alembic_init": true,
+          "revision_001": true,
+          "env_switching": true,
+          "pg_startup": true,
+          "sqlite_fallback": true
+        }
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T09:18:23.210409"
     },
     {
       "id": "ISS-090",
@@ -3469,6 +3491,57 @@
       },
       "result": null,
       "spawn_rules": []
+    },
+    {
+      "id": "ISS-100",
+      "title": "[Plan:테스트] ISS-089 변경사항 검증",
+      "type": "RUN_TESTS",
+      "status": "READY",
+      "priority": "P1",
+      "assign_to": "test-harness",
+      "depth": 2,
+      "retry_count": 0,
+      "parent_id": "ISS-089",
+      "depends_on": [],
+      "created_at": "2026-04-10T09:18:23.210409",
+      "payload": {
+        "files": [
+          "backend/.env.example (DATABASE_URL for PG)",
+          "backend/alembic.ini (NEW)",
+          "docker-compose.yml (postgres service add)",
+          "backend/alembic/env.py (NEW)",
+          "backend/alembic/versions/001_initial.py (NEW)"
+        ],
+        "source_issue": "ISS-089",
+        "scope": "changed"
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-101",
+      "title": "[Plan:도메인분석] ISS-089 비즈니스 규칙/시나리오 도출",
+      "type": "DOMAIN_ANALYZE",
+      "status": "READY",
+      "priority": "P1",
+      "assign_to": "domain-analyst",
+      "depth": 2,
+      "retry_count": 0,
+      "parent_id": "ISS-089",
+      "depends_on": [],
+      "created_at": "2026-04-10T09:18:23.210409",
+      "payload": {
+        "files": [
+          "backend/.env.example (DATABASE_URL for PG)",
+          "backend/alembic.ini (NEW)",
+          "docker-compose.yml (postgres service add)",
+          "backend/alembic/env.py (NEW)",
+          "backend/alembic/versions/001_initial.py (NEW)"
+        ],
+        "source_issue": "ISS-089"
+      },
+      "result": null,
+      "spawn_rules": []
     }
   ],
   "hooks": {
@@ -3708,6 +3781,12 @@
         "issue_type": "FEATURE_PLAN",
         "plan_created": 2,
         "timestamp": "2026-04-10T09:12:17.099849"
+      },
+      {
+        "issue_id": "ISS-089",
+        "issue_type": "GENERATE_CODE",
+        "plan_created": 2,
+        "timestamp": "2026-04-10T09:18:23.210409"
       }
     ],
     "on_fail": [],
@@ -4890,17 +4969,34 @@
           "failed": 0,
           "escalated": 0
         }
+      },
+      {
+        "cycle": 72,
+        "timestamp": "2026-04-10T09:12:54.011432",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, agent-harness, plan-ceo-reviewer, plan-eng-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 98,
+          "done": 56,
+          "in_progress": 3,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
       }
     ]
   },
   "stats": {
-    "total_issues": 98,
-    "completed": 49,
+    "total_issues": 100,
+    "completed": 50,
     "ready": 7,
     "created": 13,
     "failed": 0,
     "phase6_issues": "ISS-025~030 (Brand Templates)",
-    "evolved": 61
+    "evolved": 62
   },
   "pending_opportunity_signals": [
     {
