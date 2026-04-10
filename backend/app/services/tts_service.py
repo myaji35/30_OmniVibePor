@@ -176,14 +176,19 @@ _tts_service_instance = None
 def get_tts_service():
     """TTS 서비스 싱글톤 — TTS_ENGINE 설정에 따라 엔진 선택
 
-    - "openai"    → OpenAI TTS (유료, $0.015/1000자)
+    - "edge_tts"  → Microsoft Edge-TTS (무료, API 키 불필요)
     - "cosyvoice" → CosyVoice2 Docker (무료, 오픈소스)
+    - "openai"    → OpenAI TTS (유료, $0.015/1000자)
     """
     global _tts_service_instance
     if _tts_service_instance is None:
-        engine = settings.TTS_ENGINE if hasattr(settings, "TTS_ENGINE") else "openai"
+        engine = settings.TTS_ENGINE if hasattr(settings, "TTS_ENGINE") else "edge_tts"
 
-        if engine == "cosyvoice":
+        if engine == "edge_tts":
+            from app.services.edge_tts_service import EdgeTTSService
+            _tts_service_instance = EdgeTTSService()
+            logging.getLogger(__name__).info("TTS engine: Edge-TTS (free, Microsoft)")
+        elif engine == "cosyvoice":
             from app.services.cosyvoice_tts_service import CosyVoiceTTSService
             _tts_service_instance = CosyVoiceTTSService()
             logging.getLogger(__name__).info("TTS engine: CosyVoice2 (free)")
