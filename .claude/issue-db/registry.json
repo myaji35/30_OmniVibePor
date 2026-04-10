@@ -3978,7 +3978,8 @@
           "scope_dir": "backend/app/domain",
           "ui_needed": true
         },
-        "feature": "ISS-038"
+        "feature": "ISS-038",
+        "files_changed": []
       },
       "result": null,
       "spawn_rules": [],
@@ -6152,6 +6153,24 @@
           "failed": 0,
           "escalated": 0
         }
+      },
+      {
+        "cycle": 105,
+        "timestamp": "2026-04-10T10:59:09.625205",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer, agent-harness, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 114,
+          "done": 73,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
       }
     ]
   },
@@ -6162,7 +6181,7 @@
     "created": 13,
     "failed": 0,
     "phase6_issues": "ISS-025~030 (Brand Templates)",
-    "evolved": 94
+    "evolved": 95
   },
   "pending_opportunity_signals": [
     {

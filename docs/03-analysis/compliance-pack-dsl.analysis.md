@@ -43,7 +43,7 @@ Rule:
   
   # must_include:
   required_text: string      # 포함 필수 텍스트
-  trigger_when: string       # always | contains_price | contains_effect | contains_before_after
+  trigger_when: string       # always | contains_price | contains_effect | contains_before_after | contains_promotion
   
   # llm_semantic:
   prompt_ko: string          # LLM에게 전달할 검증 프롬프트 (한국어)
@@ -470,6 +470,16 @@ backend/compliance_packs/
   message_ko: "특정 시술만이 유일한 해결책이라는 표현 금지"
   law_reference: "의료법 제56조 제2항 제1호"
   auto_fix_suggestion: "전문의 상담을 통해 가장 적합한 치료 방법을 찾아보세요"
+
+# ── ISS-112 BIZ_VALIDATE P0 보완: 의료법 제57조 사전심의번호 ──
+- id: MED-DERM-031
+  type: must_include
+  severity: critical
+  required_text: "심의번호"
+  trigger_when: always
+  message_ko: "온라인 의료광고는 사전심의번호를 반드시 표기해야 합니다 (의료법 제57조). 심의번호가 없는 의료광고는 위법입니다."
+  law_reference: "의료법 제57조 (의료광고의 심의)"
+  auto_fix_suggestion: "본 광고는 의료광고심의위원회 심의필 제XXXX호입니다. [실제 심의번호로 교체 필요]"
   tags: [exclusive_claim, choice_restriction]
 ```
 
@@ -1164,7 +1174,7 @@ backend/
 | BR-003 | warning은 리포트에 포함되지만 스크립트 진행을 차단하지 않음 | 유연성 확보 |
 | BR-004 | info는 로깅만 — UI에 "권장 사항"으로 표시 | 정보성 |
 | BR-005 | llm_semantic 룰은 static 룰 통과 후에만 실행 (비용 절감) | 비용 최적화 |
-| BR-006 | compliance_score = 100 - (critical * 20 + warning * 5 + info * 1) / max(1, total_rules) * 100 | 점수 산출 |
+| BR-006 | compliance_score = max(0, 100 - (critical * 20 + warning * 5 + info * 1)). 음수 방지 필수. critical 5건 이상이면 무조건 0점. | 점수 산출 |
 | BR-007 | 거래처(Client) 등록 시 vertical + sub_vertical 필수 입력 | 팩 자동 매칭 |
 | BR-008 | 팩 버전 업데이트 시 기존 통과된 스크립트는 소급 검증하지 않음 | 운영 안정성 |
 | BR-009 | general 팩은 모든 vertical의 기본 베이스로 항상 함께 적용 | 이중 레이어 |
