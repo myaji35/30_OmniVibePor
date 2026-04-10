@@ -26,6 +26,7 @@ from app.db.models.generated_script import GeneratedScript  # noqa: E402,F401
 from app.db.models.storyboard_block import StoryboardBlock  # noqa: E402,F401
 from app.db.models.resource_library import ResourceLibrary  # noqa: E402,F401
 from app.db.models.ab_test import AbTest  # noqa: E402,F401
+from app.db.models.agency import Agency, AgencyMember  # noqa: E402,F401
 
 config = context.config
 
