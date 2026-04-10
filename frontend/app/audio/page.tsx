@@ -185,23 +185,23 @@ export default function AudioPage() {
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="text-xs text-white/40">정확도 임계값</label>
-                  <span className="text-xs font-bold text-purple-400">{(accuracyThreshold * 100).toFixed(0)}%</span>
+                  <span className="text-xs font-bold" style={{ color: '#22d3ee' }}>{(accuracyThreshold * 100).toFixed(0)}%</span>
                 </div>
                 <input type="range" min="0.8" max="1.0" step="0.01"
                   value={accuracyThreshold}
                   onChange={(e) => setAccuracyThreshold(parseFloat(e.target.value))}
-                  className="w-full accent-purple-500" />
+                  className="w-full" style={{ accentColor: '#22d3ee' }} />
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="text-xs text-white/40">최대 재시도 횟수</label>
-                  <span className="text-xs font-bold text-indigo-400">{maxAttempts}회</span>
+                  <span className="text-xs font-bold" style={{ color: '#a855f7' }}>{maxAttempts}회</span>
                 </div>
                 <input type="range" min="1" max="10" step="1"
                   value={maxAttempts}
                   onChange={(e) => setMaxAttempts(parseInt(e.target.value))}
-                  className="w-full accent-indigo-500" />
+                  className="w-full" style={{ accentColor: '#a855f7' }} />
               </div>
             </div>
 
@@ -264,7 +264,7 @@ export default function AudioPage() {
 
               <button onClick={downloadAudio}
                 className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all"
-                style={{ background: 'rgba(52,211,153,0.15)', border: '1px solid rgba(52,211,153,0.3)', color: '#34d399' }}>
+                style={{ background: 'rgba(34,211,238,0.15)', border: '1px solid rgba(34,211,238,0.3)', color: '#22d3ee' }}>
                 <Download className="w-4 h-4" />
                 오디오 다운로드
               </button>
@@ -297,7 +297,7 @@ export default function AudioPage() {
                   taskStatus.result.normalized_text !== taskStatus.result.original_text
                     ? { label: '정규화됨', value: taskStatus.result.normalized_text, color: 'text-emerald-400' }
                     : null,
-                  { label: 'STT 변환 결과', value: taskStatus.result.transcribed_text, color: 'text-blue-400' },
+                  { label: 'STT 변환 결과', value: taskStatus.result.transcribed_text, color: 'text-[#22d3ee]' },
                 ].filter(Boolean).map((item) => item && (
                   <div key={item.label} className="p-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.04)' }}>
                     <p className="text-[10px] text-white/50 uppercase tracking-widest mb-1">{item.label}</p>
@@ -314,10 +314,10 @@ export default function AudioPage() {
               <SectionLabel>Zero-Fault 파이프라인</SectionLabel>
               <div className="space-y-2">
                 {[
-                  { step: '01', label: 'TTS 생성', desc: 'ElevenLabs API로 고품질 음성 합성', color: '#a855f7' },
-                  { step: '02', label: 'STT 검증', desc: 'OpenAI Whisper v3로 역변환 검증', color: '#6366f1' },
-                  { step: '03', label: '유사도 비교', desc: '원본 텍스트와 STT 결과 정밀 비교', color: '#3b82f6' },
-                  { step: '04', label: '자동 재생성', desc: `임계값 미달 시 최대 ${maxAttempts}회 반복`, color: '#22d3ee' },
+                  { step: '01', label: 'TTS 생성', desc: 'Edge-TTS로 고품질 음성 합성', color: '#a855f7' },
+                  { step: '02', label: 'STT 검증', desc: 'Whisper v3로 역변환 검증', color: '#6366f1' },
+                  { step: '03', label: '유사도 비교', desc: '원본 텍스트와 STT 결과 정밀 비교', color: '#22d3ee' },
+                  { step: '04', label: '자동 재생성', desc: `임계값 미달 시 최대 ${maxAttempts}회 반복`, color: '#4BCA81' },
                 ].map(({ step, label, desc, color }) => (
                   <div key={step} className="flex items-start gap-3 p-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }}>
                     <span className="text-[10px] font-black font-mono shrink-0 mt-0.5" style={{ color }}>{step}</span>

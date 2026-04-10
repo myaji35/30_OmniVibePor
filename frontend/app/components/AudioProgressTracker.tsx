@@ -107,7 +107,7 @@ export default function AudioProgressTracker({
   return (
     <div>
       <div className="flex items-center gap-2 mb-5">
-        <Mic2 className="w-5 h-5 text-purple-400" />
+        <Mic2 className="w-5 h-5 text-[#22d3ee]" />
         <h3 className="text-base font-bold text-white/90">오디오 생성 진행 상황</h3>
       </div>
 
