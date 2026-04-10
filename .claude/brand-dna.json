@@ -3,15 +3,18 @@
   "project": "OmniVibe Pro",
   "owner": "Gagahoho, Inc.",
   "tagline": "PDF 하나로 영상 한 편이 완성된다",
-  "agenda": "영상 제작을 모르는 사람도 자신의 메시지를 손에 든 자료(PDF·스크립트·아이디어)만으로 완성된 한국어 영상으로 받아내게 만든다. '영상 제작의 모든 것을 자동화'라는 약속을 Zero-Fault 오디오와 한 번에 끝나는 자동 파이프라인으로 증명한다.",
-  "north_star_metric": "사용자가 PDF 업로드부터 다운로드 가능한 MP4까지 걸리는 시간 (목표: 5분 이내, 사람 손 0회 개입)",
+  "agenda": "1인 마케팅 에이전시 회원이 거래처(병의원·학원·마트 등) 홈페이지 URL 하나만 입력하면, 브랜드 자산을 자동 추출하고 매월 프로모션 영상을 자동 생산한다. '거래처 영상 제작의 모든 것을 자동화'하는 약속을 Zero-Fault 오디오와 Marp 하이브리드 파이프라인으로 증명한다.",
+  "north_star_metric": "1인 에이전시 회원이 거래처 등록(URL) → 첫 번째 MP4 다운로드까지 걸리는 시간 (목표: 10분 이내, 사람 손 1회 = URL 입력)",
   "brand_voice": "확신에 찬 자동화 엔지니어. 약속은 짧고, 결과는 숫자로. 마케팅 미사여구 대신 '99%', '5분', 'PDF 한 장'처럼 검증 가능한 수치로 말한다. 한국어가 모국어이며 존댓말은 쓰지 않고 단정한 평어체.",
   "voice_examples": [
     "PDF 하나면 충분합니다.",
     "AI가 스크립트를 쓰고, 목소리를 복제하고, 영상을 완성합니다.",
     "99% Zero-Fault 오디오.",
     "TSX 코딩 불필요.",
-    "스크립트→영상, 한 번에."
+    "스크립트→영상, 한 번에.",
+    "거래처 URL 하나로, 이번 달 영상 끝.",
+    "1편 374원. 거래처 3만원 받으면 마진 98%.",
+    "병의원, 학원, 마트. 업종별 영상 자동."
   ],
   "voice_anti_examples": [
     "혁신적인 솔루션으로 여러분의 비즈니스를 한 단계 도약시켜 드립니다",
@@ -74,12 +77,13 @@
   },
   "primary_action_per_screen": "MUST_EXIST",
   "primary_action_examples": {
-    "/": "AI 전략부터 시작하기",
-    "/strategy": "전략 생성",
+    "/": "무료로 시작하기",
+    "/dashboard": "새 거래처 등록",
+    "/clients/new": "거래처 URL 입력",
+    "/strategy": "이번 달 전략 생성",
     "/concept": "컨셉 확정",
     "/produce": "영상 생성",
-    "/publish": "공유 / 예약 발행",
-    "/dashboard": "새 프로젝트 시작"
+    "/publish": "공유 / 예약 발행"
   },
   "user_decision_clarity": "0.5초 룰 — 첫 시선 0.5초 안에 다음 행동(주요 CTA) 식별 가능해야 함. 한 화면에 시각 무게가 가장 큰 요소는 반드시 다음 단계 액션이어야 한다.",
   "pillars": [
@@ -130,10 +134,15 @@
     "99% Zero-Fault 오디오",
     "20개 영상 템플릿 무료",
     "한국어 네이티브 TTS",
-    "Remotion 4.0 기반 코드형 렌더링"
+    "Remotion 4.0 기반 코드형 렌더링",
+    "1편 실원가 374원 (마진 98.75%)",
+    "거래처 URL 입력 → 브랜드 자동 추출 30초",
+    "8개 업종 × 24개 슬라이드 테마 조합",
+    "편집 가능한 PPTX 동시 출력 (Marp)"
   ],
   "_decisions": [
-    "2026-04-09 옵션 A 확정 — 외부 마케팅(다크/보라·인디고)과 내부 작업(SLDS 라이트/Salesforce Blue)의 표면 이원화를 의도된 정체성으로 인정. surfaces 필드가 단일 진실 소스(SoT). 두 표면 사이에는 '다리' 요소(공용 로고, Studio Mockup 등)로 동일한 세계로 인식되게 한다."
+    "2026-04-09 옵션 A 확정 — 외부 마케팅(다크/보라·인디고)과 내부 작업(SLDS 라이트/Salesforce Blue)의 표면 이원화를 의도된 정체성으로 인정. surfaces 필드가 단일 진실 소스(SoT). 두 표면 사이에는 '다리' 요소(공용 로고, Studio Mockup 등)로 동일한 세계로 인식되게 한다.",
+    "2026-04-10 Agency SaaS pivot 반영 — 타겟을 '일반인'에서 '1인 마케팅 에이전시 회원'으로 전환. agenda/north_star/voice_examples/trust_proofs/primary_actions 업데이트. 시각 정체성(색상/표면)은 변경 없음."
   ],
   "bridge_rules": [
     "내부 작업 화면 상단 헤더/로고에는 외부 브랜드 색(보라 #a855f7) 액센트가 최소 1곳 이상 들어갈 것 — 사용자가 가입 후 이질감을 느끼지 않도록",
@@ -150,8 +159,11 @@
     "backend/app/services/* (Zero-Fault Audio, PDF→Video, GraphRAG 증거)"
   ],
   "_status": "active",
+  "_version": "2.0",
   "_drafted_at": "2026-04-09",
   "_drafted_by": "brand-guardian (claude-opus-4-6)",
   "_activated_at": "2026-04-09",
-  "_activated_by": "강승식 대표 (옵션 A 선택)"
+  "_activated_by": "강승식 대표 (옵션 A 선택)",
+  "_updated_at": "2026-04-10",
+  "_updated_by": "brand-guardian v2 — Agency SaaS pivot 반영"
 }

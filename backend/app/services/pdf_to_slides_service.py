@@ -104,6 +104,21 @@ class PDFToSlidesService:
 
                 self.logger.info(f"Saved slide {i}/{total_pages}: {file_path}")
 
+            # ISS-063 Path 2: NotebookLM PDF 자동 감지 + 워터마크 제거
+            # 비-NotebookLM PDF는 no-op으로 그대로 통과
+            try:
+                from app.services.notebooklm_adapter import adapt_notebooklm_slides
+                image_paths, was_notebooklm = await asyncio.to_thread(
+                    adapt_notebooklm_slides, pdf_path, image_paths
+                )
+                if was_notebooklm:
+                    self.logger.info(
+                        f"NotebookLM watermark removed from {len(image_paths)} slides"
+                    )
+            except Exception as e:
+                # Adapter 실패는 치명적이지 않음 — 원본 이미지로 진행
+                self.logger.warning(f"NotebookLM adapter error (non-fatal): {e}")
+
             return image_paths
 
     async def get_pdf_metadata(self, pdf_path: str) -> Dict:

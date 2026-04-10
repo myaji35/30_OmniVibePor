@@ -43,6 +43,7 @@ pillow>=10.2.0
 # PDF & Document Processing
 pdf2image>=1.17.0
 pytesseract>=0.3.10
+pypdf>=6.0.0  # ISS-063: NotebookLM PDF 감지용 (text layer 스캔)
 
 # Audio & Video
 ffmpeg-python>=0.2.0

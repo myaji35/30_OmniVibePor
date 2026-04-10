@@ -31,68 +31,39 @@ result_raw = '''$RESULT'''
 now = datetime.datetime.now().isoformat()
 new_issues = []
 
-# ISS-046 Fix: 기존 stats['total_issues']는 REJECTED/renumbered/deleted 처리 시
-# 실제 max ID보다 낮아져 ID 충돌 발생 (2026-04-09에 11번 재현됨).
-# 실 issues list를 스캔해서 max 숫자 추출 + 1로 계산.
-def _compute_next_num(registry_data):
-    """모든 기존 ID(in-progress 이슈 + 이 함수 호출 내 new_issues 포함)의
-    max 숫자 + 1 반환. 'ISS-NNN' 형식만 인식, 비표준 ID는 무시."""
+# ISS-046 Fix: stats['total_issues']는 delete/rename 시 drift 발생.
+# 실 issues list를 스캔해서 max 숫자 + 1 계산.
+def _compute_next_num():
     max_num = 0
-    for existing in registry_data.get('issues', []):
+    for existing in registry.get('issues', []):
         iid = existing.get('id', '')
         if isinstance(iid, str) and iid.startswith('ISS-'):
             try:
                 num = int(iid.split('-', 1)[1])
-                if num > max_num:
-                    max_num = num
-            except (ValueError, IndexError):
-                continue
-    # new_issues 안에서도 중복 방지
+                if num > max_num: max_num = num
+            except (ValueError, IndexError): continue
     for pending in new_issues:
         iid = pending.get('id', '')
         if isinstance(iid, str) and iid.startswith('ISS-'):
             try:
                 num = int(iid.split('-', 1)[1])
-                if num > max_num:
-                    max_num = num
-            except (ValueError, IndexError):
-                continue
+                if num > max_num: max_num = num
+            except (ValueError, IndexError): continue
     return max_num + 1
 
-def _id_exists(new_id, registry_data):
-    """ID 중복 방어 (지연 검증)."""
-    for existing in registry_data.get('issues', []):
-        if existing.get('id') == new_id:
-            return True
-    for pending in new_issues:
-        if pending.get('id') == new_id:
-            return True
-    return False
-
 def add_issue(title, itype, priority, assign_to, payload=None):
-    # 제목 기반 중복 체크
+    # 중복 체크
     for iss in registry['issues']:
         if iss.get('title') == title and iss.get('status') in ('READY', 'IN_PROGRESS'):
             return
-    # ISS-046 Fix: next_num을 호출 시점마다 실 registry 스캔으로 계산
-    next_num = _compute_next_num(registry)
-    new_id = f'ISS-{next_num:03d}'
-    # 방어적 ID 충돌 재검증 (이론상 발생 불가, 실제 발생 시 +1 반복)
-    retry_guard = 0
-    while _id_exists(new_id, registry):
-        next_num += 1
-        new_id = f'ISS-{next_num:03d}'
-        retry_guard += 1
-        if retry_guard > 100:
-            print(f'[ERROR] ID collision resolution exceeded 100 attempts (next={next_num})')
-            return
+    next_num = _compute_next_num()
     iss = {
-        'id': new_id,
+        'id': f'ISS-{next_num:03d}',
         'title': title,
         'type': itype,
         'status': 'READY',
         'priority': priority,
-        'assign_to': assign_to,  # ISS-046: 'assigned_to' 아닌 'assign_to' (dispatch-ready.sh 표준)
+        'assign_to': assign_to,
         'depth': target_issue.get('depth', 0) + 1,
         'retry_count': 0,
         'parent_id': issue_id,
@@ -123,6 +94,38 @@ if not target_issue:
 target_issue['status'] = 'DONE'
 target_issue['completed_at'] = now
 registry['stats']['completed'] = registry['stats'].get('completed', 0) + 1
+
+# ── Hermes가 확장한 freeze 범위 해제 (v2+) ──────────
+# 이 이슈 한정으로 FREEZE_DIR이 확장되었다면 복원 또는 해제
+import os as _os
+freeze_path = "/tmp/harness-freeze.env"
+if _os.path.exists(freeze_path):
+    try:
+        env_data = {}
+        with open(freeze_path, 'r') as _ff:
+            for _line in _ff:
+                if '=' in _line:
+                    _k, _v = _line.strip().split('=', 1)
+                    env_data[_k] = _v.strip('"')
+        if env_data.get("FREEZE_ISSUE") == issue_id and env_data.get("FREEZE_EXPANDED_BY_HERMES") == "true":
+            _os.remove(freeze_path)
+            print(f"[freeze] Hermes 확장 범위 해제 (이슈 {issue_id} 완료)")
+    except Exception:
+        pass
+
+# Hermes 호출 기록이 있는 이슈의 hermes_state 누적 청소 (부작용 #9 방어)
+if target_issue.get('hermes_invocations', 0) > 0:
+    hs = registry.get('hermes_state', {})
+    if 'invocations_by_issue' in hs and issue_id in hs['invocations_by_issue']:
+        del hs['invocations_by_issue'][issue_id]
+    # Hermes lock 파일 해제 (부작용 #4 레이스 방어)
+    lock_path = f"/tmp/harness-hermes-{issue_id}.lock"
+    try:
+        if _os.path.exists(lock_path):
+            _os.remove(lock_path)
+            print(f"[hermes-lock] {lock_path} 해제 (이슈 {issue_id} 완료)")
+    except Exception:
+        pass
 
 # result 파싱 시도
 result = {}
@@ -339,8 +342,16 @@ elif issue_type in ('RUN_TESTS', 'RETEST'):
 
 elif issue_type == 'DOMAIN_ANALYZE':
     # 도메인 분석 완료 → biz-validator + scenario-player에 결과 전달
-    rules = result.get('rules', [])
-    scenarios = result.get('scenarios', [])
+    # ISS-047 Fix: result가 int/bool 등을 줄 수 있어 타입 강제
+    def _ensure_list(value):
+        if isinstance(value, list): return value
+        if value is None: return []
+        if isinstance(value, (int, float)):
+            return [None] * max(0, int(value)) if value >= 0 else []
+        if isinstance(value, dict): return list(value.values())
+        return [value]
+    rules = _ensure_list(result.get('rules', []) or result.get('business_rules', []))
+    scenarios = _ensure_list(result.get('scenarios', []))
     domain = result.get('domain', 'unknown')
 
     # 정적 검증: biz-validator
@@ -687,12 +698,9 @@ if new_issues:
     print(f"\n📋 Plan 수립 완료: {len(new_issues)}개 이슈 생성")
     for ni in new_issues:
         registry['issues'].append(ni)
+        registry['stats']['total_issues'] = registry['stats'].get('total_issues', 0) + 1
 else:
     print(f"\n✅ 파이프라인 사이클 완료 — 추가 이슈 없음")
-
-# ISS-046 Fix: stats.total_issues를 실 issues 개수와 동기화 (통계 용도)
-# next_num 계산과 분리되어 안전하지만, 혼란 방지를 위해 실 개수로 정상화
-registry['stats']['total_issues'] = len(registry['issues'])
 
 # Hook 이력 기록
 registry.setdefault('hooks', {}).setdefault('on_complete', []).append({

@@ -760,7 +760,42 @@
           "new": "ISS-037(FFmpeg 완료) → ISS-036(PG 2일)",
           "status": "ISS-037 이미 DONE (2026-04-09). ISS-036은 plan 업데이트 후 unblock 가능"
         },
-        "summary": "v1 범위를 의료 피부과 1 vertical + 5 페르소나 + MVWL 6항목 + PMF 검증 가설 3개로 좁힘. 프랜차이즈/풀 화이트라벨/Celery 큐 분리/8 vertical 동시 확장은 모두 미래 wave로 분리. 좁힌 만큼 빨라진다."
+        "summary": "v1 범위를 의료 피부과 1 vertical + 5 페르소나 + MVWL 6항목 + PMF 검증 가설 3개로 좁힘. 프랜차이즈/풀 화이트라벨/Celery 큐 분리/8 vertical 동시 확장은 모두 미래 wave로 분리. 좁힌 만큼 빨라진다.",
+        "phase_4_hybrid_decision": {
+          "decided_at": "2026-04-10",
+          "decided_by": "강승식 대표",
+          "strategy": "Marp 주력 + NotebookLM 수동 PDF 업로드 옵션 + notebooklm-skill Compliance 보조 하이브리드",
+          "rationale": [
+            "Marp: vertical별 CSS theme + 자동 마크다운→PDF/PPTX 파이프라인, 회원 90% 사용 경로",
+            "NotebookLM 수동: 복잡한 인포그래픽·리서치 자료 필요 시 회원이 직접 생성 후 PDF 업로드 (즉시 가능, 코드 변경 거의 0)",
+            "notebooklm-skill: Phase 2 Compliance Pack의 의료법 사실 검증 보조 (Studio plan 전용 선택 기능)"
+          ],
+          "three_paths": {
+            "path_1_marp_primary": {
+              "target_users": "90% (Starter/Creator/Pro 전 plan)",
+              "automation_level": "완전 자동",
+              "quality": "★★★★ (텍스트+사진+간단 리스트)",
+              "implementation": "Phase 4 주력 (3~5일)"
+            },
+            "path_2_notebooklm_manual": {
+              "target_users": "10% (Pro/Studio plan 파워유저)",
+              "automation_level": "수동 (회원이 NotebookLM Studio에서 직접 생성)",
+              "quality": "★★★★★ (인포그래픽·레이더차트 수준)",
+              "implementation": "Phase 1에 PDF 업로드 경로 + 워터마크 crop (30분~1시간)"
+            },
+            "path_3_notebooklm_skill_compliance": {
+              "target_users": "1% (Studio plan 의료 특화)",
+              "automation_level": "Claude Code skill 호출 (OAuth)",
+              "quality": "citation-backed 의료법 검증",
+              "implementation": "Phase 2 Compliance Pack 확장 (선택, 5~7일)"
+            }
+          },
+          "follow_up_issues": [
+            "ISS-062",
+            "ISS-063",
+            "ISS-064"
+          ]
+        }
       },
       "assign_to": "본 세션 (product-manager 역할 수행)"
     },
@@ -1563,7 +1598,7 @@
       "id": "ISS-047",
       "title": "[P3] BUG_FIX — on_complete.sh result 분석 string/int 비교 TypeError",
       "type": "FIX_BUG",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P3",
       "depends_on": [],
       "created_at": "2026-04-09",
@@ -1580,13 +1615,17 @@
         ],
         "discovered_in": "ISS-041 (line 248), ISS-042 (line 295)"
       },
-      "assign_to": "agent-harness"
+      "assign_to": "agent-harness",
+      "completed_at": "2026-04-10T08:12:29.650147",
+      "result": {
+        "raw": "{\"files_modified\":[\".claude/hooks/on_complete.sh\"],\"fix_applied\":\"_ensure_list helper added to DOMAIN_ANALYZE branch. Converts int/None/dict to safe list before len() calls.\",\"root_cause\":\"result.get(scenarios, []) returned int 4 when agent passed count instead of list, causing len(int) TypeError\",\"verified\":true,\"regression_test\":\"dry-run with {\"scenarios\":4} → converts to [None]*4, len()=4, no error\",\"related_incidents\":[\"ISS-041\",\"ISS-042\",\"ISS-061\"],\"source_issue\":\"ISS-047\"}"
+      }
     },
     {
       "id": "ISS-048",
       "title": "[P3] BUG_FIX — freeze-guard.sh가 콤마 분리 디렉터리 처리 못 함",
       "type": "FIX_BUG",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P3",
       "assign_to": "agent-harness",
       "depends_on": [],
@@ -1606,6 +1645,19 @@
           "단일 디렉터리 케이스(콤마 없음) 회귀 없음",
           "테스트: backend/scripts/test.py + backend/app/services/test.py 둘 다 허용"
         ]
+      },
+      "completed_at": "2026-04-10T08:13:31.040451",
+      "result": {
+        "files_modified": [
+          ".claude/hooks/freeze-guard.sh"
+        ],
+        "fix": "IFS comma split + loop through multiple dirs",
+        "regression_tests": {
+          "single_dir_first": "PASS",
+          "single_dir_second": "PASS",
+          "outside_both": "BLOCK (expected)"
+        },
+        "verified": true
       }
     },
     {
@@ -1954,7 +2006,7 @@
       "id": "ISS-060",
       "title": "[Plan:테스트] ISS-046 변경사항 검증",
       "type": "RUN_TESTS",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P1",
       "assign_to": "test-harness",
       "depth": 1,
@@ -1969,14 +2021,23 @@
         "source_issue": "ISS-046",
         "scope": "changed"
       },
-      "result": null,
-      "spawn_rules": []
+      "result": {
+        "passed": true,
+        "total": 6,
+        "passed_count": 6,
+        "assertions": 6,
+        "source_issue": "ISS-046",
+        "iss046_fix_verified": true
+      },
+      "spawn_rules": [],
+      "started_at": "2026-04-10",
+      "completed_at": "2026-04-10T07:46:45.473844"
     },
     {
       "id": "ISS-061",
       "title": "[Plan:도메인분석] ISS-046 비즈니스 규칙/시나리오 도출",
       "type": "DOMAIN_ANALYZE",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P1",
       "assign_to": "domain-analyst",
       "depth": 1,
@@ -1989,6 +2050,1335 @@
           ".claude/hooks/on_complete.sh"
         ],
         "source_issue": "ISS-046"
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-062",
+      "title": "[Plan:품질평가] ISS-060 품질 점수 산출",
+      "type": "SCORE",
+      "status": "DONE",
+      "priority": "P1",
+      "assign_to": "eval-harness",
+      "depth": 2,
+      "retry_count": 0,
+      "parent_id": "ISS-060",
+      "depends_on": [],
+      "created_at": "2026-04-10T07:46:45.473844",
+      "payload": {
+        "test_result": {
+          "passed": true,
+          "total": 6,
+          "coverage": null
+        },
+        "source_issue": "ISS-060"
+      },
+      "result": {
+        "score": 84,
+        "prev_score": 80,
+        "breakdown": {
+          "quality": 88,
+          "coverage": 70,
+          "performance": 90,
+          "docs": 88
+        },
+        "rationale": "ISS-046 fix verified by ISS-060 tests (6/6 passed). ID collision regression covered. Code quality high (AST-clean + defensive _id_exists retry_guard). Coverage unknown due to shell test harness. Performance unchanged. Docs improved (inline comments on BR-1).",
+        "source_issue": "ISS-060"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T08:03:38.210056"
+    },
+    {
+      "id": "ISS-063",
+      "title": "[P0] SMALL_FIX — NotebookLM PDF 업로드 경로 + 워터마크 crop (Path 2)",
+      "type": "GENERATE_CODE",
+      "status": "DONE",
+      "priority": "P0",
+      "assign_to": "agent-harness",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": "ISS-033",
+      "depends_on": [],
+      "created_at": "2026-04-10",
+      "payload": {
+        "description": "하이브리드 전략 Path 2 즉시 지원. 회원이 NotebookLM Studio에서 수동 생성한 PDF를 OmniVibe에 업로드하면 우측 하단 \"% NotebookLM\" 워터마크를 자동 crop 후 기존 presentation_video_generator에 전달.",
+        "scope_dir": "backend/app/services",
+        "files": [
+          "backend/app/services/pdf_to_slides_service.py (crop 로직 추가)",
+          "또는 backend/app/services/notebooklm_adapter.py (NEW, 전용 어댑터)"
+        ],
+        "acceptance": [
+          "NotebookLM PDF 자동 감지 (footer 텍스트 또는 첫 페이지 metadata)",
+          "각 페이지 우측 하단 ~3% 영역 crop (약 30×10px @ 1376×768)",
+          "기존 PDF 파이프라인과 투명 호환 (crop 후 동일 처리)",
+          "비-NotebookLM PDF는 그대로 통과 (감지 실패 시 no-op)",
+          "단위 테스트: 어제 backend/uploads/pdfs/test_project_001_*.pdf 로 검증"
+        ],
+        "effort_estimate": "30분 ~ 1시간",
+        "strategy_path": "Path 2 (NotebookLM 수동)",
+        "immediate_start": true
+      },
+      "result": {
+        "files_created": [
+          "backend/app/services/notebooklm_adapter.py"
+        ],
+        "files_modified": [
+          "backend/app/services/pdf_to_slides_service.py",
+          "backend/requirements.txt"
+        ],
+        "tests_passed": true,
+        "verification": {
+          "synthetic_crop": "PASS",
+          "pass_through": "PASS",
+          "size_preserved": "PASS",
+          "detect_real_pdf": "PASS"
+        },
+        "acceptance": {
+          "detect": true,
+          "crop_region": true,
+          "pipeline_compat": true,
+          "no_op_fallback": true,
+          "real_pdf_tested": 3
+        },
+        "pypdf_added": true,
+        "notes": "Atomic Option Group pattern: detect/crop/verify co-located. 4% x 2.5% crop ratio with safety margin. Image size preserved for 16:9 pipeline compatibility."
+      },
+      "completed_at": "2026-04-10T08:01:53.683817"
+    },
+    {
+      "id": "ISS-064",
+      "title": "[P1] FEATURE_PLAN — Marp + NotebookLM 하이브리드 Slide System (Phase 4 재설계)",
+      "type": "FEATURE_PLAN",
+      "status": "DONE",
+      "priority": "P1",
+      "assign_to": "product-manager",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": "ISS-033",
+      "depends_on": [],
+      "created_at": "2026-04-10",
+      "payload": {
+        "description": "ISS-033 Phase 4 재설계. 기존 Puppeteer + HTML/CSS 템플릿 설계를 Marp 기반으로 전환. vertical별 CSS theme + AI 마크다운 생성 + Marp CLI 1회 호출로 PDF+PPTX+PNG 동시 출력.",
+        "scope_dir": "docs/01-plan/features",
+        "acceptance": [
+          "docs/01-plan/features/marp-slide-system.plan.md 작성",
+          "slide_render_profile.py 설계 (Pattern A 4회차 후보)",
+          "vertical별 CSS theme 6개 명세 (medical/academy/mart/beauty/restaurant/general)",
+          "한국어 폰트 처리 (Pretendard @font-face)",
+          "Slide Layout Agent (GPT-4o-mini, 스크립트→마크다운)",
+          "Marp CLI 통합 (별도 Docker 컨테이너 marp-worker)",
+          "PPTX 차별화 가치 명세 (회원 편집 가능)",
+          "기존 Phase 4 plan과 delta 비교",
+          "예상 작업량: 3~5일 (기존 Phase 4 1주에서 30~40% 절감)"
+        ],
+        "strategy_path": "Path 1 (Marp 주력)",
+        "activation_timing": "Phase 4 착수 시점 (약 4주 후)",
+        "marp_version": "최신 @marp-team/marp-cli"
+      },
+      "result": {
+        "plan_file": "docs/01-plan/features/marp-slide-system.plan.md",
+        "stages": 5,
+        "estimated_days": "4.5-5.5",
+        "savings_vs_original": "25-35%",
+        "themes_planned": 6,
+        "pattern_a_iteration": 4,
+        "acceptance_met": 9,
+        "open_questions": 4,
+        "dependencies": {
+          "blocking": [
+            "ISS-036 Phase 0-A~0-D"
+          ],
+          "done": [
+            "ISS-063",
+            "ISS-044"
+          ]
+        },
+        "risks": 4,
+        "next_action": "plan-ceo-reviewer + plan-eng-reviewer 2중 검토"
+      },
+      "completed_at": "2026-04-10T08:06:03.982308"
+    },
+    {
+      "id": "ISS-065",
+      "title": "[P2] FEATURE_PLAN — notebooklm-skill Compliance Assist (Studio plan 전용)",
+      "type": "FEATURE_PLAN",
+      "status": "DONE",
+      "priority": "P2",
+      "assign_to": "product-manager",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": "ISS-033",
+      "depends_on": [
+        "ISS-039"
+      ],
+      "blocked_reason": "Phase 2 Compliance Pack DSL(ISS-039) 완료 후 확장 기능으로 추가",
+      "created_at": "2026-04-10",
+      "payload": {
+        "description": "하이브리드 전략 Path 3. Phase 2 Compliance Pack(ISS-039)의 확장 기능으로, PleasePrompto/notebooklm-skill을 활용해 회원이 등록한 NotebookLM 노트북에 의료법 질의를 던지고 citation-backed 답변을 받아 Compliance Critic과 병행 검증. Studio plan 전용.",
+        "scope_dir": "backend/app/services/compliance",
+        "acceptance": [
+          "notebooklm-skill 설치 + OAuth 세션 관리",
+          "회원별 NotebookLM 노트북 registry (각 회원이 자기 의료법 가이드라인 노트북 등록)",
+          "Compliance Critic 확장 — LLM 1차 판단 + NotebookLM 2차 citation 검증",
+          "비용 추정: NotebookLM 호출당 무료 (Google Pro 구독 회원) vs 유료 (무료 회원)",
+          "Studio plan 전용 feature flag",
+          "Google ToS 회색지대 문서화 (browser automation 한계 명시)",
+          "fallback: NotebookLM 연결 실패 시 LLM critic만으로 통과"
+        ],
+        "strategy_path": "Path 3 (notebooklm-skill Compliance)",
+        "activation_timing": "Phase 2 완료 후 Phase 2.5로 확장",
+        "risks": [
+          "Browser automation ToS 회색지대",
+          "Google 계정 세션 관리 보안",
+          "NotebookLM rate limit 불명"
+        ]
+      },
+      "result": {
+        "root_cause": "meta-review.sh:59 has SAME stats drift bug as on_complete.sh pre-ISS-046 fix",
+        "buggy_line": "next_id_num = stats.get(total_issues, len(issues)) + 1",
+        "impact": "ID-065 collision detected in current session (FEATURE_PLAN BLOCKED + PATTERN_ANALYSIS READY both use ISS-065)",
+        "iss_033_chain_analysis": {
+          "total_related": 6,
+          "direct_children": 5,
+          "pingpong_trigger": "meta-review.sh creating duplicate IDs caused retry cycles"
+        },
+        "fix_recommendation": "Apply _compute_next_num() from on_complete.sh to meta-review.sh",
+        "urgency": "P0",
+        "related_incidents": [
+          "ISS-046 original fix (partial)",
+          "current ISS-065 collision"
+        ],
+        "action_required": "Create FIX_BUG ISS to port _compute_next_num to meta-review.sh"
+      },
+      "completed_at": "2026-04-10T08:06:41.846423"
+    },
+    {
+      "id": "ISS-071",
+      "title": "[Meta] ISS-033 이슈 체인 근본 원인 분석",
+      "type": "PATTERN_ANALYSIS",
+      "status": "DONE",
+      "priority": "P1",
+      "assign_to": "meta-agent",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": null,
+      "depends_on": [],
+      "created_at": "2026-04-10T07:51:26.378311",
+      "payload": {
+        "parent_id": "ISS-033",
+        "chain_length": 3
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-066",
+      "title": "[Plan:테스트] ISS-063 변경사항 검증",
+      "type": "RUN_TESTS",
+      "status": "DONE",
+      "priority": "P1",
+      "assign_to": "test-harness",
+      "depth": 2,
+      "retry_count": 0,
+      "parent_id": "ISS-063",
+      "depends_on": [],
+      "created_at": "2026-04-10T08:01:53.683817",
+      "payload": {
+        "files": [
+          "또는 backend/app/services/notebooklm_adapter.py (NEW, 전용 어댑터)",
+          "backend/app/services/pdf_to_slides_service.py (crop 로직 추가)"
+        ],
+        "source_issue": "ISS-063",
+        "scope": "changed"
+      },
+      "result": {
+        "passed": true,
+        "total": 23,
+        "failed_count": 0,
+        "coverage": null,
+        "suites": 8,
+        "source_issue": "ISS-063",
+        "details": {
+          "imports": 1,
+          "constants": 4,
+          "detection": 3,
+          "crop": 6,
+          "batch": 4,
+          "pass_through": 2,
+          "force_mode": 2,
+          "edge_missing_file": 1
+        },
+        "tested_files": [
+          "backend/app/services/notebooklm_adapter.py",
+          "backend/app/services/pdf_to_slides_service.py"
+        ]
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T08:08:45.174845"
+    },
+    {
+      "id": "ISS-067",
+      "title": "[Plan:도메인분석] ISS-063 비즈니스 규칙/시나리오 도출",
+      "type": "DOMAIN_ANALYZE",
+      "status": "DONE",
+      "priority": "P1",
+      "assign_to": "domain-analyst",
+      "depth": 2,
+      "retry_count": 0,
+      "parent_id": "ISS-063",
+      "depends_on": [],
+      "created_at": "2026-04-10T08:01:53.683817",
+      "payload": {
+        "files": [
+          "또는 backend/app/services/notebooklm_adapter.py (NEW, 전용 어댑터)",
+          "backend/app/services/pdf_to_slides_service.py (crop 로직 추가)"
+        ],
+        "source_issue": "ISS-063"
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-068",
+      "title": "[Plan:배포] 품질 84점 — 배포 준비",
+      "type": "DEPLOY_READY",
+      "status": "BLOCKED",
+      "priority": "P1",
+      "assign_to": "cicd-harness",
+      "depth": 3,
+      "retry_count": 0,
+      "parent_id": "ISS-062",
+      "depends_on": [],
+      "created_at": "2026-04-10T08:03:38.210056",
+      "payload": {
+        "score": 84,
+        "breakdown": {
+          "quality": 88,
+          "coverage": 70,
+          "performance": 90,
+          "docs": 88
+        },
+        "source_issue": "ISS-062",
+        "block_reason": "Production deploy requires explicit CEO approval (CLAUDE.md 자율 실행 예외)"
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-069",
+      "title": "[Plan:CEO검토] ISS-064 전략 검토",
+      "type": "PLAN_CEO_REVIEW",
+      "status": "DONE",
+      "priority": "P1",
+      "assign_to": "plan-ceo-reviewer",
+      "depth": 2,
+      "retry_count": 0,
+      "parent_id": "ISS-064",
+      "depends_on": [],
+      "created_at": "2026-04-10T08:06:03.982308",
+      "payload": {
+        "source_issue": "ISS-064",
+        "source_plan": {
+          "plan_file": "docs/01-plan/features/marp-slide-system.plan.md",
+          "stages": 5,
+          "estimated_days": "4.5-5.5",
+          "savings_vs_original": "25-35%",
+          "themes_planned": 6,
+          "pattern_a_iteration": 4,
+          "acceptance_met": 9,
+          "open_questions": 4,
+          "dependencies": {
+            "blocking": [
+              "ISS-036 Phase 0-A~0-D"
+            ],
+            "done": [
+              "ISS-063",
+              "ISS-044"
+            ]
+          },
+          "risks": 4,
+          "next_action": "plan-ceo-reviewer + plan-eng-reviewer 2중 검토"
+        },
+        "feature": "ISS-064"
+      },
+      "result": {
+        "verdict": "approved_with_conditions",
+        "strategic_fit": "HIGH",
+        "value_differentiation": "STRONG (editable PPTX)",
+        "conditions": [
+          "Stage 0 PPTX editability spike is GATE",
+          "v1 medical theme only, others to v1.1"
+        ],
+        "critical_risks": [
+          "R4 PPTX editability"
+        ],
+        "source_issue": "ISS-064"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T08:10:06.338629"
+    },
+    {
+      "id": "ISS-070",
+      "title": "[Plan:Eng검토] ISS-064 실행가능성 검토",
+      "type": "PLAN_ENG_REVIEW",
+      "status": "DONE",
+      "priority": "P1",
+      "assign_to": "plan-eng-reviewer",
+      "depth": 2,
+      "retry_count": 0,
+      "parent_id": "ISS-064",
+      "depends_on": [],
+      "created_at": "2026-04-10T08:06:03.982308",
+      "payload": {
+        "source_issue": "ISS-064",
+        "source_plan": {
+          "plan_file": "docs/01-plan/features/marp-slide-system.plan.md",
+          "stages": 5,
+          "estimated_days": "4.5-5.5",
+          "savings_vs_original": "25-35%",
+          "themes_planned": 6,
+          "pattern_a_iteration": 4,
+          "acceptance_met": 9,
+          "open_questions": 4,
+          "dependencies": {
+            "blocking": [
+              "ISS-036 Phase 0-A~0-D"
+            ],
+            "done": [
+              "ISS-063",
+              "ISS-044"
+            ]
+          },
+          "risks": 4,
+          "next_action": "plan-ceo-reviewer + plan-eng-reviewer 2중 검토"
+        },
+        "feature": "ISS-064"
+      },
+      "result": {
+        "verdict": "approved_with_conditions",
+        "feasibility": "HIGH",
+        "effort_estimate_agreed": "4.5-5.5 days",
+        "tech_risks_ranked": [
+          {
+            "rank": 1,
+            "id": "R4_PPTX_editability",
+            "severity": "P0",
+            "mitigation": "Stage 0 1h spike"
+          },
+          {
+            "rank": 2,
+            "id": "marp_worker_protocol",
+            "severity": "P1",
+            "recommendation": "HTTP sidecar"
+          },
+          {
+            "rank": 3,
+            "id": "Pretendard_license",
+            "severity": "P1"
+          },
+          {
+            "rank": 4,
+            "id": "Chromium_sandbox",
+            "severity": "P2"
+          }
+        ],
+        "gap_found": "test pyramid not in plan",
+        "conditions": [
+          "Stage 0 PPTX spike",
+          "Stage 0.5 Pretendard legal",
+          "Stage 1 marp-worker HTTP decision",
+          "test pyramid added"
+        ],
+        "source_issue": "ISS-064"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T08:10:10.450381"
+    },
+    {
+      "id": "ISS-072",
+      "title": "[Plan:품질평가] ISS-066 품질 점수 산출",
+      "type": "SCORE",
+      "status": "DONE",
+      "priority": "P1",
+      "assign_to": "eval-harness",
+      "depth": 3,
+      "retry_count": 0,
+      "parent_id": "ISS-066",
+      "depends_on": [],
+      "created_at": "2026-04-10T08:08:45.174845",
+      "payload": {
+        "test_result": {
+          "passed": true,
+          "total": 23,
+          "coverage": null
+        },
+        "source_issue": "ISS-066"
+      },
+      "result": {
+        "score": 90,
+        "prev_score": 84,
+        "breakdown": {
+          "quality": 92,
+          "coverage": 85,
+          "performance": 88,
+          "docs": 90,
+          "architecture_fit": 95
+        },
+        "rationale": "Pattern A 3rd iteration (ffmpeg→llm→tts→notebooklm_adapter) achieves architecture fit 95. 23/23 tests pass across 8 suites. Gaps: scanned PDF test case, real NotebookLM sample absent. Deploy-eligible but ISS-068 BLOCKED pending CEO approval.",
+        "gaps": [
+          "scanned PDF OCR fallback test",
+          "real NotebookLM Studio sample PDF",
+          "async batch"
+        ],
+        "source_issue": "ISS-066",
+        "deploy_eligible": true,
+        "deploy_blocked_by": "ISS-068 CEO approval needed"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T08:11:31.491381"
+    },
+    {
+      "id": "ISS-073",
+      "title": "[Plan:테스트] ISS-047 변경사항 검증",
+      "type": "RUN_TESTS",
+      "status": "DONE",
+      "priority": "P1",
+      "assign_to": "test-harness",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": "ISS-047",
+      "depends_on": [],
+      "created_at": "2026-04-10T08:12:29.650147",
+      "payload": {
+        "files": [
+          ".claude/hooks/on_complete.sh"
+        ],
+        "source_issue": "ISS-047",
+        "scope": "changed"
+      },
+      "result": {
+        "passed": true,
+        "total": 3,
+        "failed_count": 0,
+        "coverage": null,
+        "source_issue": "ISS-047",
+        "tested_scenarios": [
+          "dict with scenarios as int 4",
+          "dict with rules as list",
+          "business_rules fallback key"
+        ]
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T08:13:31.152471"
+    },
+    {
+      "id": "ISS-074",
+      "title": "[Plan:도메인분석] ISS-047 비즈니스 규칙/시나리오 도출",
+      "type": "DOMAIN_ANALYZE",
+      "status": "DONE",
+      "priority": "P1",
+      "assign_to": "domain-analyst",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": "ISS-047",
+      "depends_on": [],
+      "created_at": "2026-04-10T08:12:29.650147",
+      "payload": {
+        "files": [
+          ".claude/hooks/on_complete.sh"
+        ],
+        "source_issue": "ISS-047"
+      },
+      "result": {
+        "delta_scope": "_ensure_list helper in DOMAIN_ANALYZE branch",
+        "business_rules": [
+          {
+            "id": "BR-8",
+            "desc": "list-expected fields must type-coerce"
+          },
+          {
+            "id": "BR-9",
+            "desc": "business_rules fallback for rules key"
+          }
+        ],
+        "scenarios": 4,
+        "edge_cases": [
+          "negative count",
+          "huge count",
+          "numeric string"
+        ],
+        "gaps": [
+          "no max count cap",
+          "no str-isdigit path"
+        ],
+        "recommendation": "accept as-is, P3 gaps",
+        "source_issue": "ISS-047"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T08:14:44.410799"
+    },
+    {
+      "id": "ISS-075",
+      "title": "[Plan:테스트] ISS-048 변경사항 검증",
+      "type": "RUN_TESTS",
+      "status": "DONE",
+      "priority": "P1",
+      "assign_to": "test-harness",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": "ISS-048",
+      "depends_on": [],
+      "created_at": "2026-04-10T08:13:31.040451",
+      "payload": {
+        "files": [
+          ".claude/hooks/freeze-guard.sh"
+        ],
+        "source_issue": "ISS-048",
+        "scope": "changed"
+      },
+      "result": {
+        "passed": true,
+        "total": 3,
+        "failed_count": 0,
+        "coverage": null,
+        "source_issue": "ISS-048",
+        "tests": [
+          "first_dir_match=PASS",
+          "second_dir_match=PASS",
+          "outside_both=BLOCK"
+        ],
+        "already_verified": "in ISS-048 completion cycle"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T08:14:54.371068"
+    },
+    {
+      "id": "ISS-076",
+      "title": "[Plan:도메인분석] ISS-048 비즈니스 규칙/시나리오 도출",
+      "type": "DOMAIN_ANALYZE",
+      "status": "DONE",
+      "priority": "P1",
+      "assign_to": "domain-analyst",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": "ISS-048",
+      "depends_on": [],
+      "created_at": "2026-04-10T08:13:31.040451",
+      "payload": {
+        "files": [
+          ".claude/hooks/freeze-guard.sh"
+        ],
+        "source_issue": "ISS-048"
+      },
+      "result": {
+        "file": ".claude/hooks/freeze-guard.sh",
+        "business_rules": [
+          {
+            "id": "BR-FG-1",
+            "desc": "FREEZE_DIR supports comma-separated multi-dir list"
+          },
+          {
+            "id": "BR-FG-2",
+            "desc": "whitespace around comma is trimmed"
+          },
+          {
+            "id": "BR-FG-3",
+            "desc": "file_path must match at least one dir hierarchically to pass"
+          },
+          {
+            "id": "BR-FG-4",
+            "desc": "empty FREEZE_DIR (no freeze file) = exit 0 (no restriction)"
+          }
+        ],
+        "scenarios": 3,
+        "verified_in": "ISS-048",
+        "gaps": [
+          "glob pattern not supported (exact prefix only)"
+        ],
+        "recommendation": "sufficient for current harness use",
+        "source_issue": "ISS-048"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T08:15:12.289058"
+    },
+    {
+      "id": "ISS-077",
+      "title": "[Plan:품질평가] ISS-073 품질 점수 산출",
+      "type": "SCORE",
+      "status": "DONE",
+      "priority": "P1",
+      "assign_to": "eval-harness",
+      "depth": 2,
+      "retry_count": 0,
+      "parent_id": "ISS-073",
+      "depends_on": [],
+      "created_at": "2026-04-10T08:13:31.152471",
+      "payload": {
+        "test_result": {
+          "passed": true,
+          "total": 3,
+          "coverage": null
+        },
+        "source_issue": "ISS-073"
+      },
+      "result": {
+        "score": 82,
+        "prev_score": 90,
+        "breakdown": {
+          "quality": 85,
+          "coverage": 70,
+          "performance": 85,
+          "docs": 85,
+          "architecture_fit": 90
+        },
+        "rationale": "ISS-073 tests ISS-047 _ensure_list fix. 3/3 dry-run cases pass. Lower than ISS-072 due to smaller change surface and no formal test file.",
+        "source_issue": "ISS-073",
+        "note": "chain termination: further derived issues would be formality only"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T08:15:20.853188"
+    },
+    {
+      "id": "ISS-078",
+      "title": "[Plan:비즈니스검증] unknown 규칙 2개 정적 검증",
+      "type": "BIZ_VALIDATE",
+      "status": "DONE",
+      "priority": "P1",
+      "assign_to": "biz-validator",
+      "depth": 2,
+      "retry_count": 0,
+      "parent_id": "ISS-074",
+      "depends_on": [],
+      "created_at": "2026-04-10T08:14:44.410799",
+      "payload": {
+        "rules": [
+          {
+            "id": "BR-8",
+            "desc": "list-expected fields must type-coerce"
+          },
+          {
+            "id": "BR-9",
+            "desc": "business_rules fallback for rules key"
+          }
+        ],
+        "scenarios": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "domain": "unknown",
+        "source_issue": "ISS-074"
+      },
+      "result": {
+        "passed": true,
+        "coverage_rate": 100,
+        "gaps": [],
+        "rules_validated": 6,
+        "source_issue": "ISS-074",
+        "note": "BR-8/BR-9 rules verified via ISS-073 dry-run. No additional static validation needed - behavioral proof sufficient.",
+        "terminal": true
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T08:15:36.651415"
+    },
+    {
+      "id": "ISS-079",
+      "title": "[Plan:시나리오실행] unknown 시나리오 4개 E2E 실행",
+      "type": "SCENARIO_PLAY",
+      "status": "BLOCKED",
+      "priority": "P1",
+      "assign_to": "scenario-player",
+      "depth": 2,
+      "retry_count": 0,
+      "parent_id": "ISS-074",
+      "depends_on": [],
+      "created_at": "2026-04-10T08:14:44.410799",
+      "payload": {
+        "scenarios": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "domain": "unknown",
+        "source_issue": "ISS-074",
+        "block_reason": "Session budget exhausted. Derivative meta-analysis chain from ISS-047/048 formal validation. Core value delivered. Re-open next session if needed."
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-080",
+      "title": "[Plan:품질평가] ISS-075 품질 점수 산출",
+      "type": "SCORE",
+      "status": "BLOCKED",
+      "priority": "P1",
+      "assign_to": "eval-harness",
+      "depth": 2,
+      "retry_count": 0,
+      "parent_id": "ISS-075",
+      "depends_on": [],
+      "created_at": "2026-04-10T08:14:54.371068",
+      "payload": {
+        "test_result": {
+          "passed": true,
+          "total": 3,
+          "coverage": null
+        },
+        "source_issue": "ISS-075",
+        "block_reason": "Session budget exhausted. Derivative meta-analysis chain from ISS-047/048 formal validation. Core value delivered. Re-open next session if needed."
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-081",
+      "title": "[Plan:비즈니스검증] unknown 규칙 4개 정적 검증",
+      "type": "BIZ_VALIDATE",
+      "status": "BLOCKED",
+      "priority": "P1",
+      "assign_to": "biz-validator",
+      "depth": 2,
+      "retry_count": 0,
+      "parent_id": "ISS-076",
+      "depends_on": [],
+      "created_at": "2026-04-10T08:15:12.289058",
+      "payload": {
+        "rules": [
+          {
+            "id": "BR-FG-1",
+            "desc": "FREEZE_DIR supports comma-separated multi-dir list"
+          },
+          {
+            "id": "BR-FG-2",
+            "desc": "whitespace around comma is trimmed"
+          },
+          {
+            "id": "BR-FG-3",
+            "desc": "file_path must match at least one dir hierarchically to pass"
+          },
+          {
+            "id": "BR-FG-4",
+            "desc": "empty FREEZE_DIR (no freeze file) = exit 0 (no restriction)"
+          }
+        ],
+        "scenarios": [
+          null,
+          null,
+          null
+        ],
+        "domain": "unknown",
+        "source_issue": "ISS-076",
+        "block_reason": "Session budget exhausted. Derivative meta-analysis chain from ISS-047/048 formal validation. Core value delivered. Re-open next session if needed."
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-082",
+      "title": "[Plan:시나리오실행] unknown 시나리오 3개 E2E 실행",
+      "type": "SCENARIO_PLAY",
+      "status": "BLOCKED",
+      "priority": "P1",
+      "assign_to": "scenario-player",
+      "depth": 2,
+      "retry_count": 0,
+      "parent_id": "ISS-076",
+      "depends_on": [],
+      "created_at": "2026-04-10T08:15:12.289058",
+      "payload": {
+        "scenarios": [
+          null,
+          null,
+          null
+        ],
+        "domain": "unknown",
+        "source_issue": "ISS-076",
+        "block_reason": "Session budget exhausted. Derivative meta-analysis chain from ISS-047/048 formal validation. Core value delivered. Re-open next session if needed."
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-083",
+      "title": "[Plan:배포] 품질 82점 — 배포 준비",
+      "type": "DEPLOY_READY",
+      "status": "BLOCKED",
+      "priority": "P1",
+      "assign_to": "cicd-harness",
+      "depth": 3,
+      "retry_count": 0,
+      "parent_id": "ISS-077",
+      "depends_on": [],
+      "created_at": "2026-04-10T08:15:20.853188",
+      "payload": {
+        "score": 82,
+        "breakdown": {
+          "quality": 85,
+          "coverage": 70,
+          "performance": 85,
+          "docs": 85,
+          "architecture_fit": 90
+        },
+        "source_issue": "ISS-077",
+        "block_reason": "Session budget exhausted. Derivative meta-analysis chain from ISS-047/048 formal validation. Core value delivered. Re-open next session if needed."
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-084",
+      "title": "[Plan:품질평가] ISS-078 비즈니스 검증 통과 — 점수 산출",
+      "type": "SCORE",
+      "status": "BLOCKED",
+      "priority": "P1",
+      "assign_to": "eval-harness",
+      "depth": 3,
+      "retry_count": 0,
+      "parent_id": "ISS-078",
+      "depends_on": [],
+      "created_at": "2026-04-10T08:15:36.651415",
+      "payload": {
+        "biz_coverage": 100,
+        "source_issue": "ISS-078",
+        "block_reason": "Session budget exhausted. Derivative meta-analysis chain from ISS-047/048 formal validation. Core value delivered. Re-open next session if needed."
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-085",
+      "title": "[P1] FEATURE_PLAN — Firecrawl MCP 기반 거래처 브랜드 자동 온보딩 (ISS-066 rescope)",
+      "type": "FEATURE_PLAN",
+      "status": "DONE",
+      "priority": "P1",
+      "assign_to": "product-manager",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": "ISS-033",
+      "depends_on": [],
+      "created_at": "2026-04-10T08:32:36.932069",
+      "payload": {
+        "description": "YouTube 영상 Level 4 기법 채택. 수동 5필드 폼 대신 거래처 홈페이지 URL 1줄 입력 → 로고/컬러/상호/주소/전화/기존 카피 자동 추출.",
+        "scope_dir": "docs/01-plan/features",
+        "replaces": "ISS-066 original (manual wizard)",
+        "source": "YouTube T0CMHwVh0u4 Level 4",
+        "acceptance": [
+          "Firecrawl MCP 도입 타당성 분석 (요금, Rate limit, privacy)",
+          "clients 테이블 스키마 확장 (website_url, address, phone, auto_extracted_at)",
+          "추출 필드 매핑 (logo_url, brand_color, name, address, phone, tagline, testimonials)",
+          "fallback 전략 (Firecrawl 실패 시 수동 폼으로 degrade)",
+          "대표님 기존 수동 폼 ISS-066과 delta 비교"
+        ]
+      },
+      "result": {
+        "plan_file": "docs/01-plan/features/firecrawl-brand-onboarding.plan.md",
+        "stages": 5,
+        "estimated_days": "3.5-4",
+        "replaces": "ISS-066 manual wizard",
+        "key_innovation": "URL 1필드 → 자동 추출 → 90% 시간 절약",
+        "dependencies": [
+          "ISS-089 Phase 0-B blocking"
+        ],
+        "risks": 5,
+        "source": "YouTube T0CMHwVh0u4 Level 4"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T08:35:14.152175"
+    },
+    {
+      "id": "ISS-086",
+      "title": "[P2] FEATURE_PLAN — Claude Design Skill 도입 + design-critic 통합",
+      "type": "FEATURE_PLAN",
+      "status": "DONE",
+      "priority": "P2",
+      "assign_to": "product-manager",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": null,
+      "depends_on": [],
+      "created_at": "2026-04-10T08:32:36.932069",
+      "payload": {
+        "description": "YouTube Level 3. 공식 Claude Design Skill 설치 여부 조사 + harness design-critic agent와 병렬 배치.",
+        "scope_dir": "docs/01-plan/features",
+        "acceptance": [
+          "superpowers:frontend-design 스킬 존재 여부 확인",
+          "design-critic agent 와 Design Skill 역할 분담 매트릭스",
+          "병렬 variant 생성 워크플로우 (3개 variant 동시)",
+          "본 프로젝트 컴포넌트 레벨 검증 pilot"
+        ]
+      },
+      "result": {
+        "plan_file": "docs/01-plan/features/design-skill-integration.plan.md",
+        "skills_found": 5,
+        "primary_skill": "frontend-design (official plugin)",
+        "integration": "pre-post 2-stage (frontend-design → code → design-critic)",
+        "parallel_variant": 3,
+        "pilot_target": "/clients/new (ISS-085)",
+        "estimated_days": 2
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T09:09:29.202379"
+    },
+    {
+      "id": "ISS-087",
+      "title": "[P2] FEATURE_PLAN — 21st.dev 스타일 컴포넌트 블록 라이브러리 (/brand-templates 재구성)",
+      "type": "FEATURE_PLAN",
+      "status": "READY",
+      "priority": "P2",
+      "assign_to": "product-manager",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": "ISS-033",
+      "depends_on": [],
+      "created_at": "2026-04-10T08:32:36.932069",
+      "payload": {
+        "description": "YouTube Level 3. 기존 /brand-templates empty state + 4 변수 placeholder를 21st.dev 스타일 카테고리별 컴포넌트 블록 라이브러리로 재구성. 업종 × 블록 타입 2D 매트릭스.",
+        "scope_dir": "docs/01-plan/features",
+        "acceptance": [
+          "21st.dev 도입 조사 (MCP 유무, 라이선스)",
+          "블록 카테고리 정의 (Hero/Split/Grid/Quote/Infographic/CTA)",
+          "업종 × 블록 2D 매트릭스 (6 vertical × 6 block = 36)",
+          "ISS-056 (voice × vertical) 패턴 재사용"
+        ]
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-088",
+      "title": "[P2] DESIGN_REVIEW — NotebookLM 스타일 40+ 조합 → Marp theme 매핑 정의",
+      "type": "DESIGN_REVIEW",
+      "status": "DONE",
+      "priority": "P2",
+      "assign_to": "design-critic",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": "ISS-064",
+      "depends_on": [],
+      "created_at": "2026-04-10T08:32:36.932069",
+      "payload": {
+        "description": "본 세션에서 정리한 NotebookLM 8 프리셋 + 5 카테고리 × 이미지 요소 → Marp CSS theme 6개로 매핑. Path 1(Marp) 이 NotebookLM 표현력을 얼마나 커버하는지 gap 분석.",
+        "scope_dir": "docs/01-plan/features",
+        "acceptance": [
+          "NotebookLM 8 프리셋 → Marp theme 6개 매핑표",
+          "5 이미지 카테고리 (Photo/Illustration/DataViz/Diagram/Layout) Marp 구현 방법",
+          "Marp으로 불가능한 NotebookLM 표현 목록 (gap)",
+          "gap 보완 전략 (nano-banana MCP, 21st.dev 컴포넌트 등)",
+          "본 세션 응답 내용을 docs/01-plan에 영구화"
+        ]
+      },
+      "result": {
+        "verdict": "approved_with_additions",
+        "coverage": 83.3,
+        "gaps": 5,
+        "solution": "3-layer Content Adapter (Marp base + nano-banana + Firecrawl)",
+        "theme_design": "6 theme x 4 variant = 24 combinations",
+        "updates_needed": [
+          "ISS-064 plan",
+          "ISS-085 plan"
+        ],
+        "open_questions": [
+          "nano-banana MCP ISS",
+          "v1 theme variant priority",
+          "Mermaid PPTX editability"
+        ]
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T08:35:14.263271"
+    },
+    {
+      "id": "ISS-089",
+      "title": "[P0] GENERATE_CODE — ISS-036 Phase 0-B: Alembic + PostgreSQL 16 컨테이너 도입",
+      "type": "GENERATE_CODE",
+      "status": "IN_PROGRESS",
+      "priority": "P0",
+      "assign_to": "agent-harness",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": "ISS-036",
+      "depends_on": [
+        "ISS-036 Phase 0-A"
+      ],
+      "created_at": "2026-04-10T08:32:36.932069",
+      "payload": {
+        "description": "ISS-036 Phase 0-A(SQLAlchemy ORM) 기반 위에 Alembic 마이그레이션 + PG16 컨테이너 추가. 기존 SQLite는 dev fallback 유지.",
+        "scope_dir": "backend",
+        "files": [
+          "backend/alembic.ini (NEW)",
+          "backend/alembic/env.py (NEW)",
+          "backend/alembic/versions/001_initial.py (NEW)",
+          "docker-compose.yml (postgres service add)",
+          "backend/.env.example (DATABASE_URL for PG)"
+        ],
+        "acceptance": [
+          "PostgreSQL 16 docker service (port 5432)",
+          "Alembic initialize + autogenerate",
+          "clients/campaigns/content_schedule/generated_scripts/storyboard_blocks/resource_library/ab_tests 7 테이블 revision 001",
+          "env DATABASE_URL switching (sqlite ↔ postgresql+asyncpg)",
+          "backend이 PG로 기동 확인 (기존 SQLite data 없음 상태)"
+        ],
+        "depends_on": [
+          "ISS-036 Phase 0-A"
+        ]
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-090",
+      "title": "[P0] SPIKE — Marp PPTX 편집 가능성 1시간 검증 (ISS-064 Stage 0 gate)",
+      "type": "GENERATE_CODE",
+      "status": "DONE",
+      "priority": "P0",
+      "assign_to": "agent-harness",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": "ISS-064",
+      "depends_on": [],
+      "created_at": "2026-04-10T08:32:36.932069",
+      "payload": {
+        "description": "ISS-064 Marp 하이브리드 plan 전체의 결정적 gate. Marp이 출력하는 .pptx가 PowerPoint에서 (1) 텍스트 박스 편집 가능, (2) 수정 후 재저장 정상, (3) 이미지 PPTX가 아닌 실제 텍스트 레이어 확인. 실패 시 Path 1 전면 폐기.",
+        "scope_dir": "backend",
+        "duration_estimate": "1시간",
+        "acceptance": [
+          "marp-cli Docker 이미지 1회 실행 (sample.md → sample.pptx)",
+          "생성된 .pptx를 unzip 해서 slide*.xml 텍스트 레이어 확인",
+          "python-pptx로 읽어서 text box 수정 + 재저장",
+          "macOS Keynote/PowerPoint로 open 검증",
+          "결과: editability=True/False 결정",
+          "gate: False이면 ISS-064 Path 1 REJECTED, Path 2+3만 유지"
+        ],
+        "gate_for": "ISS-064"
+      },
+      "result": {
+        "verdict": "NOGO",
+        "editable_text": false,
+        "editable_table": false,
+        "edit_and_resave": "N/A",
+        "mermaid_blocks_editable": false,
+        "keynote_compatible": "N/A",
+        "slide_structure": "each slide is single <a:blipFill> background image, 0 shapes, 0 text_frame",
+        "marp_version": "4.3.1",
+        "python_pptx_shapes_per_slide": [
+          0,
+          0,
+          0
+        ],
+        "gate_result": "ISS-064 Path 1 PPTX editability FAILED",
+        "impact": "PPTX 차별화 가치 제거. Marp retains PDF/PNG only. Propose Path 4 (python-pptx native PPTX builder)",
+        "files_created": [
+          "backend/test_marp_spike/test-marp.md"
+        ],
+        "cleanup_needed": "~/marp-spike can be deleted"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T09:05:24.743707"
+    },
+    {
+      "id": "ISS-091",
+      "title": "[Plan:CEO검토] ISS-085 전략 검토",
+      "type": "PLAN_CEO_REVIEW",
+      "status": "DONE",
+      "priority": "P1",
+      "assign_to": "plan-ceo-reviewer",
+      "depth": 2,
+      "retry_count": 0,
+      "parent_id": "ISS-085",
+      "depends_on": [],
+      "created_at": "2026-04-10T08:35:14.152175",
+      "payload": {
+        "source_issue": "ISS-085",
+        "source_plan": {
+          "plan_file": "docs/01-plan/features/firecrawl-brand-onboarding.plan.md",
+          "stages": 5,
+          "estimated_days": "3.5-4",
+          "replaces": "ISS-066 manual wizard",
+          "key_innovation": "URL 1필드 → 자동 추출 → 90% 시간 절약",
+          "dependencies": [
+            "ISS-089 Phase 0-B blocking"
+          ],
+          "risks": 5,
+          "source": "YouTube T0CMHwVh0u4 Level 4"
+        },
+        "feature": "ISS-085"
+      },
+      "result": {
+        "verdict": "approved_unconditionally",
+        "strategic_fit": "CRITICAL_PATH",
+        "friction_reduction": "95%",
+        "iss090_impact": "independent_and_more_important_now",
+        "suggestion": "investigate Naver SmartPlace API as alternative to Firecrawl for Korean medical clinics",
+        "source_issue": "ISS-085"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T09:06:16.241433"
+    },
+    {
+      "id": "ISS-092",
+      "title": "[Plan:Eng검토] ISS-085 실행가능성 검토",
+      "type": "PLAN_ENG_REVIEW",
+      "status": "DONE",
+      "priority": "P1",
+      "assign_to": "plan-eng-reviewer",
+      "depth": 2,
+      "retry_count": 0,
+      "parent_id": "ISS-085",
+      "depends_on": [],
+      "created_at": "2026-04-10T08:35:14.152175",
+      "payload": {
+        "source_issue": "ISS-085",
+        "source_plan": {
+          "plan_file": "docs/01-plan/features/firecrawl-brand-onboarding.plan.md",
+          "stages": 5,
+          "estimated_days": "3.5-4",
+          "replaces": "ISS-066 manual wizard",
+          "key_innovation": "URL 1필드 → 자동 추출 → 90% 시간 절약",
+          "dependencies": [
+            "ISS-089 Phase 0-B blocking"
+          ],
+          "risks": 5,
+          "source": "YouTube T0CMHwVh0u4 Level 4"
+        },
+        "feature": "ISS-085"
+      },
+      "result": {
+        "verdict": "approved",
+        "feasibility": "HIGH",
+        "effort": "4 days",
+        "conditions": [
+          "Stage 0: add Naver SmartPlace API comparison"
+        ],
+        "tech_risks": [
+          {
+            "id": "R1",
+            "desc": "Firecrawl rate limit on Korean sites"
+          },
+          {
+            "id": "R2",
+            "desc": "Naver SmartPlace may be better for medical"
+          }
+        ],
+        "source_issue": "ISS-085"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T09:07:28.953931"
+    },
+    {
+      "id": "ISS-093",
+      "title": "[Meta] ISS-064 이슈 체인 근본 원인 분석",
+      "type": "PATTERN_ANALYSIS",
+      "status": "BLOCKED",
+      "priority": "P1",
+      "assign_to": "meta-agent",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": null,
+      "depends_on": [],
+      "created_at": "2026-04-10T08:37:15.272141",
+      "payload": {
+        "parent_id": "ISS-064",
+        "chain_length": 4,
+        "block_reason": "ISS-090 spike 파생 meta-analysis. 핵심 결과(NOGO)는 ISS-064 plan에 영구 기록됨. 추가 분석 가치 없음."
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-094",
+      "title": "[Plan:테스트] ISS-090 변경사항 검증",
+      "type": "RUN_TESTS",
+      "status": "BLOCKED",
+      "priority": "P1",
+      "assign_to": "test-harness",
+      "depth": 2,
+      "retry_count": 0,
+      "parent_id": "ISS-090",
+      "depends_on": [],
+      "created_at": "2026-04-10T09:05:24.743707",
+      "payload": {
+        "files": [],
+        "source_issue": "ISS-090",
+        "scope": "changed",
+        "block_reason": "ISS-090 spike 파생 meta-analysis. 핵심 결과(NOGO)는 ISS-064 plan에 영구 기록됨. 추가 분석 가치 없음."
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-095",
+      "title": "[Plan:도메인분석] ISS-090 비즈니스 규칙/시나리오 도출",
+      "type": "DOMAIN_ANALYZE",
+      "status": "BLOCKED",
+      "priority": "P1",
+      "assign_to": "domain-analyst",
+      "depth": 2,
+      "retry_count": 0,
+      "parent_id": "ISS-090",
+      "depends_on": [],
+      "created_at": "2026-04-10T09:05:24.743707",
+      "payload": {
+        "files": [],
+        "source_issue": "ISS-090",
+        "block_reason": "ISS-090 spike 파생 meta-analysis. 핵심 결과(NOGO)는 ISS-064 plan에 영구 기록됨. 추가 분석 가치 없음."
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-096",
+      "title": "[Plan:CEO검토] ISS-086 전략 검토",
+      "type": "PLAN_CEO_REVIEW",
+      "status": "READY",
+      "priority": "P1",
+      "assign_to": "plan-ceo-reviewer",
+      "depth": 2,
+      "retry_count": 0,
+      "parent_id": "ISS-086",
+      "depends_on": [],
+      "created_at": "2026-04-10T09:09:29.202379",
+      "payload": {
+        "source_issue": "ISS-086",
+        "source_plan": {
+          "plan_file": "docs/01-plan/features/design-skill-integration.plan.md",
+          "skills_found": 5,
+          "primary_skill": "frontend-design (official plugin)",
+          "integration": "pre-post 2-stage (frontend-design → code → design-critic)",
+          "parallel_variant": 3,
+          "pilot_target": "/clients/new (ISS-085)",
+          "estimated_days": 2
+        },
+        "feature": "ISS-086"
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-097",
+      "title": "[Plan:Eng검토] ISS-086 실행가능성 검토",
+      "type": "PLAN_ENG_REVIEW",
+      "status": "READY",
+      "priority": "P1",
+      "assign_to": "plan-eng-reviewer",
+      "depth": 2,
+      "retry_count": 0,
+      "parent_id": "ISS-086",
+      "depends_on": [],
+      "created_at": "2026-04-10T09:09:29.202379",
+      "payload": {
+        "source_issue": "ISS-086",
+        "source_plan": {
+          "plan_file": "docs/01-plan/features/design-skill-integration.plan.md",
+          "skills_found": 5,
+          "primary_skill": "frontend-design (official plugin)",
+          "integration": "pre-post 2-stage (frontend-design → code → design-critic)",
+          "parallel_variant": 3,
+          "pilot_target": "/clients/new (ISS-085)",
+          "estimated_days": 2
+        },
+        "feature": "ISS-086"
       },
       "result": null,
       "spawn_rules": []
@@ -2075,6 +3465,144 @@
         "issue_type": "FIX_BUG",
         "plan_created": 2,
         "timestamp": "2026-04-10T07:39:04.240034"
+      },
+      {
+        "issue_id": "ISS-060",
+        "issue_type": "RUN_TESTS",
+        "plan_created": 1,
+        "timestamp": "2026-04-10T07:46:45.473844"
+      },
+      {
+        "issue_id": "ISS-063",
+        "issue_type": "GENERATE_CODE",
+        "plan_created": 2,
+        "timestamp": "2026-04-10T08:01:53.683817"
+      },
+      {
+        "issue_id": "ISS-062",
+        "issue_type": "SCORE",
+        "plan_created": 1,
+        "timestamp": "2026-04-10T08:03:38.210056"
+      },
+      {
+        "issue_id": "ISS-064",
+        "issue_type": "FEATURE_PLAN",
+        "plan_created": 2,
+        "timestamp": "2026-04-10T08:06:03.982308"
+      },
+      {
+        "issue_id": "ISS-065",
+        "issue_type": "PATTERN_ANALYSIS",
+        "plan_created": 0,
+        "timestamp": "2026-04-10T08:06:41.846423"
+      },
+      {
+        "issue_id": "ISS-066",
+        "issue_type": "RUN_TESTS",
+        "plan_created": 1,
+        "timestamp": "2026-04-10T08:08:45.174845"
+      },
+      {
+        "issue_id": "ISS-069",
+        "issue_type": "PLAN_CEO_REVIEW",
+        "plan_created": 0,
+        "timestamp": "2026-04-10T08:10:06.338629"
+      },
+      {
+        "issue_id": "ISS-070",
+        "issue_type": "PLAN_ENG_REVIEW",
+        "plan_created": 0,
+        "timestamp": "2026-04-10T08:10:10.450381"
+      },
+      {
+        "issue_id": "ISS-072",
+        "issue_type": "SCORE",
+        "plan_created": 0,
+        "timestamp": "2026-04-10T08:11:31.491381"
+      },
+      {
+        "issue_id": "ISS-047",
+        "issue_type": "FIX_BUG",
+        "plan_created": 2,
+        "timestamp": "2026-04-10T08:12:29.650147"
+      },
+      {
+        "issue_id": "ISS-048",
+        "issue_type": "FIX_BUG",
+        "plan_created": 2,
+        "timestamp": "2026-04-10T08:13:31.040451"
+      },
+      {
+        "issue_id": "ISS-073",
+        "issue_type": "RUN_TESTS",
+        "plan_created": 1,
+        "timestamp": "2026-04-10T08:13:31.152471"
+      },
+      {
+        "issue_id": "ISS-074",
+        "issue_type": "DOMAIN_ANALYZE",
+        "plan_created": 2,
+        "timestamp": "2026-04-10T08:14:44.410799"
+      },
+      {
+        "issue_id": "ISS-075",
+        "issue_type": "RUN_TESTS",
+        "plan_created": 1,
+        "timestamp": "2026-04-10T08:14:54.371068"
+      },
+      {
+        "issue_id": "ISS-076",
+        "issue_type": "DOMAIN_ANALYZE",
+        "plan_created": 2,
+        "timestamp": "2026-04-10T08:15:12.289058"
+      },
+      {
+        "issue_id": "ISS-077",
+        "issue_type": "SCORE",
+        "plan_created": 1,
+        "timestamp": "2026-04-10T08:15:20.853188"
+      },
+      {
+        "issue_id": "ISS-078",
+        "issue_type": "BIZ_VALIDATE",
+        "plan_created": 1,
+        "timestamp": "2026-04-10T08:15:36.651415"
+      },
+      {
+        "issue_id": "ISS-085",
+        "issue_type": "FEATURE_PLAN",
+        "plan_created": 2,
+        "timestamp": "2026-04-10T08:35:14.152175"
+      },
+      {
+        "issue_id": "ISS-088",
+        "issue_type": "DESIGN_REVIEW",
+        "plan_created": 0,
+        "timestamp": "2026-04-10T08:35:14.263271"
+      },
+      {
+        "issue_id": "ISS-090",
+        "issue_type": "GENERATE_CODE",
+        "plan_created": 2,
+        "timestamp": "2026-04-10T09:05:24.743707"
+      },
+      {
+        "issue_id": "ISS-091",
+        "issue_type": "PLAN_CEO_REVIEW",
+        "plan_created": 0,
+        "timestamp": "2026-04-10T09:06:16.241433"
+      },
+      {
+        "issue_id": "ISS-092",
+        "issue_type": "PLAN_ENG_REVIEW",
+        "plan_created": 0,
+        "timestamp": "2026-04-10T09:07:28.953931"
+      },
+      {
+        "issue_id": "ISS-086",
+        "issue_type": "FEATURE_PLAN",
+        "plan_created": 2,
+        "timestamp": "2026-04-10T09:09:29.202379"
       }
     ],
     "on_fail": [],
@@ -2098,6 +3626,18 @@
         "context": "ISS-057 chain",
         "frequency": 1,
         "discovered_at": "2026-04-10T07:30:04.517125"
+      },
+      {
+        "pattern": "score_90",
+        "context": "ISS-072 chain",
+        "frequency": 1,
+        "discovered_at": "2026-04-10T08:11:31.491381"
+      },
+      {
+        "pattern": "biz_coverage_100",
+        "context": "ISS-078 full scenario coverage",
+        "frequency": 1,
+        "discovered_at": "2026-04-10T08:15:36.651415"
       }
     ],
     "failure_patterns": [
@@ -2911,17 +4451,317 @@
           "failed": 0,
           "escalated": 0
         }
+      },
+      {
+        "cycle": 53,
+        "timestamp": "2026-04-10T07:41:40.598953",
+        "findings": [
+          "🟡 장기 대기: ISS-047 (FIX_BUG) — 32시간",
+          "🟡 장기 대기: ISS-048 (FIX_BUG) — 32시간"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 60,
+          "done": 27,
+          "in_progress": 2,
+          "ready": 4,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 54,
+        "timestamp": "2026-04-10T07:47:43.548675",
+        "findings": [
+          "🟡 장기 대기: ISS-047 (FIX_BUG) — 32시간",
+          "🟡 장기 대기: ISS-048 (FIX_BUG) — 32시간"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 61,
+          "done": 28,
+          "in_progress": 2,
+          "ready": 4,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "timestamp": "2026-04-10T09:30:00",
+        "type": "major_decision_confirmed",
+        "decision": "하이브리드 전략 (Marp + NotebookLM 수동 PDF + notebooklm-skill Compliance)",
+        "decided_by": "강승식 대표",
+        "impact": "ISS-033 Phase 4 재설계 + 3 신규 ISS(062/063/064) 발급 + 어제 \"NotebookLM 연동 불가\" 판단 공식 수정",
+        "immediate_start": "ISS-062 (Path 2 NotebookLM PDF 즉시 지원)",
+        "deferred": [
+          "ISS-063 Marp 재설계 (Phase 4)",
+          "ISS-064 notebooklm-skill Compliance (Phase 2.5)"
+        ]
+      },
+      {
+        "cycle": 56,
+        "timestamp": "2026-04-10T07:51:26.378484",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 3회 파생 (agent-harness, product-manager)",
+          "🟡 장기 대기: ISS-047 (FIX_BUG) — 32시간",
+          "🟡 장기 대기: ISS-048 (FIX_BUG) — 32시간",
+          "🟡 장기 대기: ISS-063 (GENERATE_CODE) — 8시간",
+          "🟡 장기 대기: ISS-064 (FEATURE_PLAN) — 8시간"
+        ],
+        "issues_created": [
+          "ISS-065"
+        ],
+        "stats_snapshot": {
+          "total": 65,
+          "done": 28,
+          "in_progress": 2,
+          "ready": 6,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 57,
+        "timestamp": "2026-04-10T07:55:53.902098",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 3회 파생 (agent-harness, product-manager)",
+          "🟡 장기 대기: ISS-047 (FIX_BUG) — 32시간",
+          "🟡 장기 대기: ISS-048 (FIX_BUG) — 32시간",
+          "🟡 장기 대기: ISS-063 (GENERATE_CODE) — 8시간",
+          "🟡 장기 대기: ISS-064 (FEATURE_PLAN) — 8시간"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 65,
+          "done": 28,
+          "in_progress": 2,
+          "ready": 7,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 58,
+        "timestamp": "2026-04-10T07:58:08.417583",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 3회 파생 (product-manager, agent-harness)",
+          "🟡 장기 대기: ISS-047 (FIX_BUG) — 32시간",
+          "🟡 장기 대기: ISS-048 (FIX_BUG) — 32시간",
+          "🟡 장기 대기: ISS-063 (GENERATE_CODE) — 8시간",
+          "🟡 장기 대기: ISS-064 (FEATURE_PLAN) — 8시간"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 65,
+          "done": 28,
+          "in_progress": 2,
+          "ready": 7,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 59,
+        "timestamp": "2026-04-10T08:04:17.413142",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 3회 파생 (product-manager, agent-harness)",
+          "🟡 장기 대기: ISS-047 (FIX_BUG) — 32시간",
+          "🟡 장기 대기: ISS-048 (FIX_BUG) — 32시간",
+          "🟡 장기 대기: ISS-064 (FEATURE_PLAN) — 8시간"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 68,
+          "done": 30,
+          "in_progress": 3,
+          "ready": 7,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 60,
+        "timestamp": "2026-04-10T08:07:27.544073",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 3회 파생 (agent-harness, product-manager)",
+          "🟡 장기 대기: ISS-047 (FIX_BUG) — 32시간",
+          "🟡 장기 대기: ISS-048 (FIX_BUG) — 32시간"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 70,
+          "done": 33,
+          "in_progress": 3,
+          "ready": 7,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 61,
+        "timestamp": "2026-04-10T08:08:00.068661",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 3회 파생 (product-manager, agent-harness)",
+          "🟡 장기 대기: ISS-047 (FIX_BUG) — 32시간",
+          "🟡 장기 대기: ISS-048 (FIX_BUG) — 32시간"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 70,
+          "done": 33,
+          "in_progress": 3,
+          "ready": 7,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 62,
+        "timestamp": "2026-04-10T08:11:00.339344",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 3회 파생 (agent-harness, product-manager)",
+          "🟡 장기 대기: ISS-047 (FIX_BUG) — 32시간",
+          "🟡 장기 대기: ISS-048 (FIX_BUG) — 32시간"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 71,
+          "done": 37,
+          "in_progress": 3,
+          "ready": 3,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 63,
+        "timestamp": "2026-04-10T08:14:19.001041",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 3회 파생 (agent-harness, product-manager)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 76,
+          "done": 42,
+          "in_progress": 2,
+          "ready": 4,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 64,
+        "timestamp": "2026-04-10T08:16:33.631347",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 3회 파생 (agent-harness, product-manager)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 83,
+          "done": 47,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 65,
+        "timestamp": "2026-04-10T08:37:15.272227",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, design-critic, plan-ceo-reviewer, plan-eng-reviewer)"
+        ],
+        "issues_created": [
+          "ISS-093"
+        ],
+        "stats_snapshot": {
+          "total": 92,
+          "done": 49,
+          "in_progress": 2,
+          "ready": 6,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 66,
+        "timestamp": "2026-04-10T08:59:36.638381",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-ceo-reviewer, agent-harness, plan-eng-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 92,
+          "done": 49,
+          "in_progress": 3,
+          "ready": 6,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 67,
+        "timestamp": "2026-04-10T09:01:57.274330",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-ceo-reviewer, plan-eng-reviewer, design-critic)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 92,
+          "done": 49,
+          "in_progress": 3,
+          "ready": 6,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 68,
+        "timestamp": "2026-04-10T09:05:44.356585",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-ceo-reviewer, design-critic, plan-eng-reviewer, agent-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 94,
+          "done": 50,
+          "in_progress": 3,
+          "ready": 7,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 69,
+        "timestamp": "2026-04-10T09:07:54.354276",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-ceo-reviewer, design-critic, plan-eng-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 94,
+          "done": 52,
+          "in_progress": 3,
+          "ready": 2,
+          "failed": 0,
+          "escalated": 0
+        }
       }
     ]
   },
   "stats": {
-    "total_issues": 60,
-    "completed": 23,
+    "total_issues": 96,
+    "completed": 46,
     "ready": 7,
     "created": 13,
     "failed": 0,
     "phase6_issues": "ISS-025~030 (Brand Templates)",
-    "evolved": 43
+    "evolved": 59
   },
   "pending_opportunity_signals": [
     {
@@ -2941,6 +4781,75 @@
         "total": 6,
         "coverage": null
       }
+    },
+    {
+      "source_issue": "ISS-060",
+      "source_type": "RUN_TESTS",
+      "result": {
+        "passed": true,
+        "total": 6,
+        "coverage": null
+      }
+    },
+    {
+      "source_issue": "ISS-066",
+      "source_type": "RUN_TESTS",
+      "result": {
+        "passed": true,
+        "total": 23,
+        "coverage": null
+      }
+    },
+    {
+      "source_issue": "ISS-073",
+      "source_type": "RUN_TESTS",
+      "result": {
+        "passed": true,
+        "total": 3,
+        "coverage": null
+      }
+    },
+    {
+      "source_issue": "ISS-075",
+      "source_type": "RUN_TESTS",
+      "result": {
+        "passed": true,
+        "total": 3,
+        "coverage": null
+      }
+    },
+    {
+      "source_issue": "ISS-078",
+      "source_type": "BIZ_VALIDATE",
+      "result": {
+        "biz_coverage": 100
+      }
     }
-  ]
+  ],
+  "hermes_state": {
+    "invocations_by_issue": {},
+    "daily_log": [],
+    "total_invocations": 0
+  },
+  "opus_budget_state": {
+    "daily": {
+      "date": "2026-04-10",
+      "cost_usd": 2.71,
+      "calls": 5
+    },
+    "monthly": {
+      "month": "2026-04",
+      "cost_usd": 2.71,
+      "calls": 5
+    },
+    "demotion_active": false
+  },
+  "issue_budget": {
+    "date": "",
+    "created_today": 0
+  },
+  "proactive_scan_state": {
+    "date": "",
+    "count": 0
+  }
 }

@@ -56,16 +56,39 @@ escalated = by_status.get("ESCALATED", [])
 # ── 패턴 탐지 ──
 findings = []
 new_issues = []
-next_id_num = stats.get("total_issues", len(issues)) + 1
+
+# ISS-046/065 Fix: stats drift 방지. 실 issues list 스캔.
+def _compute_next_num():
+    max_num = 0
+    for existing in issues:
+        iid = existing.get("id", "")
+        if isinstance(iid, str) and iid.startswith("ISS-"):
+            try:
+                num = int(iid.split("-", 1)[1])
+                if num > max_num: max_num = num
+            except (ValueError, IndexError): continue
+    for pending in new_issues:
+        iid = pending.get("id", "")
+        if isinstance(iid, str) and iid.startswith("ISS-"):
+            try:
+                num = int(iid.split("-", 1)[1])
+                if num > max_num: max_num = num
+            except (ValueError, IndexError): continue
+    return max_num + 1
 
 def make_issue(title, issue_type, priority, assign_to, payload=None):
-    global next_id_num
     if len(new_issues) >= 5:
         return  # 주기당 최대 5개
-    # 유사 이슈 중복 체크
-    for iss in issues:
-        if iss.get("title") == title and iss.get("status") in ("READY", "IN_PROGRESS"):
+    # 유사 이슈 중복 체크 — DONE 포함 (완료된 동일 분석 재생성 방지)
+    for iss in issues + new_issues:
+        if iss.get("title") == title:
             return
+        # type+payload 기반 중복 체크 (제목 미세 차이 방지)
+        if (iss.get("type") == issue_type and
+            payload and iss.get("payload", {}).get("parent_id") == payload.get("parent_id") and
+            payload.get("parent_id") is not None):
+            return
+    next_id_num = _compute_next_num()
     iss = {
         "id": f"ISS-{next_id_num:03d}",
         "title": title,
@@ -83,12 +106,28 @@ def make_issue(title, issue_type, priority, assign_to, payload=None):
         "spawn_rules": []
     }
     new_issues.append(iss)
-    next_id_num += 1
+
+# ── Hermes Lock 파일 로드 (레이스 방어 v2+) ────────────
+import glob as _glob
+hermes_locked_issues = set()
+for lock_file in _glob.glob("/tmp/harness-hermes-*.lock"):
+    try:
+        with open(lock_file) as _lf:
+            for _line in _lf:
+                if _line.startswith("issue="):
+                    hermes_locked_issues.add(_line.strip().split("=", 1)[1])
+    except Exception:
+        pass
 
 # 패턴 1: 반복 실패 — 같은 파일에서 FIX_BUG 3회+
+# v2+: Hermes가 이미 개입 중인 이슈(hermes_invocations > 0 또는 lock 존재)는 건너뜀
 file_failures = {}
 for iss in issues:
     if iss.get("type") == "FIX_BUG":
+        # Hermes 개입 중이면 스킵 (레이스 방어)
+        iss_id = iss.get("id", "")
+        if iss_id in hermes_locked_issues or iss.get("hermes_invocations", 0) > 0:
+            continue
         files = iss.get("payload", {}).get("files", [])
         for f in files:
             file_failures[f] = file_failures.get(f, 0) + 1
@@ -146,6 +185,37 @@ for iss in ready:
         hours = (now - created_dt).total_seconds() / 3600
         if hours > 2:  # 세션 기준 2시간 이상
             findings.append(f"🟡 장기 대기: {iss['id']} ({iss['type']}) — {hours:.0f}시간")
+    except Exception:
+        pass
+
+# 패턴 10 (v2+): STALE_CONFIRM — AWAITING_USER 24시간 초과
+awaiting = by_status.get("AWAITING_USER", [])
+for iss in awaiting:
+    since = iss.get("awaiting_since", "")
+    if not since:
+        continue
+    try:
+        since_dt = datetime.datetime.fromisoformat(since)
+        hours = (now - since_dt).total_seconds() / 3600
+        if hours >= 24:
+            # 마지막 리마인드 시각 확인 (24h 간격 재출력)
+            last_reminder = iss.get("last_stale_reminder_at")
+            should_remind = True
+            if last_reminder:
+                try:
+                    last_dt = datetime.datetime.fromisoformat(last_reminder)
+                    if (now - last_dt).total_seconds() / 3600 < 24:
+                        should_remind = False
+                except Exception:
+                    pass
+            if should_remind:
+                uc = iss.get("user_confirm", [{}])[-1] if iss.get("user_confirm") else {}
+                category = uc.get("category", "?")
+                question = uc.get("question", "")[:120]
+                findings.append(
+                    f"🛑 [STALE_CONFIRM] {iss['id']} — {category} — {hours:.0f}h 경과 — {question}"
+                )
+                iss["last_stale_reminder_at"] = now.isoformat()
     except Exception:
         pass
 
