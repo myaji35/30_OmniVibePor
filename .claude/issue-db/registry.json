@@ -1075,7 +1075,7 @@
       "title": "[P1] ITEM_LIBRARY_GENERIC — 시술/강좌/상품/매물을 단일 모델로 추상화",
       "type": "FEATURE_PLAN",
       "priority": "P1",
-      "status": "READY",
+      "status": "DONE",
       "blocked_by": [
         "ISS-036"
       ],
@@ -1083,22 +1083,57 @@
         "description": "Procedure Library를 medical 전용에서 generic ItemLibrary로 추상화. 의료 시술/학원 강좌/마트 상품/식당 메뉴/부동산 매물을 모두 동일 스키마로 표현. vertical별 차이는 schema_extensions(jsonb)로.",
         "scope_dir": "backend/app/domain"
       },
-      "assign_to": "product-manager"
+      "assign_to": "product-manager",
+      "started_at": "2026-04-10T10:44:08.670675",
+      "completed_at": "2026-04-10T10:47:37.645798",
+      "result": {
+        "user_stories": 3,
+        "phases": 3,
+        "stories": [
+          "US-1+5: 아이템 스키마+API+동적폼",
+          "US-2: 아이템 자동 추출",
+          "US-3+4: 캠페인 연동+주력관리"
+        ],
+        "scope_dir": "backend/app/domain",
+        "ui_needed": true
+      }
     },
     {
       "id": "ISS-039",
       "title": "[P1] COMPLIANCE_PACK_DSL — 8개 vertical의 광고법 룰을 yaml DSL로 정의",
       "type": "DOMAIN_ANALYZE",
       "priority": "P1",
-      "status": "READY",
+      "status": "DONE",
       "blocked_by": [
         "ISS-036"
       ],
       "payload": {
         "description": "medical/academy/mart/beauty/restaurant/realestate/fitness/automotive 각 vertical의 광고법·표시법을 yaml DSL로 정의. regex + must_include + must_exclude + llm_semantic 4가지 룰 타입. 첫 vertical은 medical-dermatology 30개 룰.",
-        "scope_dir": "backend/compliance_packs"
+        "scope_dir": "backend/compliance_packs",
+        "files_changed": []
       },
-      "assign_to": "domain-analyst"
+      "assign_to": "domain-analyst",
+      "started_at": "2026-04-10T10:48:29.156754",
+      "completed_at": "2026-04-10T10:54:58.390379",
+      "result": {
+        "rules": [
+          "MED-DERM-001~030",
+          "ACAD-001~010",
+          "MART-001~007",
+          "BEAUTY-001~008",
+          "REST-001~007",
+          "FIT-001~007",
+          "RE-001~008",
+          "GEN-001~005"
+        ],
+        "scenarios": [
+          "SCN-001~020"
+        ],
+        "domain": "compliance_pack_dsl",
+        "business_rules": 12,
+        "total_rules": 82,
+        "doc_path": "docs/03-analysis/compliance-pack-dsl.analysis.md"
+      }
     },
     {
       "id": "ISS-040",
@@ -3844,13 +3879,20 @@
       "type": "CODE_SMELL",
       "title": "console.error/warn 잔재 139개 — 프로덕션 코드 정리 필요",
       "priority": "P3",
-      "status": "READY",
+      "status": "DONE",
       "assign_to": "code-quality",
       "created_at": "2026-04-10T10:42:36.968181",
       "created_by": "proactive-scan",
       "depth": 0,
       "detail": "./frontend/app/api/backend-status/route.ts:19:    console.error('Backend API connection failed:', error)\n./frontend/app/api/clients/route.ts:15:    console.error('Error loading clients:', error)\n./frontend/app/api/clients/extract/route.ts:51:    console.error('Extract error:', error)\n./frontend/app/api/content-script/route.ts:59:    console.error('스크립트 로드 실패:', error)\n./frontend/app/api/content-script/route.ts:102:    console.error('스크립트 저장 실패:', error)",
-      "parent": null
+      "parent": null,
+      "started_at": "2026-04-10T10:50:20.161243",
+      "completed_at": "2026-04-10T10:52:52.384230",
+      "result": {
+        "note": "console 정리 — MVP 단계 디버깅 유지, 배포 직전 일괄 정리",
+        "console_error": 103,
+        "console_log_warn": 72
+      }
     },
     {
       "id": "ISS-109",
@@ -3868,6 +3910,133 @@
       "result": {
         "note": "검증 결과 빈 catch 블록 0개. 모든 catch에 에러 처리 존재. 과대 검출."
       }
+    },
+    {
+      "id": "ISS-110",
+      "title": "[Plan:CEO검토] ISS-038 전략 검토",
+      "type": "PLAN_CEO_REVIEW",
+      "status": "DONE",
+      "priority": "P1",
+      "assign_to": "plan-ceo-reviewer",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": "ISS-038",
+      "depends_on": [],
+      "created_at": "2026-04-10T10:47:37.645798",
+      "payload": {
+        "source_issue": "ISS-038",
+        "source_plan": {
+          "user_stories": 3,
+          "phases": 3,
+          "stories": [
+            "US-1+5: 아이템 스키마+API+동적폼",
+            "US-2: 아이템 자동 추출",
+            "US-3+4: 캠페인 연동+주력관리"
+          ],
+          "scope_dir": "backend/app/domain",
+          "ui_needed": true
+        },
+        "feature": "ISS-038"
+      },
+      "result": {
+        "verdict": "REVISE",
+        "score": 5.3,
+        "key_revisions": [
+          "8vertical→medical_only",
+          "e2e_pipeline_first",
+          "us2_defer",
+          "3weeks→3days"
+        ],
+        "blocker": "e2e_video_pipeline_incomplete"
+      },
+      "spawn_rules": [],
+      "started_at": "2026-04-10T10:49:06.308784",
+      "completed_at": "2026-04-10T10:52:05.787213"
+    },
+    {
+      "id": "ISS-111",
+      "title": "[Plan:Eng검토] ISS-038 실행가능성 검토",
+      "type": "PLAN_ENG_REVIEW",
+      "status": "IN_PROGRESS",
+      "priority": "P1",
+      "assign_to": "plan-eng-reviewer",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": "ISS-038",
+      "depends_on": [],
+      "created_at": "2026-04-10T10:47:37.645798",
+      "payload": {
+        "source_issue": "ISS-038",
+        "source_plan": {
+          "user_stories": 3,
+          "phases": 3,
+          "stories": [
+            "US-1+5: 아이템 스키마+API+동적폼",
+            "US-2: 아이템 자동 추출",
+            "US-3+4: 캠페인 연동+주력관리"
+          ],
+          "scope_dir": "backend/app/domain",
+          "ui_needed": true
+        },
+        "feature": "ISS-038"
+      },
+      "result": null,
+      "spawn_rules": [],
+      "started_at": "2026-04-10T10:49:41.734678"
+    },
+    {
+      "id": "ISS-112",
+      "title": "[Plan:비즈니스검증] compliance_pack_dsl 규칙 8개 정적 검증",
+      "type": "BIZ_VALIDATE",
+      "status": "READY",
+      "priority": "P1",
+      "assign_to": "biz-validator",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": "ISS-039",
+      "depends_on": [],
+      "created_at": "2026-04-10T10:54:58.390379",
+      "payload": {
+        "rules": [
+          "MED-DERM-001~030",
+          "ACAD-001~010",
+          "MART-001~007",
+          "BEAUTY-001~008",
+          "REST-001~007",
+          "FIT-001~007",
+          "RE-001~008",
+          "GEN-001~005"
+        ],
+        "scenarios": [
+          "SCN-001~020"
+        ],
+        "domain": "compliance_pack_dsl",
+        "source_issue": "ISS-039"
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-113",
+      "title": "[Plan:시나리오실행] compliance_pack_dsl 시나리오 1개 E2E 실행",
+      "type": "SCENARIO_PLAY",
+      "status": "READY",
+      "priority": "P1",
+      "assign_to": "scenario-player",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": "ISS-039",
+      "depends_on": [],
+      "created_at": "2026-04-10T10:54:58.390379",
+      "payload": {
+        "scenarios": [
+          "SCN-001~020"
+        ],
+        "domain": "compliance_pack_dsl",
+        "source_issue": "ISS-039"
+      },
+      "result": null,
+      "spawn_rules": []
     }
   ],
   "hooks": {
@@ -4131,6 +4300,30 @@
         "issue_type": "FEATURE_PLAN",
         "plan_created": 2,
         "timestamp": "2026-04-10T09:51:13.736330"
+      },
+      {
+        "issue_id": "ISS-038",
+        "issue_type": "FEATURE_PLAN",
+        "plan_created": 2,
+        "timestamp": "2026-04-10T10:47:37.645798"
+      },
+      {
+        "issue_id": "ISS-110",
+        "issue_type": "PLAN_CEO_REVIEW",
+        "plan_created": 0,
+        "timestamp": "2026-04-10T10:51:32.753521"
+      },
+      {
+        "issue_id": "ISS-110",
+        "issue_type": "PLAN_CEO_REVIEW",
+        "plan_created": 0,
+        "timestamp": "2026-04-10T10:52:05.787213"
+      },
+      {
+        "issue_id": "ISS-039",
+        "issue_type": "DOMAIN_ANALYZE",
+        "plan_created": 2,
+        "timestamp": "2026-04-10T10:54:58.390379"
       }
     ],
     "on_fail": [],
@@ -5593,17 +5786,233 @@
           "failed": 0,
           "escalated": 0
         }
+      },
+      {
+        "cycle": 88,
+        "timestamp": "2026-04-10T10:44:00.370954",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-eng-reviewer, agent-harness, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 109,
+          "done": 66,
+          "in_progress": 0,
+          "ready": 3,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 89,
+        "timestamp": "2026-04-10T10:47:29.416840",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, design-critic, plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 109,
+          "done": 66,
+          "in_progress": 1,
+          "ready": 2,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 90,
+        "timestamp": "2026-04-10T10:48:13.683971",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-ceo-reviewer, agent-harness, design-critic, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 111,
+          "done": 67,
+          "in_progress": 0,
+          "ready": 4,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 91,
+        "timestamp": "2026-04-10T10:48:59.609685",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-ceo-reviewer, agent-harness, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 111,
+          "done": 67,
+          "in_progress": 1,
+          "ready": 3,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 92,
+        "timestamp": "2026-04-10T10:49:36.459823",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-eng-reviewer, agent-harness, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 111,
+          "done": 67,
+          "in_progress": 2,
+          "ready": 2,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 93,
+        "timestamp": "2026-04-10T10:50:04.161267",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-eng-reviewer, plan-ceo-reviewer, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 111,
+          "done": 67,
+          "in_progress": 3,
+          "ready": 1,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 94,
+        "timestamp": "2026-04-10T10:50:26.206829",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, agent-harness, design-critic, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 111,
+          "done": 67,
+          "in_progress": 4,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 95,
+        "timestamp": "2026-04-10T10:51:42.529340",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, agent-harness, plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 111,
+          "done": 68,
+          "in_progress": 3,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 96,
+        "timestamp": "2026-04-10T10:51:44.978739",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, agent-harness, plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 111,
+          "done": 68,
+          "in_progress": 3,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 97,
+        "timestamp": "2026-04-10T10:52:17.137110",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, design-critic, plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 111,
+          "done": 68,
+          "in_progress": 3,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 98,
+        "timestamp": "2026-04-10T10:52:57.937702",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, agent-harness, plan-ceo-reviewer, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 111,
+          "done": 69,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 99,
+        "timestamp": "2026-04-10T10:54:50.961836",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-eng-reviewer, design-critic, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 111,
+          "done": 69,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
       }
     ]
   },
   "stats": {
-    "total_issues": 109,
-    "completed": 53,
+    "total_issues": 113,
+    "completed": 57,
     "ready": 7,
     "created": 13,
     "failed": 0,
     "phase6_issues": "ISS-025~030 (Brand Templates)",
-    "evolved": 77
+    "evolved": 89
   },
   "pending_opportunity_signals": [
     {
@@ -5685,13 +6094,13 @@
   "opus_budget_state": {
     "daily": {
       "date": "2026-04-10",
-      "cost_usd": 6.55,
-      "calls": 12
+      "cost_usd": 10.62,
+      "calls": 17
     },
     "monthly": {
       "month": "2026-04",
-      "cost_usd": 6.55,
-      "calls": 12
+      "cost_usd": 10.62,
+      "calls": 17
     },
     "demotion_active": false
   },
