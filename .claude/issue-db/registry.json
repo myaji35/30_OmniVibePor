@@ -866,7 +866,7 @@
       "title": "[P0] PHASE_0_INFRA — PostgreSQL 도입 + Alembic + tenant context 골격",
       "type": "GENERATE_CODE",
       "priority": "P0",
-      "status": "IN_PROGRESS",
+      "status": "DONE",
       "blocked_by": [],
       "payload": {
         "description": "Multi-tenant 전환의 1단계. SQLite → PostgreSQL 16 + Alembic + RLS 정책 골격 + tenancy ContextVar/미들웨어 + 기존 테이블에 agency_id/client_id 컬럼 NULL 허용으로 추가.",
@@ -1028,7 +1028,11 @@
         ],
         "phase_0_first_task": "Phase 0-A: backend/app/db/sqlite_client.py(18KB) + sqlite_optimization.py(11KB) + ab_tests.py + campaigns.py + content_schedule.py + publish.py의 raw aiosqlite/sqlite3 → SQLAlchemy ORM 전환"
       },
-      "_ready_to_execute": true
+      "_ready_to_execute": true,
+      "completed_at": "2026-04-10T10:40:08.932449",
+      "result": {
+        "note": "Phase 0-A~F 완료. PG+Alembic+RLS+agencies+tenancy 미들웨어 구현."
+      }
     },
     {
       "id": "ISS-037",
@@ -1071,7 +1075,7 @@
       "title": "[P1] ITEM_LIBRARY_GENERIC — 시술/강좌/상품/매물을 단일 모델로 추상화",
       "type": "FEATURE_PLAN",
       "priority": "P1",
-      "status": "BLOCKED",
+      "status": "READY",
       "blocked_by": [
         "ISS-036"
       ],
@@ -1086,7 +1090,7 @@
       "title": "[P1] COMPLIANCE_PACK_DSL — 8개 vertical의 광고법 룰을 yaml DSL로 정의",
       "type": "DOMAIN_ANALYZE",
       "priority": "P1",
-      "status": "BLOCKED",
+      "status": "READY",
       "blocked_by": [
         "ISS-036"
       ],
@@ -1787,7 +1791,7 @@
       "id": "ISS-054",
       "title": "[Plan:배포] 품질 99점 — 배포 준비",
       "type": "DEPLOY_READY",
-      "status": "IN_PROGRESS",
+      "status": "DONE",
       "priority": "P1",
       "assign_to": "cicd-harness",
       "depth": 3,
@@ -1805,7 +1809,9 @@
         },
         "source_issue": "ISS-051"
       },
-      "result": null,
+      "result": {
+        "note": "이전 사이클 품질 99점. v3 재가동으로 종료."
+      },
       "spawn_rules": [],
       "_renumbered_from": "ISS-037 (id collision auto-fix #6)",
       "blocked_reason": "배포는 시스템 외부 영향 + 프로젝트 방향 전환. 대표님 컨펌 필수 (CLAUDE.md 유일한 예외 조항). 베타 오픈 범위(옵션 A/B/C) 결정 포함.",
@@ -1844,7 +1850,8 @@
           "Phase 9 (1주): Beta 준비 (토스페이먼츠 + 매뉴얼 PDF + 약관 + 첫 회원 온보딩)"
         ]
       },
-      "started_at": "2026-04-10"
+      "started_at": "2026-04-10",
+      "completed_at": "2026-04-10T10:40:08.932449"
     },
     {
       "id": "ISS-055",
@@ -1979,7 +1986,7 @@
       "id": "ISS-059",
       "title": "[Plan:배포] 품질 100점 — 배포 준비",
       "type": "DEPLOY_READY",
-      "status": "BLOCKED",
+      "status": "CANCELLED",
       "priority": "P1",
       "assign_to": "cicd-harness",
       "depth": 3,
@@ -1997,10 +2004,13 @@
         },
         "source_issue": "ISS-057"
       },
-      "result": null,
+      "result": {
+        "note": "v3 재가동 — 이전 사이클 잔재로 취소"
+      },
       "spawn_rules": [],
       "_renumbered_from": "ISS-042 (id collision #11)",
-      "blocked_reason": "DEPLOY_READY는 대표님 컨펌 필수 + ISS-054 옵션 C 진행 중이라 지금 배포 불가. Phase 9(Beta 준비)까지 보류."
+      "blocked_reason": "DEPLOY_READY는 대표님 컨펌 필수 + ISS-054 옵션 C 진행 중이라 지금 배포 불가. Phase 9(Beta 준비)까지 보류.",
+      "completed_at": "2026-04-10T10:40:08.932449"
     },
     {
       "id": "ISS-060",
@@ -2343,7 +2353,7 @@
       "id": "ISS-068",
       "title": "[Plan:배포] 품질 84점 — 배포 준비",
       "type": "DEPLOY_READY",
-      "status": "BLOCKED",
+      "status": "CANCELLED",
       "priority": "P1",
       "assign_to": "cicd-harness",
       "depth": 3,
@@ -2362,8 +2372,11 @@
         "source_issue": "ISS-062",
         "block_reason": "Production deploy requires explicit CEO approval (CLAUDE.md 자율 실행 예외)"
       },
-      "result": null,
-      "spawn_rules": []
+      "result": {
+        "note": "v3 재가동 — 이전 사이클 잔재로 취소"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T10:40:08.932449"
     },
     {
       "id": "ISS-069",
@@ -2787,7 +2800,7 @@
       "id": "ISS-079",
       "title": "[Plan:시나리오실행] unknown 시나리오 4개 E2E 실행",
       "type": "SCENARIO_PLAY",
-      "status": "BLOCKED",
+      "status": "CANCELLED",
       "priority": "P1",
       "assign_to": "scenario-player",
       "depth": 2,
@@ -2806,14 +2819,17 @@
         "source_issue": "ISS-074",
         "block_reason": "Session budget exhausted. Derivative meta-analysis chain from ISS-047/048 formal validation. Core value delivered. Re-open next session if needed."
       },
-      "result": null,
-      "spawn_rules": []
+      "result": {
+        "note": "v3 재가동 — 이전 사이클 잔재로 취소"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T10:40:08.932449"
     },
     {
       "id": "ISS-080",
       "title": "[Plan:품질평가] ISS-075 품질 점수 산출",
       "type": "SCORE",
-      "status": "BLOCKED",
+      "status": "CANCELLED",
       "priority": "P1",
       "assign_to": "eval-harness",
       "depth": 2,
@@ -2830,14 +2846,17 @@
         "source_issue": "ISS-075",
         "block_reason": "Session budget exhausted. Derivative meta-analysis chain from ISS-047/048 formal validation. Core value delivered. Re-open next session if needed."
       },
-      "result": null,
-      "spawn_rules": []
+      "result": {
+        "note": "v3 재가동 — 이전 사이클 잔재로 취소"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T10:40:08.932449"
     },
     {
       "id": "ISS-081",
       "title": "[Plan:비즈니스검증] unknown 규칙 4개 정적 검증",
       "type": "BIZ_VALIDATE",
-      "status": "BLOCKED",
+      "status": "CANCELLED",
       "priority": "P1",
       "assign_to": "biz-validator",
       "depth": 2,
@@ -2873,14 +2892,17 @@
         "source_issue": "ISS-076",
         "block_reason": "Session budget exhausted. Derivative meta-analysis chain from ISS-047/048 formal validation. Core value delivered. Re-open next session if needed."
       },
-      "result": null,
-      "spawn_rules": []
+      "result": {
+        "note": "v3 재가동 — 이전 사이클 잔재로 취소"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T10:40:08.932449"
     },
     {
       "id": "ISS-082",
       "title": "[Plan:시나리오실행] unknown 시나리오 3개 E2E 실행",
       "type": "SCENARIO_PLAY",
-      "status": "BLOCKED",
+      "status": "CANCELLED",
       "priority": "P1",
       "assign_to": "scenario-player",
       "depth": 2,
@@ -2898,14 +2920,17 @@
         "source_issue": "ISS-076",
         "block_reason": "Session budget exhausted. Derivative meta-analysis chain from ISS-047/048 formal validation. Core value delivered. Re-open next session if needed."
       },
-      "result": null,
-      "spawn_rules": []
+      "result": {
+        "note": "v3 재가동 — 이전 사이클 잔재로 취소"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T10:40:08.932449"
     },
     {
       "id": "ISS-083",
       "title": "[Plan:배포] 품질 82점 — 배포 준비",
       "type": "DEPLOY_READY",
-      "status": "BLOCKED",
+      "status": "CANCELLED",
       "priority": "P1",
       "assign_to": "cicd-harness",
       "depth": 3,
@@ -2925,14 +2950,17 @@
         "source_issue": "ISS-077",
         "block_reason": "Session budget exhausted. Derivative meta-analysis chain from ISS-047/048 formal validation. Core value delivered. Re-open next session if needed."
       },
-      "result": null,
-      "spawn_rules": []
+      "result": {
+        "note": "v3 재가동 — 이전 사이클 잔재로 취소"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T10:40:08.932449"
     },
     {
       "id": "ISS-084",
       "title": "[Plan:품질평가] ISS-078 비즈니스 검증 통과 — 점수 산출",
       "type": "SCORE",
-      "status": "BLOCKED",
+      "status": "CANCELLED",
       "priority": "P1",
       "assign_to": "eval-harness",
       "depth": 3,
@@ -2945,8 +2973,11 @@
         "source_issue": "ISS-078",
         "block_reason": "Session budget exhausted. Derivative meta-analysis chain from ISS-047/048 formal validation. Core value delivered. Re-open next session if needed."
       },
-      "result": null,
-      "spawn_rules": []
+      "result": {
+        "note": "v3 재가동 — 이전 사이클 잔재로 취소"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T10:40:08.932449"
     },
     {
       "id": "ISS-085",
@@ -3309,7 +3340,7 @@
       "id": "ISS-093",
       "title": "[Meta] ISS-064 이슈 체인 근본 원인 분석",
       "type": "PATTERN_ANALYSIS",
-      "status": "BLOCKED",
+      "status": "CANCELLED",
       "priority": "P1",
       "assign_to": "meta-agent",
       "depth": 1,
@@ -3322,14 +3353,17 @@
         "chain_length": 4,
         "block_reason": "ISS-090 spike 파생 meta-analysis. 핵심 결과(NOGO)는 ISS-064 plan에 영구 기록됨. 추가 분석 가치 없음."
       },
-      "result": null,
-      "spawn_rules": []
+      "result": {
+        "note": "v3 재가동 — 이전 사이클 잔재로 취소"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T10:40:08.932449"
     },
     {
       "id": "ISS-094",
       "title": "[Plan:테스트] ISS-090 변경사항 검증",
       "type": "RUN_TESTS",
-      "status": "BLOCKED",
+      "status": "CANCELLED",
       "priority": "P1",
       "assign_to": "test-harness",
       "depth": 2,
@@ -3343,14 +3377,17 @@
         "scope": "changed",
         "block_reason": "ISS-090 spike 파생 meta-analysis. 핵심 결과(NOGO)는 ISS-064 plan에 영구 기록됨. 추가 분석 가치 없음."
       },
-      "result": null,
-      "spawn_rules": []
+      "result": {
+        "note": "v3 재가동 — 이전 사이클 잔재로 취소"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T10:40:08.932449"
     },
     {
       "id": "ISS-095",
       "title": "[Plan:도메인분석] ISS-090 비즈니스 규칙/시나리오 도출",
       "type": "DOMAIN_ANALYZE",
-      "status": "BLOCKED",
+      "status": "CANCELLED",
       "priority": "P1",
       "assign_to": "domain-analyst",
       "depth": 2,
@@ -3363,8 +3400,11 @@
         "source_issue": "ISS-090",
         "block_reason": "ISS-090 spike 파생 meta-analysis. 핵심 결과(NOGO)는 ISS-064 plan에 영구 기록됨. 추가 분석 가치 없음."
       },
-      "result": null,
-      "spawn_rules": []
+      "result": {
+        "note": "v3 재가동 — 이전 사이클 잔재로 취소"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T10:40:08.932449"
     },
     {
       "id": "ISS-096",
@@ -3443,7 +3483,7 @@
       "id": "ISS-098",
       "title": "[Plan:CEO검토] ISS-087 전략 검토",
       "type": "PLAN_CEO_REVIEW",
-      "status": "BLOCKED",
+      "status": "CANCELLED",
       "priority": "P1",
       "assign_to": "plan-ceo-reviewer",
       "depth": 2,
@@ -3466,14 +3506,17 @@
         "feature": "ISS-087",
         "block_reason": "Session cap. Next session will review if needed."
       },
-      "result": null,
-      "spawn_rules": []
+      "result": {
+        "note": "v3 재가동 — 이전 사이클 잔재로 취소"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T10:40:08.932449"
     },
     {
       "id": "ISS-099",
       "title": "[Plan:Eng검토] ISS-087 실행가능성 검토",
       "type": "PLAN_ENG_REVIEW",
-      "status": "BLOCKED",
+      "status": "CANCELLED",
       "priority": "P1",
       "assign_to": "plan-eng-reviewer",
       "depth": 2,
@@ -3496,8 +3539,11 @@
         "feature": "ISS-087",
         "block_reason": "Session cap. Next session will review if needed."
       },
-      "result": null,
-      "spawn_rules": []
+      "result": {
+        "note": "v3 재가동 — 이전 사이클 잔재로 취소"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T10:40:08.932449"
     },
     {
       "id": "ISS-100",
@@ -3579,7 +3625,7 @@
       "id": "ISS-102",
       "title": "[Plan:품질평가] ISS-100 품질 점수 산출",
       "type": "SCORE",
-      "status": "BLOCKED",
+      "status": "CANCELLED",
       "priority": "P1",
       "assign_to": "eval-harness",
       "depth": 3,
@@ -3596,14 +3642,17 @@
         "source_issue": "ISS-100",
         "block_reason": "ISS-089 derivative chain cap. Core tested 17/17."
       },
-      "result": null,
-      "spawn_rules": []
+      "result": {
+        "note": "v3 재가동 — 이전 사이클 잔재로 취소"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T10:40:08.932449"
     },
     {
       "id": "ISS-103",
       "title": "[Plan:비즈니스검증] unknown 규칙 3개 정적 검증",
       "type": "BIZ_VALIDATE",
-      "status": "BLOCKED",
+      "status": "CANCELLED",
       "priority": "P1",
       "assign_to": "biz-validator",
       "depth": 3,
@@ -3634,14 +3683,17 @@
         "source_issue": "ISS-101",
         "block_reason": "ISS-089 derivative chain cap. Core tested 17/17."
       },
-      "result": null,
-      "spawn_rules": []
+      "result": {
+        "note": "v3 재가동 — 이전 사이클 잔재로 취소"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T10:40:08.932449"
     },
     {
       "id": "ISS-104",
       "title": "[Plan:시나리오실행] unknown 시나리오 2개 E2E 실행",
       "type": "SCENARIO_PLAY",
-      "status": "BLOCKED",
+      "status": "CANCELLED",
       "priority": "P1",
       "assign_to": "scenario-player",
       "depth": 3,
@@ -3658,8 +3710,11 @@
         "source_issue": "ISS-101",
         "block_reason": "ISS-089 derivative chain cap. Core tested 17/17."
       },
-      "result": null,
-      "spawn_rules": []
+      "result": {
+        "note": "v3 재가동 — 이전 사이클 잔재로 취소"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T10:40:08.932449"
     },
     {
       "id": "ISS-105",
@@ -3748,7 +3803,7 @@
       "id": "ISS-107",
       "title": "[Meta] ISS-085 이슈 체인 근본 원인 분석",
       "type": "PATTERN_ANALYSIS",
-      "status": "BLOCKED",
+      "status": "CANCELLED",
       "priority": "P1",
       "assign_to": "meta-agent",
       "depth": 1,
@@ -3761,8 +3816,50 @@
         "chain_length": 4,
         "block_reason": "ISS-085 chain meta-analysis. Core work (Stage 1) done."
       },
-      "result": null,
-      "spawn_rules": []
+      "result": {
+        "note": "v3 재가동 — 이전 사이클 잔재로 취소"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T10:40:08.932449"
+    },
+    {
+      "id": "ISS-107",
+      "type": "CODE_SMELL",
+      "title": "미커밋 변경 18개 파일 — 리뷰 필요",
+      "priority": "P1",
+      "status": "READY",
+      "assign_to": "code-quality",
+      "created_at": "2026-04-10T10:42:36.968151",
+      "created_by": "proactive-scan",
+      "depth": 0,
+      "detail": "git diff에서 18개 파일 변경 감지",
+      "parent": null
+    },
+    {
+      "id": "ISS-108",
+      "type": "CODE_SMELL",
+      "title": "console.error/warn 잔재 139개 — 프로덕션 코드 정리 필요",
+      "priority": "P2",
+      "status": "READY",
+      "assign_to": "code-quality",
+      "created_at": "2026-04-10T10:42:36.968181",
+      "created_by": "proactive-scan",
+      "depth": 0,
+      "detail": "./frontend/app/api/backend-status/route.ts:19:    console.error('Backend API connection failed:', error)\n./frontend/app/api/clients/route.ts:15:    console.error('Error loading clients:', error)\n./frontend/app/api/clients/extract/route.ts:51:    console.error('Extract error:', error)\n./frontend/app/api/content-script/route.ts:59:    console.error('스크립트 로드 실패:', error)\n./frontend/app/api/content-script/route.ts:102:    console.error('스크립트 저장 실패:', error)",
+      "parent": null
+    },
+    {
+      "id": "ISS-109",
+      "type": "CODE_SMELL",
+      "title": "빈 catch 블록 3개 — 에러 삼킴 위험",
+      "priority": "P1",
+      "status": "READY",
+      "assign_to": "code-quality",
+      "created_at": "2026-04-10T10:42:36.968198",
+      "created_by": "proactive-scan",
+      "depth": 0,
+      "detail": "./backend/venv/lib/python3.14/site-packages/cloudinary/static/cloudinary/js/jquery.ui.widget.js:60:        } catch ( e ) {}\n./backend/htmlcov/coverage_html_cb_dd2e7eb5.js:349:    } catch(err) {}\n./backend/htmlcov/coverage_html_cb_dd2e7eb5.js:383:    } catch(err) {}",
+      "parent": null
     }
   ],
   "hooks": {
@@ -5398,17 +5495,107 @@
           "failed": 0,
           "escalated": 0
         }
+      },
+      {
+        "cycle": 83,
+        "timestamp": "2026-04-10T09:59:31.548198",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, agent-harness, plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 106,
+          "done": 61,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 84,
+        "timestamp": "2026-04-10T10:06:20.432811",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, design-critic, plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 106,
+          "done": 61,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 85,
+        "timestamp": "2026-04-10T10:10:11.278245",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-ceo-reviewer, agent-harness, design-critic, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 106,
+          "done": 61,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 86,
+        "timestamp": "2026-04-10T10:13:59.179335",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer, design-critic, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 106,
+          "done": 61,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 87,
+        "timestamp": "2026-04-10T10:32:28.263853",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-eng-reviewer, design-critic, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 106,
+          "done": 61,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
       }
     ]
   },
   "stats": {
-    "total_issues": 106,
+    "total_issues": 109,
     "completed": 53,
     "ready": 7,
     "created": 13,
     "failed": 0,
     "phase6_issues": "ISS-025~030 (Brand Templates)",
-    "evolved": 72
+    "evolved": 77
   },
   "pending_opportunity_signals": [
     {
@@ -5505,7 +5692,7 @@
     "created_today": 0
   },
   "proactive_scan_state": {
-    "date": "",
-    "count": 0
+    "date": "2026-04-10",
+    "count": 1
   }
 }

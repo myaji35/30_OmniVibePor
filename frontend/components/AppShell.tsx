@@ -15,7 +15,7 @@ import AuthModal from './AuthModal'
 
 interface AppShellProps {
   children: React.ReactNode
-  title: string
+  title?: string
   subtitle?: string
   actions?: React.ReactNode
 }

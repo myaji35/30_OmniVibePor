@@ -56,27 +56,10 @@ escalated = by_status.get("ESCALATED", [])
 # ── 패턴 탐지 ──
 findings = []
 new_issues = []
-
-# ISS-046/065 Fix: stats drift 방지. 실 issues list 스캔.
-def _compute_next_num():
-    max_num = 0
-    for existing in issues:
-        iid = existing.get("id", "")
-        if isinstance(iid, str) and iid.startswith("ISS-"):
-            try:
-                num = int(iid.split("-", 1)[1])
-                if num > max_num: max_num = num
-            except (ValueError, IndexError): continue
-    for pending in new_issues:
-        iid = pending.get("id", "")
-        if isinstance(iid, str) and iid.startswith("ISS-"):
-            try:
-                num = int(iid.split("-", 1)[1])
-                if num > max_num: max_num = num
-            except (ValueError, IndexError): continue
-    return max_num + 1
+next_id_num = stats.get("total_issues", len(issues)) + 1
 
 def make_issue(title, issue_type, priority, assign_to, payload=None):
+    global next_id_num
     if len(new_issues) >= 5:
         return  # 주기당 최대 5개
     # 유사 이슈 중복 체크 — DONE 포함 (완료된 동일 분석 재생성 방지)
@@ -88,7 +71,6 @@ def make_issue(title, issue_type, priority, assign_to, payload=None):
             payload and iss.get("payload", {}).get("parent_id") == payload.get("parent_id") and
             payload.get("parent_id") is not None):
             return
-    next_id_num = _compute_next_num()
     iss = {
         "id": f"ISS-{next_id_num:03d}",
         "title": title,
@@ -106,6 +88,7 @@ def make_issue(title, issue_type, priority, assign_to, payload=None):
         "spawn_rules": []
     }
     new_issues.append(iss)
+    next_id_num += 1
 
 # ── Hermes Lock 파일 로드 (레이스 방어 v2+) ────────────
 import glob as _glob

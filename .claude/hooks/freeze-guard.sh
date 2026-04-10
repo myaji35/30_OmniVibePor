@@ -29,21 +29,18 @@ except Exception:
 # file_path 없으면 통과
 [ -z "$FILE_PATH" ] && exit 0
 
-# ISS-048 Fix: FREEZE_DIR가 콤마 구분 다중 경로인 경우 지원
-IFS=',' read -ra FREEZE_DIRS <<< "$FREEZE_DIR"
+# FREEZE_DIR 절대 경로화
+FREEZE_DIR_ABS="$(cd "$FREEZE_DIR" 2>/dev/null && pwd || echo "$FREEZE_DIR")"
 
-for dir in "${FREEZE_DIRS[@]}"; do
-  dir="$(echo "$dir" | xargs)"
-  [ -z "$dir" ] && continue
-  dir_abs="$(cd "$dir" 2>/dev/null && pwd || echo "$dir")"
-  case "$FILE_PATH" in
-    "$dir_abs"/*|"$dir"/*)
-      exit 0
-      ;;
-  esac
-done
-
-echo "🔒 [Harness Freeze] 편집 차단: $FILE_PATH" >&2
-echo "    허용 디렉터리: $FREEZE_DIR" >&2
-echo "    해제: rm $FREEZE_FILE" >&2
-exit 2
+# file_path가 FREEZE_DIR 하위면 통과
+case "$FILE_PATH" in
+  "$FREEZE_DIR_ABS"/*|"$FREEZE_DIR"/*)
+    exit 0
+    ;;
+  *)
+    echo "🔒 [Harness Freeze] 편집 차단: $FILE_PATH" >&2
+    echo "    허용 디렉터리: $FREEZE_DIR_ABS" >&2
+    echo "    해제: rm $FREEZE_FILE" >&2
+    exit 2
+    ;;
+esac

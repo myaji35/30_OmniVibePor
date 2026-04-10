@@ -30,33 +30,14 @@ result_raw = '''$RESULT'''
 
 now = datetime.datetime.now().isoformat()
 new_issues = []
-
-# ISS-046 Fix: stats['total_issues']는 delete/rename 시 drift 발생.
-# 실 issues list를 스캔해서 max 숫자 + 1 계산.
-def _compute_next_num():
-    max_num = 0
-    for existing in registry.get('issues', []):
-        iid = existing.get('id', '')
-        if isinstance(iid, str) and iid.startswith('ISS-'):
-            try:
-                num = int(iid.split('-', 1)[1])
-                if num > max_num: max_num = num
-            except (ValueError, IndexError): continue
-    for pending in new_issues:
-        iid = pending.get('id', '')
-        if isinstance(iid, str) and iid.startswith('ISS-'):
-            try:
-                num = int(iid.split('-', 1)[1])
-                if num > max_num: max_num = num
-            except (ValueError, IndexError): continue
-    return max_num + 1
+next_num = registry['stats']['total_issues'] + 1
 
 def add_issue(title, itype, priority, assign_to, payload=None):
+    global next_num
     # 중복 체크
     for iss in registry['issues']:
         if iss.get('title') == title and iss.get('status') in ('READY', 'IN_PROGRESS'):
             return
-    next_num = _compute_next_num()
     iss = {
         'id': f'ISS-{next_num:03d}',
         'title': title,
@@ -75,6 +56,7 @@ def add_issue(title, itype, priority, assign_to, payload=None):
     }
     if iss['depth'] <= 3:
         new_issues.append(iss)
+        next_num += 1
         print(f"[Plan] {iss['id']} [{priority}] {itype} — {title} → {assign_to}")
     else:
         print(f"[깊이 제한] {title} (depth={iss['depth']})")
@@ -342,16 +324,8 @@ elif issue_type in ('RUN_TESTS', 'RETEST'):
 
 elif issue_type == 'DOMAIN_ANALYZE':
     # 도메인 분석 완료 → biz-validator + scenario-player에 결과 전달
-    # ISS-047 Fix: result가 int/bool 등을 줄 수 있어 타입 강제
-    def _ensure_list(value):
-        if isinstance(value, list): return value
-        if value is None: return []
-        if isinstance(value, (int, float)):
-            return [None] * max(0, int(value)) if value >= 0 else []
-        if isinstance(value, dict): return list(value.values())
-        return [value]
-    rules = _ensure_list(result.get('rules', []) or result.get('business_rules', []))
-    scenarios = _ensure_list(result.get('scenarios', []))
+    rules = result.get('rules', [])
+    scenarios = result.get('scenarios', [])
     domain = result.get('domain', 'unknown')
 
     # 정적 검증: biz-validator

@@ -3,7 +3,7 @@
   "project": "OmniVibe Pro",
   "owner": "Gagahoho, Inc.",
   "tagline": "PDF 하나로 영상 한 편이 완성된다",
-  "agenda": "1인 마케팅 에이전시 회원이 거래처(병의원·학원·마트 등) 홈페이지 URL 하나만 입력하면, 브랜드 자산을 자동 추출하고 매월 프로모션 영상을 자동 생산한다. '거래처 영상 제작의 모든 것을 자동화'하는 약속을 Zero-Fault 오디오와 Marp 하이브리드 파이프라인으로 증명한다.",
+  "agenda": "1인 마케팅 에이전시 회원이 거래처(병의원·학원·마트 등) 홈페이지 URL 하나만 입력하면, Playwright 크롤러가 로고·색상·연락처·업종을 30초 안에 자동 추출하고, 매월 프로모션 영상을 자동 생산한다. '거래처 영상 제작의 모든 것을 자동화'하는 약속을 Zero-Fault 오디오와 PostgreSQL 멀티테넌시 인프라로 증명한다.",
   "north_star_metric": "1인 에이전시 회원이 거래처 등록(URL) → 첫 번째 MP4 다운로드까지 걸리는 시간 (목표: 10분 이내, 사람 손 1회 = URL 입력)",
   "brand_voice": "확신에 찬 자동화 엔지니어. 약속은 짧고, 결과는 숫자로. 마케팅 미사여구 대신 '99%', '5분', 'PDF 한 장'처럼 검증 가능한 수치로 말한다. 한국어가 모국어이며 존댓말은 쓰지 않고 단정한 평어체.",
   "voice_examples": [
@@ -14,7 +14,9 @@
     "스크립트→영상, 한 번에.",
     "거래처 URL 하나로, 이번 달 영상 끝.",
     "1편 374원. 거래처 3만원 받으면 마진 98%.",
-    "병의원, 학원, 마트. 업종별 영상 자동."
+    "병의원, 학원, 마트. 업종별 영상 자동.",
+    "URL 입력 30초. 로고, 색상, 업종 — AI가 다 읽는다.",
+    "에이전시별 데이터 격리. 거래처 정보는 당신만의 것."
   ],
   "voice_anti_examples": [
     "혁신적인 솔루션으로 여러분의 비즈니스를 한 단계 도약시켜 드립니다",
@@ -41,12 +43,17 @@
       "purpose": "확신과 야망 전달, 전환(가입·체험)"
     },
     "internal_workspace": {
-      "where": "frontend/app/dashboard, /strategy, /produce, /publish, SLDS 기반 작업 화면",
+      "where": "frontend/app/dashboard, /clients/*, /strategy, /concept, /produce, /publish, SLDS 기반 작업 화면",
       "mode": "Salesforce Lightning Design System 라이트 테마, Salesforce Blue(#00A1E0), 카드·3-Column·Compact Header",
       "purpose": "오랜 작업 시간에도 피로 없이 정확한 의사결정"
+    },
+    "onboarding_flow": {
+      "where": "frontend/app/clients/new (거래처 등록 온보딩)",
+      "mode": "내부 workspace 표면이지만, Step Wizard UX로 진입장벽 최소화. input→extracting→review→saving 4단계 프로그레시브.",
+      "purpose": "URL 하나 입력하면 나머지는 AI가 채워주는 경험 → north_star_metric 달성의 핵심 화면"
     }
   },
-  "hero_color": "#a855f7",
+  "hero_color": "#A855F7",
   "hero_gradient": "linear-gradient(135deg, #a855f7 0%, #6366f1 100%)",
   "secondary_colors": [
     "#6366f1",
@@ -106,6 +113,16 @@
       "name": "Self-Evolving Pipeline",
       "promise": "GraphRAG에 성과를 학습시켜 다음 영상을 자동으로 더 잘 만든다.",
       "evidence": "neo4j_client.py, content_performance_tracker.py, youtube_thumbnail_learner.py"
+    },
+    {
+      "name": "URL-to-Brand Auto-Extraction",
+      "promise": "거래처 URL 하나로 로고·색상·연락처·업종을 30초 안에 자동 추출. 사람이 직접 입력할 필요 없다.",
+      "evidence": "backend/app/services/brand_extractor_service.py (Playwright 크롤러), frontend/app/clients/new/page.tsx (4-step wizard), frontend/app/api/clients/extract/route.ts"
+    },
+    {
+      "name": "Multi-Tenant Agency Infra",
+      "promise": "1인 에이전시마다 완전 격리된 데이터 공간. 거래처 데이터는 다른 에이전시에게 절대 노출되지 않는다.",
+      "evidence": "PostgreSQL + RLS (Row Level Security), backend/app/db/ (Alembic migrations), agencies 테이블 + tenancy 미들웨어"
     }
   ],
   "anti_patterns": [
@@ -136,13 +153,16 @@
     "한국어 네이티브 TTS",
     "Remotion 4.0 기반 코드형 렌더링",
     "1편 실원가 374원 (마진 98.75%)",
-    "거래처 URL 입력 → 브랜드 자동 추출 30초",
-    "8개 업종 × 24개 슬라이드 테마 조합",
-    "편집 가능한 PPTX 동시 출력 (Marp)"
+    "거래처 URL 입력 → Playwright 자동 크롤링 → 로고·색상·업종 30초 추출 (구현 완료)",
+    "8개 업종(병의원·학원·마트·뷰티·음식점·피트니스·부동산·일반) 자동 분류",
+    "편집 가능한 PPTX 동시 출력 (Marp)",
+    "PostgreSQL RLS 기반 에이전시별 완전 데이터 격리 (구현 완료)",
+    "journey-validator 자동 검증 — 온보딩~발행까지 사용자 여정 품질을 AI가 매 릴리스마다 체크"
   ],
   "_decisions": [
     "2026-04-09 옵션 A 확정 — 외부 마케팅(다크/보라·인디고)과 내부 작업(SLDS 라이트/Salesforce Blue)의 표면 이원화를 의도된 정체성으로 인정. surfaces 필드가 단일 진실 소스(SoT). 두 표면 사이에는 '다리' 요소(공용 로고, Studio Mockup 등)로 동일한 세계로 인식되게 한다.",
-    "2026-04-10 Agency SaaS pivot 반영 — 타겟을 '일반인'에서 '1인 마케팅 에이전시 회원'으로 전환. agenda/north_star/voice_examples/trust_proofs/primary_actions 업데이트. 시각 정체성(색상/표면)은 변경 없음."
+    "2026-04-10 Agency SaaS pivot 반영 — 타겟을 '일반인'에서 '1인 마케팅 에이전시 회원'으로 전환. agenda/north_star/voice_examples/trust_proofs/primary_actions 업데이트. 시각 정체성(색상/표면)은 변경 없음.",
+    "2026-04-10 v3.0 재해석 — (1) ISS-085 brand_extractor_service 구현 완료로 'URL-to-Brand Auto-Extraction' pillar 신설, trust_proofs '구현 완료' 표기 (2) ISS-036 PostgreSQL+RLS 멀티테넌시로 'Multi-Tenant Agency Infra' pillar 신설 (3) surfaces에 onboarding_flow 추가 (/clients/new = 내부 workspace 표면 + Step Wizard) (4) Harness v3 journey-validator 에이전트 반영 (5) 8개 업종 구체 명시 (6) agenda에 Playwright 크롤러 + PG 멀티테넌시 명시"
   ],
   "bridge_rules": [
     "내부 작업 화면 상단 헤더/로고에는 외부 브랜드 색(보라 #a855f7) 액센트가 최소 1곳 이상 들어갈 것 — 사용자가 가입 후 이질감을 느끼지 않도록",
@@ -156,14 +176,59 @@
     "git log --oneline -50 (기능 흐름·우선순위·반복 키워드)",
     ".claude/CLAUDE.md (SLDS 표준·가독성 규칙·아이콘 시스템)",
     "CLAUDE.md (프로젝트 핵심 가치 제안·기술 스택)",
-    "backend/app/services/* (Zero-Fault Audio, PDF→Video, GraphRAG 증거)"
+    "backend/app/services/* (Zero-Fault Audio, PDF→Video, GraphRAG 증거)",
+    "backend/app/services/brand_extractor_service.py (Playwright 크롤러, ISS-085)",
+    "frontend/app/clients/new/page.tsx (4-step 온보딩 wizard, ISS-085)",
+    "backend/app/db/ (PostgreSQL + Alembic + RLS, ISS-036)",
+    ".claude/CLAUDE.md v3 (journey-validator 에이전트 추가)"
   ],
-  "_status": "active",
-  "_version": "2.0",
+  "_status": "initialized",
+  "_version": "3.0",
   "_drafted_at": "2026-04-09",
   "_drafted_by": "brand-guardian (claude-opus-4-6)",
   "_activated_at": "2026-04-09",
   "_activated_by": "강승식 대표 (옵션 A 선택)",
   "_updated_at": "2026-04-10",
-  "_updated_by": "brand-guardian v2 — Agency SaaS pivot 반영"
+  "_updated_by": "brand-guardian v3 — Harness 업그레이드 + ISS-085/036 구현 완료 반영",
+  "design_tokens": {
+    "colors": {
+      "hero": "#A855F7",
+      "surface": "#0A0A0A",
+      "surface_alt": "#1A1A2E",
+      "text_primary": "#F5F5F5",
+      "text_secondary": "#A1A1AA",
+      "accent": "#22D3EE",
+      "border": "#27272A"
+    },
+    "typography": {
+      "font_heading": "Inter",
+      "font_body": "Inter",
+      "font_mono": "Fira Code",
+      "scale": "spacious"
+    },
+    "shape": {
+      "radius": "moderate",
+      "card_shadow": "glow",
+      "border_width": "1px"
+    },
+    "motion": {
+      "style": "cinematic",
+      "page_transition": "scale",
+      "scroll_animation": "parallax",
+      "hover_effect": "glow",
+      "loading_animation": "shimmer",
+      "micro_interaction": "card-flip",
+      "entrance_style": "blur-in"
+    },
+    "layout": {
+      "density": "spacious",
+      "max_width": "1280px",
+      "grid": "centered"
+    },
+    "personality": {
+      "mood": "dark-studio",
+      "icon_style": "lucide",
+      "illustration_style": "3d-isometric"
+    }
+  }
 }

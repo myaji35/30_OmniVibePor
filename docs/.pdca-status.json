@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-04-03T06:42:30.469Z",
+  "lastUpdated": "2026-04-10T01:41:15.206Z",
   "activeFeatures": [
     "template-start",
     "generate",
@@ -60,7 +60,35 @@
     "storyboard",
     "test-websocket",
     "middleware",
-    "render-auto"
+    "render-auto",
+    "cosyvoice",
+    "cosyvoice_tts_service.py",
+    "tts_service.py",
+    "pdf_to_slides_service.py",
+    "video_renderer.py",
+    "video_editor_service.py",
+    "presentation_video_generator.py",
+    "brand-templates",
+    "ocr_vision_corrector.py",
+    "pdf_processor.py",
+    "ffmpeg_profile.py",
+    "subtitle_editor_service.py",
+    "subtitle_service.py",
+    "video_orchestrator_agent.py",
+    "llm_profile.py",
+    "writer_agent.py",
+    "continuity_agent.py",
+    "slide_to_script_converter.py",
+    "manual",
+    "tts_profile.py",
+    "db",
+    ".claude",
+    "notebooklm_adapter.py",
+    "alembic",
+    "versions",
+    "brand_extractor_service.py",
+    "extract",
+    "new"
   ],
   "primaryFeature": "template-start",
   "features": {
@@ -105,9 +133,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-17T04:03:32.257Z",
-        "lastUpdated": "2026-02-17T04:03:45.463Z"
+        "lastUpdated": "2026-04-09T09:45:16.543Z"
       },
-      "lastFile": "/Volumes/Extreme SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/api/director/task-status/[taskId]/route.ts"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/api/audio/status/[taskId]/route.ts"
     },
     "generate-video": {
       "phase": "do",
@@ -157,7 +185,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-17T04:05:28.371Z",
-        "lastUpdated": "2026-04-03T06:31:09.190Z"
+        "lastUpdated": "2026-04-03T14:06:13.742Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/dashboard/page.tsx"
     },
@@ -170,9 +198,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-17T04:07:23.741Z",
-        "lastUpdated": "2026-04-03T06:29:28.684Z"
+        "lastUpdated": "2026-04-10T01:41:15.206Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/components/PipelineNav.tsx"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/components/AppShell.tsx"
     },
     "content-schedule": {
       "phase": "do",
@@ -210,9 +238,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-17T04:13:45.592Z",
-        "lastUpdated": "2026-02-17T04:24:31.124Z"
+        "lastUpdated": "2026-04-03T09:20:58.922Z"
       },
-      "lastFile": "/Volumes/Extreme SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/core/config.py"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/core/config.py"
     },
     "v1": {
       "phase": "do",
@@ -223,9 +251,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-17T04:13:50.231Z",
-        "lastUpdated": "2026-04-03T01:34:30.992Z"
+        "lastUpdated": "2026-04-03T09:47:07.193Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/api/v1/__init__.py"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/api/v1/presentation.py"
     },
     "content_performance_tracker.py": {
       "phase": "do",
@@ -249,9 +277,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-17T04:14:48.081Z",
-        "lastUpdated": "2026-02-17T04:14:48.081Z"
+        "lastUpdated": "2026-04-09T09:39:16.373Z"
       },
-      "lastFile": "/Volumes/Extreme SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/services/audio_correction_loop.py"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/services/audio_correction_loop.py"
     },
     "backend": {
       "phase": "do",
@@ -262,9 +290,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-17T04:24:38.539Z",
-        "lastUpdated": "2026-04-03T06:02:55.519Z"
+        "lastUpdated": "2026-04-03T09:47:17.360Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/models/subscription.py"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/models/presentation.py"
     },
     "scenes": {
       "phase": "do",
@@ -380,9 +408,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-28T19:44:33.842Z",
-        "lastUpdated": "2026-02-28T20:08:04.395Z"
+        "lastUpdated": "2026-04-03T07:07:39.768Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/data/remotion-showcase.ts"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/data/demo-presentation.ts"
     },
     "audio": {
       "phase": "do",
@@ -393,7 +421,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-28T20:17:38.365Z",
-        "lastUpdated": "2026-04-03T06:17:11.605Z"
+        "lastUpdated": "2026-04-09T09:44:30.525Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/audio/page.tsx"
     },
@@ -628,9 +656,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-04-02T23:01:59.280Z",
-        "lastUpdated": "2026-04-02T23:17:52.382Z"
+        "lastUpdated": "2026-04-10T00:33:37.344Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/scripts/generate_bobot_narration.py"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/scripts/migrate_sqlite_to_pg.py"
     },
     "render-promo": {
       "phase": "do",
@@ -771,7 +799,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-04-03T03:26:35.729Z",
-        "lastUpdated": "2026-04-03T03:26:35.729Z"
+        "lastUpdated": "2026-04-03T07:10:23.467Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/presentation/page.tsx"
     },
@@ -823,9 +851,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-04-03T06:01:51.997Z",
-        "lastUpdated": "2026-04-03T06:01:51.997Z"
+        "lastUpdated": "2026-04-10T00:43:06.971Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/middleware/quota.py"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/middleware/tenancy.py"
     },
     "render-auto": {
       "phase": "do",
@@ -839,6 +867,370 @@
         "lastUpdated": "2026-04-03T06:41:31.166Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/api/render-auto/route.ts"
+    },
+    "cosyvoice": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-03T07:22:07.708Z",
+        "lastUpdated": "2026-04-03T07:22:46.010Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/cosyvoice/server.py"
+    },
+    "cosyvoice_tts_service.py": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-03T07:23:26.558Z",
+        "lastUpdated": "2026-04-03T07:23:26.558Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/services/cosyvoice_tts_service.py"
+    },
+    "tts_service.py": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-03T07:24:08.985Z",
+        "lastUpdated": "2026-04-03T07:24:08.985Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/services/tts_service.py"
+    },
+    "pdf_to_slides_service.py": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-03T07:55:11.473Z",
+        "lastUpdated": "2026-04-09T23:00:21.791Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/services/pdf_to_slides_service.py"
+    },
+    "video_renderer.py": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-03T13:17:06.786Z",
+        "lastUpdated": "2026-04-09T06:53:28.940Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/services/video_renderer.py"
+    },
+    "video_editor_service.py": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-03T13:17:27.757Z",
+        "lastUpdated": "2026-04-09T06:54:04.810Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/services/video_editor_service.py"
+    },
+    "presentation_video_generator.py": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-03T13:17:31.684Z",
+        "lastUpdated": "2026-04-09T06:53:00.116Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/services/presentation_video_generator.py"
+    },
+    "brand-templates": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-03T13:57:45.703Z",
+        "lastUpdated": "2026-04-03T14:00:17.620Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/brand-templates/page.tsx"
+    },
+    "ocr_vision_corrector.py": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-03T14:07:22.994Z",
+        "lastUpdated": "2026-04-09T07:40:51.098Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/services/ocr_vision_corrector.py"
+    },
+    "pdf_processor.py": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-03T14:07:38.887Z",
+        "lastUpdated": "2026-04-03T14:07:38.887Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/services/pdf_processor.py"
+    },
+    "ffmpeg_profile.py": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-09T06:48:14.368Z",
+        "lastUpdated": "2026-04-09T06:48:14.368Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/services/ffmpeg_profile.py"
+    },
+    "subtitle_editor_service.py": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-09T07:26:19.142Z",
+        "lastUpdated": "2026-04-09T07:27:09.802Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/services/subtitle_editor_service.py"
+    },
+    "subtitle_service.py": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-09T07:27:42.008Z",
+        "lastUpdated": "2026-04-09T07:27:50.511Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/services/subtitle_service.py"
+    },
+    "video_orchestrator_agent.py": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-09T07:28:34.653Z",
+        "lastUpdated": "2026-04-09T07:29:03.558Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/services/video_orchestrator_agent.py"
+    },
+    "llm_profile.py": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-09T07:35:05.634Z",
+        "lastUpdated": "2026-04-09T07:41:09.492Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/services/llm_profile.py"
+    },
+    "writer_agent.py": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-09T07:38:07.271Z",
+        "lastUpdated": "2026-04-09T07:38:23.729Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/services/writer_agent.py"
+    },
+    "continuity_agent.py": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-09T07:39:03.117Z",
+        "lastUpdated": "2026-04-09T07:39:21.750Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/services/continuity_agent.py"
+    },
+    "slide_to_script_converter.py": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-09T07:39:47.039Z",
+        "lastUpdated": "2026-04-09T07:39:59.206Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/services/slide_to_script_converter.py"
+    },
+    "manual": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-09T08:04:03.176Z",
+        "lastUpdated": "2026-04-09T08:04:03.176Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/manual/page.tsx"
+    },
+    "tts_profile.py": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-09T08:11:58.797Z",
+        "lastUpdated": "2026-04-09T08:12:59.730Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/services/tts_profile.py"
+    },
+    "db": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-09T22:31:27.445Z",
+        "lastUpdated": "2026-04-10T00:57:04.124Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/db/models/client.py"
+    },
+    ".claude": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-09T22:37:36.231Z",
+        "lastUpdated": "2026-04-09T23:59:13.487Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/.claude/hooks/freeze-guard.sh"
+    },
+    "notebooklm_adapter.py": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-09T23:00:10.930Z",
+        "lastUpdated": "2026-04-09T23:00:57.709Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/services/notebooklm_adapter.py"
+    },
+    "alembic": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-10T00:16:57.698Z",
+        "lastUpdated": "2026-04-10T00:41:47.358Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/alembic/env.py"
+    },
+    "versions": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-10T00:42:28.649Z",
+        "lastUpdated": "2026-04-10T00:56:17.791Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/alembic/versions/3760ce6bc590_004_clients_brand_extraction_columns.py"
+    },
+    "brand_extractor_service.py": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-10T00:54:06.719Z",
+        "lastUpdated": "2026-04-10T00:54:06.719Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/backend/app/services/brand_extractor_service.py"
+    },
+    "extract": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-10T00:57:49.701Z",
+        "lastUpdated": "2026-04-10T00:57:49.701Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/api/clients/extract/route.ts"
+    },
+    "new": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-04-10T00:58:50.968Z",
+        "lastUpdated": "2026-04-10T01:05:47.147Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0030_OmniVibePro/frontend/app/clients/new/page.tsx"
     }
   },
   "pipeline": {
@@ -849,7 +1241,7 @@
   "session": {
     "startedAt": "2026-02-17T03:58:39.163Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-04-03T06:42:30.469Z"
+    "lastActivity": "2026-04-10T01:41:15.206Z"
   },
   "history": [
     {
@@ -3213,6 +3605,1236 @@
     {
       "timestamp": "2026-04-03T06:42:30.469Z",
       "feature": "produce",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:07:39.768Z",
+      "feature": "data",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:07:54.252Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:08:10.764Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:08:26.710Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:08:35.936Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:08:54.302Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:09:10.156Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:09:25.823Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:09:37.935Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:09:48.709Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:09:56.612Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:10:23.467Z",
+      "feature": "presentation",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:11:43.860Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:17:01.188Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:17:17.603Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:17:44.960Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:22:07.708Z",
+      "feature": "cosyvoice",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:22:46.010Z",
+      "feature": "cosyvoice",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:23:26.558Z",
+      "feature": "cosyvoice_tts_service.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:23:58.285Z",
+      "feature": "core",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:24:08.985Z",
+      "feature": "tts_service.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:24:36.871Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:24:48.904Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:25:07.412Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:25:21.162Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:25:31.792Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:25:40.044Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:25:52.512Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:26:17.316Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:26:32.448Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:55:11.473Z",
+      "feature": "pdf_to_slides_service.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:55:48.231Z",
+      "feature": "pdf_to_slides_service.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:56:03.918Z",
+      "feature": "pdf_to_slides_service.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:58:25.465Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T07:58:38.192Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T08:01:46.246Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T08:02:11.539Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T08:02:37.823Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T08:02:55.548Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T08:47:56.198Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T08:56:13.526Z",
+      "feature": "pdf_to_slides_service.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T08:56:37.346Z",
+      "feature": "pdf_to_slides_service.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T08:56:53.047Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T08:57:03.826Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T08:57:48.109Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T08:58:06.591Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T09:20:03.639Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T09:20:58.922Z",
+      "feature": "core",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T09:41:21.228Z",
+      "feature": "backend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T09:41:47.959Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T09:41:51.483Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T09:41:54.282Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T09:45:35.580Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T09:46:05.179Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T09:46:11.215Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T09:46:17.996Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T09:47:07.193Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T09:47:17.360Z",
+      "feature": "backend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T13:17:06.786Z",
+      "feature": "video_renderer.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T13:17:12.103Z",
+      "feature": "video_renderer.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T13:17:18.128Z",
+      "feature": "video_renderer.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T13:17:27.757Z",
+      "feature": "video_editor_service.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T13:17:31.684Z",
+      "feature": "presentation_video_generator.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T13:17:37.185Z",
+      "feature": "presentation_video_generator.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T13:41:56.913Z",
+      "feature": "presentation_video_generator.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T13:57:45.703Z",
+      "feature": "brand-templates",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T13:59:04.068Z",
+      "feature": "brand-templates",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T13:59:39.342Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T14:00:17.620Z",
+      "feature": "brand-templates",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T14:02:32.336Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T14:02:45.424Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T14:02:54.416Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T14:03:20.145Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T14:04:23.142Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T14:06:13.742Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T14:07:22.994Z",
+      "feature": "ocr_vision_corrector.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-03T14:07:38.887Z",
+      "feature": "pdf_processor.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T05:55:59.427Z",
+      "feature": "presentation_video_generator.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T05:56:16.183Z",
+      "feature": "presentation_video_generator.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T05:56:24.142Z",
+      "feature": "presentation_video_generator.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T05:56:32.983Z",
+      "feature": "presentation_video_generator.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T05:56:43.106Z",
+      "feature": "presentation_video_generator.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T05:58:27.577Z",
+      "feature": "video_renderer.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T05:58:44.460Z",
+      "feature": "video_renderer.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T05:59:07.159Z",
+      "feature": "video_renderer.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T05:59:15.201Z",
+      "feature": "video_renderer.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T05:59:27.401Z",
+      "feature": "video_editor_service.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T06:48:14.368Z",
+      "feature": "ffmpeg_profile.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T06:48:27.172Z",
+      "feature": "presentation_video_generator.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T06:48:48.619Z",
+      "feature": "presentation_video_generator.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T06:48:58.355Z",
+      "feature": "presentation_video_generator.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T06:49:16.803Z",
+      "feature": "presentation_video_generator.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T06:49:27.012Z",
+      "feature": "presentation_video_generator.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T06:49:52.532Z",
+      "feature": "video_renderer.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T06:50:02.446Z",
+      "feature": "video_renderer.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T06:50:13.574Z",
+      "feature": "video_renderer.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T06:50:22.651Z",
+      "feature": "video_renderer.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T06:50:32.358Z",
+      "feature": "video_renderer.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T06:50:51.672Z",
+      "feature": "video_renderer.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T06:51:10.582Z",
+      "feature": "video_editor_service.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T06:51:24.183Z",
+      "feature": "video_editor_service.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T06:52:54.182Z",
+      "feature": "presentation_video_generator.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T06:53:00.116Z",
+      "feature": "presentation_video_generator.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T06:53:14.142Z",
+      "feature": "video_renderer.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T06:53:28.940Z",
+      "feature": "video_renderer.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T06:53:41.491Z",
+      "feature": "video_editor_service.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T06:53:49.952Z",
+      "feature": "video_editor_service.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T06:54:04.810Z",
+      "feature": "video_editor_service.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T07:23:47.770Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T07:25:23.978Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T07:25:53.732Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T07:26:19.142Z",
+      "feature": "subtitle_editor_service.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T07:26:30.265Z",
+      "feature": "subtitle_editor_service.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T07:27:09.802Z",
+      "feature": "subtitle_editor_service.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T07:27:42.008Z",
+      "feature": "subtitle_service.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T07:27:50.511Z",
+      "feature": "subtitle_service.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T07:28:34.653Z",
+      "feature": "video_orchestrator_agent.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T07:29:03.558Z",
+      "feature": "video_orchestrator_agent.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T07:35:05.634Z",
+      "feature": "llm_profile.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T07:36:09.353Z",
+      "feature": "llm_profile.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T07:38:07.271Z",
+      "feature": "writer_agent.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T07:38:23.729Z",
+      "feature": "writer_agent.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T07:39:03.117Z",
+      "feature": "continuity_agent.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T07:39:21.750Z",
+      "feature": "continuity_agent.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T07:39:47.039Z",
+      "feature": "slide_to_script_converter.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T07:39:59.206Z",
+      "feature": "slide_to_script_converter.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T07:40:22.340Z",
+      "feature": "ocr_vision_corrector.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T07:40:34.344Z",
+      "feature": "ocr_vision_corrector.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T07:40:51.098Z",
+      "feature": "ocr_vision_corrector.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T07:41:09.492Z",
+      "feature": "llm_profile.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T07:57:11.206Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T07:57:26.045Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T08:02:29.711Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T08:02:45.745Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T08:04:03.176Z",
+      "feature": "manual",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T08:11:58.797Z",
+      "feature": "tts_profile.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T08:12:59.730Z",
+      "feature": "tts_profile.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T09:38:46.551Z",
+      "feature": "audio_correction_loop.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T09:39:01.903Z",
+      "feature": "audio_correction_loop.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T09:39:16.373Z",
+      "feature": "audio_correction_loop.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T09:43:39.420Z",
+      "feature": "[taskId]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T09:43:57.772Z",
+      "feature": "[taskId]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T09:44:08.327Z",
+      "feature": "audio",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T09:44:30.525Z",
+      "feature": "audio",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T09:45:16.543Z",
+      "feature": "[taskId]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T22:31:27.445Z",
+      "feature": "db",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T22:31:42.240Z",
+      "feature": "db",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T22:31:58.012Z",
+      "feature": "db",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T22:32:18.425Z",
+      "feature": "db",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T22:32:34.994Z",
+      "feature": "db",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T22:32:48.942Z",
+      "feature": "db",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T22:33:01.265Z",
+      "feature": "db",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T22:33:07.777Z",
+      "feature": "db",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T22:33:15.692Z",
+      "feature": "db",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T22:37:36.231Z",
+      "feature": ".claude",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T22:38:19.287Z",
+      "feature": ".claude",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T22:42:41.542Z",
+      "feature": "db",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T23:00:10.930Z",
+      "feature": "notebooklm_adapter.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T23:00:21.791Z",
+      "feature": "pdf_to_slides_service.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T23:00:54.217Z",
+      "feature": "notebooklm_adapter.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T23:00:57.709Z",
+      "feature": "notebooklm_adapter.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T23:07:12.313Z",
+      "feature": ".claude",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T23:07:16.091Z",
+      "feature": ".claude",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T23:12:04.428Z",
+      "feature": ".claude",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T23:12:53.531Z",
+      "feature": ".claude",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T23:58:02.324Z",
+      "feature": ".claude",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T23:58:15.925Z",
+      "feature": ".claude",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T23:58:21.101Z",
+      "feature": ".claude",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T23:58:41.515Z",
+      "feature": ".claude",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T23:58:50.818Z",
+      "feature": ".claude",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T23:58:55.466Z",
+      "feature": ".claude",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T23:59:00.294Z",
+      "feature": ".claude",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-09T23:59:13.487Z",
+      "feature": ".claude",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T00:16:57.698Z",
+      "feature": "alembic",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T00:32:31.344Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T00:32:49.638Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T00:33:01.059Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T00:33:27.384Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T00:33:37.344Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T00:36:14.299Z",
+      "feature": "db",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T00:37:29.729Z",
+      "feature": "db",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T00:38:09.039Z",
+      "feature": "db",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T00:38:23.677Z",
+      "feature": "db",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T00:41:30.159Z",
+      "feature": "db",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T00:41:47.358Z",
+      "feature": "alembic",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T00:42:28.649Z",
+      "feature": "versions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T00:43:06.971Z",
+      "feature": "middleware",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T00:54:06.719Z",
+      "feature": "brand_extractor_service.py",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T00:56:17.791Z",
+      "feature": "versions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T00:56:43.207Z",
+      "feature": "db",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T00:56:55.617Z",
+      "feature": "db",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T00:57:04.124Z",
+      "feature": "db",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T00:57:49.701Z",
+      "feature": "extract",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T00:58:50.968Z",
+      "feature": "new",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T01:03:38.019Z",
+      "feature": "new",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T01:03:52.133Z",
+      "feature": "new",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T01:04:01.581Z",
+      "feature": "new",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T01:04:18.971Z",
+      "feature": "new",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T01:04:33.524Z",
+      "feature": "new",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T01:04:56.249Z",
+      "feature": "new",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T01:05:12.530Z",
+      "feature": "new",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T01:05:22.747Z",
+      "feature": "new",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T01:05:37.314Z",
+      "feature": "new",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T01:05:47.147Z",
+      "feature": "new",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-04-10T01:41:15.206Z",
+      "feature": "frontend",
       "phase": "do",
       "action": "updated"
     }
