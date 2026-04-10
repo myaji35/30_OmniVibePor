@@ -118,11 +118,11 @@ export default function NewClientPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F3F2F2] flex items-center justify-center p-6">
-      <div className="w-full max-w-lg">
+    <div className="min-h-screen bg-[#F3F2F2] flex items-center justify-center p-4 sm:p-6">
+      <div className="w-full max-w-lg" role="main" aria-label="새 거래처 등록">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[#00A1E0] mb-4">
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4" style={{ background: "linear-gradient(135deg, #00A1E0 0%, #a855f7 100%)" }}>
             <Building2 className="w-6 h-6 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-[#16325C]">새 거래처 등록</h1>
@@ -130,6 +130,51 @@ export default function NewClientPage() {
             홈페이지 URL만 입력하면 브랜드 정보를 자동 추출합니다
           </p>
         </div>
+
+        {/* D1 Fix: Step Indicator */}
+        <div className="flex items-center justify-center gap-2 mb-6">
+          {[
+            { key: "input", label: "URL 입력" },
+            { key: "extracting", label: "추출" },
+            { key: "review", label: "확인" },
+          ].map((s, idx) => {
+            const steps: Step[] = ["input", "extracting", "review", "saving"];
+            const currentIdx = steps.indexOf(step);
+            const thisIdx = idx;
+            const isActive = thisIdx <= currentIdx;
+            const isCurrent = s.key === step || (step === "saving" && s.key === "review");
+            return (
+              <div key={s.key} className="flex items-center gap-2">
+                {idx > 0 && (
+                  <div className={`w-8 h-0.5 ${isActive ? "bg-[#00A1E0]" : "bg-gray-200"}`} />
+                )}
+                <div className="flex items-center gap-1.5">
+                  <div
+                    className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold ${
+                      isCurrent
+                        ? "bg-[#00A1E0] text-white"
+                        : isActive
+                        ? "bg-[#4BCA81] text-white"
+                        : "bg-gray-200 text-gray-500"
+                    }`}
+                  >
+                    {isActive && !isCurrent ? (
+                      <Check className="w-3.5 h-3.5" />
+                    ) : (
+                      idx + 1
+                    )}
+                  </div>
+                  <span
+                    className={`text-xs ${
+                      isCurrent ? "font-semibold text-[#16325C]" : "text-[#706E6B]"
+                    }`}
+                  >
+                    {s.label}
+                  </span>
+                </div>
+              </div>
+            );
+          })}</div>
 
         {/* Step 1: URL 입력 */}
         {step === "input" && (
@@ -153,7 +198,8 @@ export default function NewClientPage() {
               <button
                 onClick={handleExtract}
                 disabled={!url.trim()}
-                className="px-5 py-2.5 bg-[#00A1E0] text-white text-sm font-semibold rounded-lg hover:bg-[#0090c7] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
+                className="px-5 py-2.5 text-white text-sm font-semibold rounded-lg disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 transition-all hover:shadow-md hover:scale-[1.02]"
+                style={{ background: "linear-gradient(135deg, #00A1E0 0%, #a855f7 100%)" }}
               >
                 <Sparkles className="w-4 h-4" />
                 추출
@@ -161,7 +207,7 @@ export default function NewClientPage() {
             </div>
 
             {error && (
-              <div className="mt-3 flex items-center gap-2 text-sm text-red-600">
+              <div className="mt-3 flex items-center gap-2 text-sm" style={{ color: "#EA001E" }}>
                 <AlertCircle className="w-4 h-4" />
                 {error}
               </div>
@@ -181,14 +227,22 @@ export default function NewClientPage() {
           </div>
         )}
 
-        {/* Step 2: 추출 중 */}
+        {/* Step 2: 추출 중 (D2 Fix: pulse progress) */}
         {step === "extracting" && (
           <div className="bg-white rounded-lg border border-gray-200 p-8 shadow-sm text-center">
             <Loader2 className="w-8 h-8 text-[#00A1E0] animate-spin mx-auto mb-4" />
             <p className="text-sm font-semibold text-[#16325C]">
               브랜드 정보 추출 중...
             </p>
-            <p className="text-xs text-[#706E6B] mt-1">{url}</p>
+            <p className="text-xs text-[#706E6B] mt-1 mb-4">{url}</p>
+            <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+              <div className="h-full bg-[#00A1E0] rounded-full animate-pulse" style={{ width: "70%" }} />
+            </div>
+            <div className="flex justify-between mt-2 text-[10px] text-[#706E6B]">
+              <span>HTML 파싱</span>
+              <span>로고 감지</span>
+              <span>주소 추출</span>
+            </div>
           </div>
         )}
 
@@ -212,6 +266,44 @@ export default function NewClientPage() {
                 >
                   신뢰도 {Math.round(confidence * 100)}%
                 </span>
+              </div>
+            )}
+
+            {/* D5 Fix: Brand Preview Card */}
+            {(editName || extracted?.logo_url) && (
+              <div
+                className="mx-6 mt-5 p-4 rounded-lg border border-gray-200 flex items-center gap-4"
+                style={{ borderLeftWidth: 4, borderLeftColor: editColor }}
+              >
+                {extracted?.logo_url ? (
+                  <img
+                    src={extracted.logo_url}
+                    alt=""
+                    className="w-12 h-12 rounded-lg border border-gray-200 object-contain bg-white"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = "none";
+                    }}
+                  />
+                ) : (
+                  <div
+                    className="w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold text-lg"
+                    style={{ background: editColor }}
+                  >
+                    {editName.charAt(0) || "?"}
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-[#16325C] truncate">
+                    {editName || "거래처명"}
+                  </p>
+                  <p className="text-xs text-[#706E6B] truncate">
+                    {extracted?.tagline || url || "태그라인"}
+                  </p>
+                </div>
+                <div
+                  className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
+                  style={{ background: editColor }}
+                />
               </div>
             )}
 
@@ -292,6 +384,18 @@ export default function NewClientPage() {
                 </div>
               )}
 
+              {/* D3 Fix: 태그라인 */}
+              {extracted?.tagline && (
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                    태그라인 (자동 추출)
+                  </label>
+                  <p className="text-sm text-[#16325C] bg-gray-50 rounded-lg px-3 py-2 border border-gray-200">
+                    {extracted.tagline}
+                  </p>
+                </div>
+              )}
+
               {/* 전화번호 */}
               <div>
                 <label className="block text-xs font-semibold text-gray-600 mb-1.5">
@@ -326,8 +430,8 @@ export default function NewClientPage() {
               </div>
             </div>
 
-            {/* Actions */}
-            <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
+            {/* Actions (D10 Fix: sticky CTA for 0.5s rule) */}
+            <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between sticky bottom-0 bg-white rounded-b-lg">
               <button
                 onClick={() => {
                   setStep("input");
@@ -341,7 +445,7 @@ export default function NewClientPage() {
               <button
                 onClick={handleSave}
                 disabled={!editName.trim()}
-                className="px-6 py-2.5 bg-[#00A1E0] text-white text-sm font-semibold rounded-lg hover:bg-[#0090c7] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
+                className="px-6 py-2.5 bg-[#00A1E0] text-white text-sm font-semibold rounded-lg hover:bg-[#0090c7] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 transition-colors shadow-sm"
               >
                 거래처 등록
                 <ArrowRight className="w-4 h-4" />
@@ -350,11 +454,16 @@ export default function NewClientPage() {
           </div>
         )}
 
-        {/* Step 4: 저장 중 */}
+        {/* Step 4: 저장 중 / 성공 (D4 Fix) */}
         {step === "saving" && (
           <div className="bg-white rounded-lg border border-gray-200 p-8 shadow-sm text-center">
-            <Loader2 className="w-8 h-8 text-[#00A1E0] animate-spin mx-auto mb-4" />
-            <p className="text-sm font-semibold text-[#16325C]">저장 중...</p>
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-[#4BCA81]/10 mb-4">
+              <Loader2 className="w-7 h-7 text-[#00A1E0] animate-spin" />
+            </div>
+            <p className="text-sm font-semibold text-[#16325C]">
+              거래처를 등록하고 있습니다...
+            </p>
+            <p className="text-xs text-[#706E6B] mt-1">{editName}</p>
           </div>
         )}
       </div>
