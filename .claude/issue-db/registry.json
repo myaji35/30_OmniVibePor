@@ -3026,7 +3026,7 @@
       "id": "ISS-087",
       "title": "[P2] FEATURE_PLAN — 21st.dev 스타일 컴포넌트 블록 라이브러리 (/brand-templates 재구성)",
       "type": "FEATURE_PLAN",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P2",
       "assign_to": "product-manager",
       "depth": 1,
@@ -3044,8 +3044,18 @@
           "ISS-056 (voice × vertical) 패턴 재사용"
         ]
       },
-      "result": null,
-      "spawn_rules": []
+      "result": {
+        "plan_file": "docs/01-plan/features/component-block-library.plan.md",
+        "blocks": 6,
+        "verticals": 6,
+        "total_variants": 36,
+        "v1_scope": "medical x 6 = 6 blocks",
+        "estimated_days": 2.5,
+        "21st_dev_verdict": "paradigm adopted, code self-built (no MCP dependency)",
+        "pattern_reused": "ISS-056 voice x vertical 2D matrix"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T09:12:17.099849"
     },
     {
       "id": "ISS-088",
@@ -3331,7 +3341,7 @@
       "id": "ISS-096",
       "title": "[Plan:CEO검토] ISS-086 전략 검토",
       "type": "PLAN_CEO_REVIEW",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P1",
       "assign_to": "plan-ceo-reviewer",
       "depth": 2,
@@ -3352,14 +3362,22 @@
         },
         "feature": "ISS-086"
       },
-      "result": null,
-      "spawn_rules": []
+      "result": {
+        "verdict": "approved",
+        "strategic_fit": "HIGH",
+        "conditions": [
+          "variant generation on sonnet for cost control"
+        ],
+        "source_issue": "ISS-086"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T09:10:49.222594"
     },
     {
       "id": "ISS-097",
       "title": "[Plan:Eng검토] ISS-086 실행가능성 검토",
       "type": "PLAN_ENG_REVIEW",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P1",
       "assign_to": "plan-eng-reviewer",
       "depth": 2,
@@ -3379,6 +3397,75 @@
           "estimated_days": 2
         },
         "feature": "ISS-086"
+      },
+      "result": {
+        "verdict": "approved",
+        "feasibility": "HIGH",
+        "effort": "2 days",
+        "conditions": [
+          "surfaces rules as skill prompt prefix"
+        ],
+        "source_issue": "ISS-086"
+      },
+      "spawn_rules": [],
+      "completed_at": "2026-04-10T09:10:49.393982"
+    },
+    {
+      "id": "ISS-098",
+      "title": "[Plan:CEO검토] ISS-087 전략 검토",
+      "type": "PLAN_CEO_REVIEW",
+      "status": "BLOCKED",
+      "priority": "P1",
+      "assign_to": "plan-ceo-reviewer",
+      "depth": 2,
+      "retry_count": 0,
+      "parent_id": "ISS-087",
+      "depends_on": [],
+      "created_at": "2026-04-10T09:12:17.099849",
+      "payload": {
+        "source_issue": "ISS-087",
+        "source_plan": {
+          "plan_file": "docs/01-plan/features/component-block-library.plan.md",
+          "blocks": 6,
+          "verticals": 6,
+          "total_variants": 36,
+          "v1_scope": "medical x 6 = 6 blocks",
+          "estimated_days": 2.5,
+          "21st_dev_verdict": "paradigm adopted, code self-built (no MCP dependency)",
+          "pattern_reused": "ISS-056 voice x vertical 2D matrix"
+        },
+        "feature": "ISS-087",
+        "block_reason": "Session cap. Next session will review if needed."
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-099",
+      "title": "[Plan:Eng검토] ISS-087 실행가능성 검토",
+      "type": "PLAN_ENG_REVIEW",
+      "status": "BLOCKED",
+      "priority": "P1",
+      "assign_to": "plan-eng-reviewer",
+      "depth": 2,
+      "retry_count": 0,
+      "parent_id": "ISS-087",
+      "depends_on": [],
+      "created_at": "2026-04-10T09:12:17.099849",
+      "payload": {
+        "source_issue": "ISS-087",
+        "source_plan": {
+          "plan_file": "docs/01-plan/features/component-block-library.plan.md",
+          "blocks": 6,
+          "verticals": 6,
+          "total_variants": 36,
+          "v1_scope": "medical x 6 = 6 blocks",
+          "estimated_days": 2.5,
+          "21st_dev_verdict": "paradigm adopted, code self-built (no MCP dependency)",
+          "pattern_reused": "ISS-056 voice x vertical 2D matrix"
+        },
+        "feature": "ISS-087",
+        "block_reason": "Session cap. Next session will review if needed."
       },
       "result": null,
       "spawn_rules": []
@@ -3603,6 +3690,24 @@
         "issue_type": "FEATURE_PLAN",
         "plan_created": 2,
         "timestamp": "2026-04-10T09:09:29.202379"
+      },
+      {
+        "issue_id": "ISS-096",
+        "issue_type": "PLAN_CEO_REVIEW",
+        "plan_created": 0,
+        "timestamp": "2026-04-10T09:10:49.222594"
+      },
+      {
+        "issue_id": "ISS-097",
+        "issue_type": "PLAN_ENG_REVIEW",
+        "plan_created": 0,
+        "timestamp": "2026-04-10T09:10:49.393982"
+      },
+      {
+        "issue_id": "ISS-087",
+        "issue_type": "FEATURE_PLAN",
+        "plan_created": 2,
+        "timestamp": "2026-04-10T09:12:17.099849"
       }
     ],
     "on_fail": [],
@@ -4751,17 +4856,51 @@
           "failed": 0,
           "escalated": 0
         }
+      },
+      {
+        "cycle": 70,
+        "timestamp": "2026-04-10T09:10:24.789371",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, design-critic, plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 96,
+          "done": 53,
+          "in_progress": 3,
+          "ready": 3,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 71,
+        "timestamp": "2026-04-10T09:11:13.354484",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, agent-harness, plan-ceo-reviewer, design-critic)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 96,
+          "done": 55,
+          "in_progress": 3,
+          "ready": 1,
+          "failed": 0,
+          "escalated": 0
+        }
       }
     ]
   },
   "stats": {
-    "total_issues": 96,
-    "completed": 46,
+    "total_issues": 98,
+    "completed": 49,
     "ready": 7,
     "created": 13,
     "failed": 0,
     "phase6_issues": "ISS-025~030 (Brand Templates)",
-    "evolved": 59
+    "evolved": 61
   },
   "pending_opportunity_signals": [
     {
@@ -4834,13 +4973,13 @@
   "opus_budget_state": {
     "daily": {
       "date": "2026-04-10",
-      "cost_usd": 2.71,
-      "calls": 5
+      "cost_usd": 5.65,
+      "calls": 10
     },
     "monthly": {
       "month": "2026-04",
-      "cost_usd": 2.71,
-      "calls": 5
+      "cost_usd": 5.65,
+      "calls": 10
     },
     "demotion_active": false
   },
