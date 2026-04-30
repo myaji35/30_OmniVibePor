@@ -1,6 +1,6 @@
 {
   "version": "3.0.0",
-  "updated_at": "2026-04-30T08:13:26.638717+00:00",
+  "updated_at": "2026-04-30T09:00:00.000000+00:00",
   "architecture": "supervisor",
   "scale_mode": "full",
   "current_phase": "Phase 6 — Presentation Pipeline + Brand Templates",
@@ -5980,7 +5980,7 @@
       "title": "SP-B1: SPIKE — Edit Mode 풀스택 PMF 검증 (ISS-033 페르소나 인터뷰 게이트)",
       "type": "USER_STORY",
       "priority": "P2",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "ISS-033",
         "ISS-153"
@@ -6001,13 +6001,31 @@
         "gate": "ISS-033 PMF 5명 인터뷰 3/5 충족",
         "phase": "B",
         "note": "ISS-033 완료 및 PMF 임계치 충족 전까지 착수 금지"
-      }
+      },
+      "dispatched_at": "2026-04-30T08:21:24.283344+00:00",
+      "assigned_agent": "agent-harness",
+      "result": {
+        "verdict": "BLOCKED_AT_GATE",
+        "gate_doc": "docs/01-plan/features/video-use-phase-B-gate.md",
+        "gate_conditions_unmet": [
+          "G1: PMF 인터뷰 미수집",
+          "G2: Cost Model 실측 미완료",
+          "G3-a~c: Eng P0 보강 미완료"
+        ],
+        "next_required_issues": [
+          "ISS-162",
+          "ISS-163",
+          "ISS-164",
+          "ISS-165"
+        ]
+      },
+      "completed_at": "2026-04-30T17:24:42.126692"
     },
     {
       "id": "ISS-155",
       "title": "[Plan:CEO검토] ISS-147 전략 검토",
       "type": "PLAN_CEO_REVIEW",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P1",
       "assign_to": "plan-ceo-reviewer",
       "depth": 1,
@@ -6038,14 +6056,30 @@
         },
         "feature": "ISS-147"
       },
-      "result": null,
-      "spawn_rules": []
+      "result": {
+        "mode": "SELECTIVE_EXPANSION",
+        "decision_summary": "Plan v1 골격 유지 + Q3 뒤집기(/edit 별도 라우트) + Q4 PMF 다변화 + 가격 정책 분리",
+        "Q1": "A 편입",
+        "Q2": "A fork",
+        "Q3": "A /edit 별도 라우트",
+        "Q4": "변경 — 합산 10명 중 5명 + Edit 실원가 ≤5000원",
+        "review_doc": "docs/03-analysis/2026-04-30-ISS-147-ceo-review.md",
+        "risks_critical": [
+          "R5 ffmpeg SoT 우회",
+          "R2 Scribe STT 비용 8.5배"
+        ]
+      },
+      "spawn_rules": [],
+      "dispatched_at": "2026-04-30T08:14:20.179675+00:00",
+      "assigned_agent": "plan-ceo-reviewer",
+      "updated_at": "2026-04-30T08:17:13.958186Z",
+      "completed_at": "2026-04-30T17:17:19.273668"
     },
     {
       "id": "ISS-156",
       "title": "[Plan:Eng검토] ISS-147 실행가능성 검토",
       "type": "PLAN_ENG_REVIEW",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P1",
       "assign_to": "plan-eng-reviewer",
       "depth": 1,
@@ -6076,14 +6110,27 @@
         },
         "feature": "ISS-147"
       },
-      "result": null,
-      "spawn_rules": []
+      "result": {
+        "verdict": "CONDITIONAL_PASS",
+        "review_doc": "docs/03-analysis/2026-04-30-ISS-147-eng-review.md",
+        "phase_A_assessment": "인터페이스 계약과 mock 테스트 완성 — 실제 Remotion/ffmpeg E2E 렌더링 검증 미완",
+        "must_fix_before_phase_B": [
+          "Remotion 실제 렌더 smoke 테스트(P0)",
+          "ffmpeg iOS MP4 실제 출력 검증(P0)",
+          "Scribe 픽스처+Whisper 폴백(P1)",
+          "Phase B Gate 비용 임계치 수정(P1)"
+        ]
+      },
+      "spawn_rules": [],
+      "dispatched_at": "2026-04-30T08:17:37.645136+00:00",
+      "completed_at": "2026-04-30T17:20:21.054195",
+      "assigned_agent": "plan-eng-reviewer"
     },
     {
       "id": "ISS-157",
       "title": "[Plan:구현] ISS-149",
       "type": "GENERATE_CODE",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P1",
       "assign_to": "agent-harness",
       "depth": 1,
@@ -6095,14 +6142,20 @@
         "source_issue": "ISS-149",
         "acceptance_criteria": []
       },
-      "result": null,
-      "spawn_rules": []
+      "result": {
+        "verdict": "no-op closure",
+        "reason": "코드는 source_issue ISS-149 처리 시 이미 작성/테스트/push 완료. on_complete.sh 자동 파생 GENERATE_CODE 잔존 이슈.",
+        "duplicate_of": "ISS-149"
+      },
+      "spawn_rules": [],
+      "closed_at": "2026-04-30T08:20:47.707223+00:00",
+      "closure_reason": "duplicate_of_user_story"
     },
     {
       "id": "ISS-158",
       "title": "[Plan:구현] ISS-150",
       "type": "GENERATE_CODE",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P1",
       "assign_to": "agent-harness",
       "depth": 1,
@@ -6114,14 +6167,20 @@
         "source_issue": "ISS-150",
         "acceptance_criteria": []
       },
-      "result": null,
-      "spawn_rules": []
+      "result": {
+        "verdict": "no-op closure",
+        "reason": "코드는 source_issue ISS-150 처리 시 이미 작성/테스트/push 완료. on_complete.sh 자동 파생 GENERATE_CODE 잔존 이슈.",
+        "duplicate_of": "ISS-150"
+      },
+      "spawn_rules": [],
+      "closed_at": "2026-04-30T08:20:47.707348+00:00",
+      "closure_reason": "duplicate_of_user_story"
     },
     {
       "id": "ISS-159",
       "title": "[Plan:구현] ISS-151",
       "type": "GENERATE_CODE",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P1",
       "assign_to": "agent-harness",
       "depth": 1,
@@ -6133,14 +6192,20 @@
         "source_issue": "ISS-151",
         "acceptance_criteria": []
       },
-      "result": null,
-      "spawn_rules": []
+      "result": {
+        "verdict": "no-op closure",
+        "reason": "코드는 source_issue ISS-151 처리 시 이미 작성/테스트/push 완료. on_complete.sh 자동 파생 GENERATE_CODE 잔존 이슈.",
+        "duplicate_of": "ISS-151"
+      },
+      "spawn_rules": [],
+      "closed_at": "2026-04-30T08:20:47.707351+00:00",
+      "closure_reason": "duplicate_of_user_story"
     },
     {
       "id": "ISS-160",
       "title": "[Plan:구현] ISS-152",
       "type": "GENERATE_CODE",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P1",
       "assign_to": "agent-harness",
       "depth": 1,
@@ -6152,14 +6217,20 @@
         "source_issue": "ISS-152",
         "acceptance_criteria": []
       },
-      "result": null,
-      "spawn_rules": []
+      "result": {
+        "verdict": "no-op closure",
+        "reason": "코드는 source_issue ISS-152 처리 시 이미 작성/테스트/push 완료. on_complete.sh 자동 파생 GENERATE_CODE 잔존 이슈.",
+        "duplicate_of": "ISS-152"
+      },
+      "spawn_rules": [],
+      "closed_at": "2026-04-30T08:20:47.707352+00:00",
+      "closure_reason": "duplicate_of_user_story"
     },
     {
       "id": "ISS-161",
       "title": "[Plan:구현] ISS-153",
       "type": "GENERATE_CODE",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P1",
       "assign_to": "agent-harness",
       "depth": 1,
@@ -6169,6 +6240,116 @@
       "created_at": "2026-04-30T17:13:32.457758",
       "payload": {
         "source_issue": "ISS-153",
+        "acceptance_criteria": []
+      },
+      "result": {
+        "verdict": "no-op closure",
+        "reason": "코드는 source_issue ISS-153 처리 시 이미 작성/테스트/push 완료. on_complete.sh 자동 파생 GENERATE_CODE 잔존 이슈.",
+        "duplicate_of": "ISS-153"
+      },
+      "spawn_rules": [],
+      "closed_at": "2026-04-30T08:20:47.707354+00:00",
+      "closure_reason": "duplicate_of_user_story"
+    },
+    {
+      "id": "ISS-162",
+      "status": "READY",
+      "type": "RUN_TESTS",
+      "priority": "P1",
+      "title": "[Eng P0] Remotion 실제 렌더 smoke 테스트 (G3-a, Phase B Gate)",
+      "assign_to": "test-harness",
+      "payload": {
+        "scope_dir": "frontend/remotion",
+        "description": "ISS-156 Eng 검토 G3-a: 현재 인터페이스 계약 + mock만 통과 상태. 실제 Remotion 렌더 파이프라인이 5초 이상 영상을 정상 출력하는지 smoke 테스트 필요.",
+        "acceptance": [
+          "Remotion CLI로 30초 이하 테스트 컴포지션 실제 렌더 성공",
+          "MP4 출력 파일 크기 > 0 확인",
+          "ffmpeg_profile.py SoT를 통한 iOS MP4 재인코딩 포함"
+        ],
+        "phase_B_gate": "G3-a",
+        "unblocks": "ISS-154"
+      },
+      "result": {}
+    },
+    {
+      "id": "ISS-163",
+      "status": "READY",
+      "type": "RUN_TESTS",
+      "priority": "P1",
+      "title": "[Eng P0] ffmpeg iOS MP4 실제 출력 검증 (G3-b, Phase B Gate)",
+      "assign_to": "test-harness",
+      "payload": {
+        "scope_dir": "backend/app/services",
+        "description": "ISS-156 Eng 검토 G3-b: ffmpeg_profile.py SoT 호출만 검증됨. 실제 입력 영상(테스트 픽스처)을 넣어 iOS 호환 MP4(30fps, yuv420p, High 4.1, faststart) 출력 확인 필요.",
+        "target_file": "backend/app/services/ffmpeg_profile.py",
+        "acceptance": [
+          "테스트 픽스처 mp4/mov 입력 → ffmpeg_profile.py 통과 → iOS 호환 MP4 출력",
+          "ffprobe로 출력 파일 포맷 검증 (yuv420p, H.264 High 4.1, moov atom faststart)",
+          "출력 파일 아이폰 시뮬레이터 or 실기기 재생 가능 확인 (또는 ffprobe 검증)"
+        ],
+        "phase_B_gate": "G3-b",
+        "unblocks": "ISS-154"
+      },
+      "result": {}
+    },
+    {
+      "id": "ISS-164",
+      "status": "READY",
+      "type": "GENERATE_CODE",
+      "priority": "P1",
+      "title": "[Eng P1] Scribe 실제 응답 픽스처 확보 + Whisper fallback 라우터 (G3-c, Phase B Gate)",
+      "assign_to": "agent-harness",
+      "payload": {
+        "scope_dir": "backend/app/services",
+        "description": "ISS-156 Eng 검토 G3-c: 현재 STT는 mock만 존재. ElevenLabs Scribe 실제 API 응답을 픽스처로 저장하고, Scribe 실패 시 Whisper로 자동 fallback하는 라우터 구현.",
+        "deliverables": [
+          "backend/tests/fixtures/scribe_response_sample.json (실제 API 호출 1회 후 저장)",
+          "backend/app/services/stt_router.py (Scribe 우선, Whisper fallback)",
+          "단위 테스트: Scribe 성공 / Scribe 실패 → Whisper 전환 시나리오"
+        ],
+        "phase_B_gate": "G3-c",
+        "unblocks": "ISS-154"
+      },
+      "result": {}
+    },
+    {
+      "id": "ISS-165",
+      "status": "READY",
+      "type": "USER_STORY",
+      "priority": "P1",
+      "title": "[PMF P1] ISS-033 후속 — 실인터뷰 10명 진행 (G1, Phase B Gate)",
+      "assign_to": "unassigned",
+      "payload": {
+        "description": "ISS-155 Q4 변경된 PMF 임계치 달성을 위한 실인터뷰. 가설적 페르소나(docs/audience/agency-video-personas-2026-04-29.md)를 실제 데이터로 검증.",
+        "target": "합산 10명(medical-dermatology 5명 + 다른 vertical 5명) 중 5명 이상이 거래처 raw 영상 편집 니즈 명시",
+        "owner": "대표님 (강승식) 직접 진행",
+        "interview_minimum": "1인 에이전시 사업자 or 병원 실장급, 30분 이상, 녹취/메모 필수",
+        "output_path": "docs/05-research/pmf-interviews/ (각 인터뷰 메모 파일)",
+        "acceptance": [
+          "10명 인터뷰 완료 증거 (메모/녹취 파일)",
+          "5명 이상 raw 영상 편집 니즈 명시 확인",
+          "docs/05-research/pmf-interviews/summary.md 작성"
+        ],
+        "phase_B_gate": "G1",
+        "unblocks": "ISS-154",
+        "note": "비기술 작업. 대표님이 직접 인터뷰 진행 후 결과 registry에 등록."
+      },
+      "result": {}
+    },
+    {
+      "id": "ISS-166",
+      "title": "[Plan:구현] ISS-154",
+      "type": "GENERATE_CODE",
+      "status": "READY",
+      "priority": "P1",
+      "assign_to": "agent-harness",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": "ISS-154",
+      "depends_on": [],
+      "created_at": "2026-04-30T17:24:42.126692",
+      "payload": {
+        "source_issue": "ISS-154",
         "acceptance_criteria": []
       },
       "result": null,
@@ -6508,6 +6689,24 @@
         "issue_type": "USER_STORY",
         "plan_created": 1,
         "timestamp": "2026-04-30T17:13:32.457758"
+      },
+      {
+        "issue_id": "ISS-155",
+        "issue_type": "PLAN_CEO_REVIEW",
+        "plan_created": 0,
+        "timestamp": "2026-04-30T17:17:19.273668"
+      },
+      {
+        "issue_id": "ISS-156",
+        "issue_type": "PLAN_ENG_REVIEW",
+        "plan_created": 0,
+        "timestamp": "2026-04-30T17:20:21.054195"
+      },
+      {
+        "issue_id": "ISS-154",
+        "issue_type": "USER_STORY",
+        "plan_created": 1,
+        "timestamp": "2026-04-30T17:24:42.126692"
       }
     ],
     "on_fail": [],
@@ -10621,17 +10820,93 @@
           "failed": 0,
           "escalated": 0
         }
+      },
+      {
+        "cycle": 231,
+        "timestamp": "2026-04-30T17:14:03.138930",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer, agent-harness, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 16회 파생 (agent-harness, check-harness:meta, test-harness, plan-harness:product, plan-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 159,
+          "done": 105,
+          "in_progress": 4,
+          "ready": 8,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 232,
+        "timestamp": "2026-04-30T17:17:31.479652",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-eng-reviewer, plan-ceo-reviewer, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 16회 파생 (test-harness, check-harness:meta, agent-harness, plan-harness, plan-harness:product)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 159,
+          "done": 106,
+          "in_progress": 4,
+          "ready": 7,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 233,
+        "timestamp": "2026-04-30T17:20:29.122725",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-eng-reviewer, plan-ceo-reviewer, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 16회 파생 (agent-harness, check-harness:meta, plan-harness:product, test-harness, plan-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 159,
+          "done": 107,
+          "in_progress": 4,
+          "ready": 6,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 234,
+        "timestamp": "2026-04-30T17:21:12.752668",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, design-critic, plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 16회 파생 (plan-harness:product, agent-harness, plan-harness, test-harness, check-harness:meta)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 159,
+          "done": 112,
+          "in_progress": 4,
+          "ready": 1,
+          "failed": 0,
+          "escalated": 0
+        }
       }
     ]
   },
   "stats": {
-    "total_issues": 123,
-    "completed": 65,
+    "total_issues": 124,
+    "completed": 68,
     "ready": 0,
     "created": 13,
     "failed": 0,
     "phase6_issues": "ISS-025~030 (Brand Templates)",
-    "evolved": 220,
+    "evolved": 224,
     "total": 144,
     "in_progress": 4,
     "done": 99,
@@ -10719,13 +10994,13 @@
   "opus_budget_state": {
     "daily": {
       "date": "2026-04-30",
-      "cost_usd": 0.45,
-      "calls": 1
+      "cost_usd": 0.9,
+      "calls": 2
     },
     "monthly": {
       "month": "2026-04",
-      "cost_usd": 11.07,
-      "calls": 18
+      "cost_usd": 11.52,
+      "calls": 19
     },
     "demotion_active": false
   },
