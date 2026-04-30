@@ -1,6 +1,6 @@
 {
   "version": "3.0.0",
-  "updated_at": "2026-04-30T07:50:19.361483+00:00",
+  "updated_at": "2026-04-30T07:54:21.734696+00:00",
   "architecture": "supervisor",
   "scale_mode": "full",
   "current_phase": "Phase 6 — Presentation Pipeline + Brand Templates",
@@ -5803,7 +5803,7 @@
       "title": "US-A3: ElevenLabs Scribe STT 어댑터 — word-level + speaker_id 정규화",
       "type": "USER_STORY",
       "priority": "P0",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "ISS-147"
       ],
@@ -5821,6 +5821,19 @@
         ],
         "est_complexity": "M",
         "scope_dir": "backend/app/services/"
+      },
+      "dispatched_at": "2026-04-30T07:54:21.734584+00:00",
+      "assigned_agent": "agent-harness",
+      "completed_at": "2026-04-30T16:59:37.661050",
+      "result": {
+        "files_created": [
+          "backend/app/services/scribe_stt_adapter.py",
+          "backend/tests/test_scribe_stt_adapter.py"
+        ],
+        "lines_of_code": 356,
+        "tests_passing": true,
+        "tests_count": 21,
+        "next_unblocks": "ISS-152"
       }
     },
     {
@@ -6017,6 +6030,25 @@
       "created_at": "2026-04-30T16:53:48.663297",
       "payload": {
         "source_issue": "ISS-149",
+        "acceptance_criteria": []
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-158",
+      "title": "[Plan:구현] ISS-150",
+      "type": "GENERATE_CODE",
+      "status": "READY",
+      "priority": "P1",
+      "assign_to": "agent-harness",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": "ISS-150",
+      "depends_on": [],
+      "created_at": "2026-04-30T16:59:37.661050",
+      "payload": {
+        "source_issue": "ISS-150",
         "acceptance_criteria": []
       },
       "result": null,
@@ -6332,6 +6364,12 @@
         "issue_type": "USER_STORY",
         "plan_created": 1,
         "timestamp": "2026-04-30T16:53:48.663297"
+      },
+      {
+        "issue_id": "ISS-150",
+        "issue_type": "USER_STORY",
+        "plan_created": 1,
+        "timestamp": "2026-04-30T16:59:37.661050"
       }
     ],
     "on_fail": [],
@@ -10369,17 +10407,36 @@
           "failed": 0,
           "escalated": 0
         }
+      },
+      {
+        "cycle": 227,
+        "timestamp": "2026-04-30T16:54:09.042650",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, design-critic, plan-ceo-reviewer, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 16회 파생 (agent-harness, plan-harness, test-harness, plan-harness:product, check-harness:meta)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 155,
+          "done": 101,
+          "in_progress": 4,
+          "ready": 8,
+          "failed": 0,
+          "escalated": 0
+        }
       }
     ]
   },
   "stats": {
-    "total_issues": 119,
-    "completed": 61,
+    "total_issues": 120,
+    "completed": 62,
     "ready": 0,
     "created": 13,
     "failed": 0,
     "phase6_issues": "ISS-025~030 (Brand Templates)",
-    "evolved": 216,
+    "evolved": 217,
     "total": 144,
     "in_progress": 4,
     "done": 99,
