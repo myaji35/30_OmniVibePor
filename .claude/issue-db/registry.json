@@ -1,6 +1,6 @@
 {
   "version": "3.0.0",
-  "updated_at": "2026-04-30T08:28:08.990117+00:00",
+  "updated_at": "2026-04-30T08:28:43.705956+00:00",
   "architecture": "supervisor",
   "scale_mode": "full",
   "current_phase": "Phase 6 — Presentation Pipeline + Brand Templates",
@@ -6285,7 +6285,7 @@
     },
     {
       "id": "ISS-163",
-      "status": "READY",
+      "status": "DONE",
       "type": "RUN_TESTS",
       "priority": "P1",
       "title": "[Eng P0] ffmpeg iOS MP4 실제 출력 검증 (G3-b, Phase B Gate)",
@@ -6302,7 +6302,28 @@
         "phase_B_gate": "G3-b",
         "unblocks": "ISS-154"
       },
-      "result": {}
+      "result": {
+        "verdict": "PASS",
+        "files_created": [
+          "backend/tests/test_ios_mp4_real_output.py"
+        ],
+        "tests_run": 8,
+        "tests_passed": 8,
+        "tests_failed": 0,
+        "ios_compat_checks": {
+          "pix_fmt_yuv420p": true,
+          "codec_h264": true,
+          "profile_high": true,
+          "level_le_41": true,
+          "fps_30": true,
+          "faststart": true
+        },
+        "g3_b_status": "GATE_PASSED",
+        "unblocks": "ISS-154"
+      },
+      "dispatched_at": "2026-04-30T08:28:43.705840+00:00",
+      "completed_at": "2026-04-30T17:32:54.104408",
+      "assigned_agent": "test-harness"
     },
     {
       "id": "ISS-164",
@@ -6386,6 +6407,29 @@
           "coverage": null
         },
         "source_issue": "ISS-162"
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-168",
+      "title": "[Plan:품질평가] ISS-163 품질 점수 산출",
+      "type": "SCORE",
+      "status": "READY",
+      "priority": "P1",
+      "assign_to": "eval-harness",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": "ISS-163",
+      "depends_on": [],
+      "created_at": "2026-04-30T17:32:54.104408",
+      "payload": {
+        "test_result": {
+          "passed": true,
+          "total": 0,
+          "coverage": null
+        },
+        "source_issue": "ISS-163"
       },
       "result": null,
       "spawn_rules": []
@@ -6748,6 +6792,12 @@
         "issue_type": "RUN_TESTS",
         "plan_created": 1,
         "timestamp": "2026-04-30T17:28:12.811951"
+      },
+      {
+        "issue_id": "ISS-163",
+        "issue_type": "RUN_TESTS",
+        "plan_created": 1,
+        "timestamp": "2026-04-30T17:32:54.104408"
       }
     ],
     "on_fail": [],
@@ -10975,17 +11025,36 @@
           "failed": 0,
           "escalated": 0
         }
+      },
+      {
+        "cycle": 237,
+        "timestamp": "2026-04-30T17:28:32.765756",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-ceo-reviewer, agent-harness, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 16회 파생 (plan-harness:product, test-harness, check-harness:meta, agent-harness, plan-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 165,
+          "done": 114,
+          "in_progress": 4,
+          "ready": 5,
+          "failed": 0,
+          "escalated": 0
+        }
       }
     ]
   },
   "stats": {
-    "total_issues": 125,
-    "completed": 69,
+    "total_issues": 126,
+    "completed": 70,
     "ready": 0,
     "created": 13,
     "failed": 0,
     "phase6_issues": "ISS-025~030 (Brand Templates)",
-    "evolved": 226,
+    "evolved": 227,
     "total": 144,
     "in_progress": 4,
     "done": 99,
@@ -11066,6 +11135,15 @@
     },
     {
       "source_issue": "ISS-162",
+      "source_type": "RUN_TESTS",
+      "result": {
+        "passed": true,
+        "total": 0,
+        "coverage": null
+      }
+    },
+    {
+      "source_issue": "ISS-163",
       "source_type": "RUN_TESTS",
       "result": {
         "passed": true,
