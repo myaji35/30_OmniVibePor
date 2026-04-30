@@ -1,6 +1,6 @@
 {
   "version": "3.0.0",
-  "updated_at": "2026-04-30T08:03:44.841424+00:00",
+  "updated_at": "2026-04-30T08:13:26.638717+00:00",
   "architecture": "supervisor",
   "scale_mode": "full",
   "current_phase": "Phase 6 — Presentation Pipeline + Brand Templates",
@@ -5928,7 +5928,7 @@
       "title": "US-A6: Director Agent 통합 + Phase A 통합 테스트",
       "type": "USER_STORY",
       "priority": "P1",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "ISS-151",
         "ISS-152"
@@ -5946,7 +5946,34 @@
         ],
         "est_complexity": "L",
         "scope_dir": "backend/app/agents/"
-      }
+      },
+      "dispatched_at": "2026-04-30T08:08:37.822612+00:00",
+      "assigned_agent": "agent-harness",
+      "result": {
+        "files_modified": [
+          "backend/app/agents/director_agent.py",
+          "backend/app/services/audio_correction_loop.py"
+        ],
+        "files_created": [
+          "backend/scripts/verify_overlay_parity.py",
+          "backend/tests/test_phase_a_integration.py"
+        ],
+        "lines_added": 280,
+        "tests_passing": true,
+        "tests_count": 12,
+        "regression_check": "기존 테스트 실패 0건",
+        "phase_A_status": "COMPLETE",
+        "phase_A_checklist": {
+          "30ms_audio_fade": "ffmpeg_profile 경유 명시",
+          "ios_mp4": "SoT 인터페이스 통과",
+          "ffmpeg_sot": "직접 호출 0건"
+        },
+        "next_phase": "Phase B Gate (ISS-154)",
+        "open_questions_pending": [
+          "ISS-148 video-use fork 컨펌 (T2 EXTERNAL)"
+        ]
+      },
+      "completed_at": "2026-04-30T17:13:32.457758"
     },
     {
       "id": "ISS-154",
@@ -6123,6 +6150,25 @@
       "created_at": "2026-04-30T17:08:11.403320",
       "payload": {
         "source_issue": "ISS-152",
+        "acceptance_criteria": []
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-161",
+      "title": "[Plan:구현] ISS-153",
+      "type": "GENERATE_CODE",
+      "status": "READY",
+      "priority": "P1",
+      "assign_to": "agent-harness",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": "ISS-153",
+      "depends_on": [],
+      "created_at": "2026-04-30T17:13:32.457758",
+      "payload": {
+        "source_issue": "ISS-153",
         "acceptance_criteria": []
       },
       "result": null,
@@ -6456,6 +6502,12 @@
         "issue_type": "USER_STORY",
         "plan_created": 1,
         "timestamp": "2026-04-30T17:08:11.403320"
+      },
+      {
+        "issue_id": "ISS-153",
+        "issue_type": "USER_STORY",
+        "plan_created": 1,
+        "timestamp": "2026-04-30T17:13:32.457758"
       }
     ],
     "on_fail": [],
@@ -10550,17 +10602,36 @@
           "failed": 0,
           "escalated": 0
         }
+      },
+      {
+        "cycle": 230,
+        "timestamp": "2026-04-30T17:08:24.373057",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-ceo-reviewer, agent-harness, plan-eng-reviewer, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 16회 파생 (plan-harness:product, agent-harness, plan-harness, check-harness:meta, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 158,
+          "done": 104,
+          "in_progress": 4,
+          "ready": 8,
+          "failed": 0,
+          "escalated": 0
+        }
       }
     ]
   },
   "stats": {
-    "total_issues": 122,
-    "completed": 64,
+    "total_issues": 123,
+    "completed": 65,
     "ready": 0,
     "created": 13,
     "failed": 0,
     "phase6_issues": "ISS-025~030 (Brand Templates)",
-    "evolved": 219,
+    "evolved": 220,
     "total": 144,
     "in_progress": 4,
     "done": 99,
@@ -10647,14 +10718,14 @@
   },
   "opus_budget_state": {
     "daily": {
-      "date": "2026-04-10",
-      "cost_usd": 10.62,
-      "calls": 17
+      "date": "2026-04-30",
+      "cost_usd": 0.45,
+      "calls": 1
     },
     "monthly": {
       "month": "2026-04",
-      "cost_usd": 10.62,
-      "calls": 17
+      "cost_usd": 11.07,
+      "calls": 18
     },
     "demotion_active": false
   },

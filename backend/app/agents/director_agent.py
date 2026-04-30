@@ -1,6 +1,6 @@
 """LangGraph Director Agent - 스크립트 분석 및 콘티 블록 자동 생성"""
 import logging
-from typing import TypedDict, List, Dict, Any, Optional
+from typing import TypedDict, List, Dict, Any, Optional, TYPE_CHECKING
 from langgraph.graph import StateGraph, END
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage
@@ -8,6 +8,9 @@ import json
 import re
 
 from app.core.config import get_settings
+
+if TYPE_CHECKING:
+    from app.services.overlay_generator_service import OverlayOutput
 
 logger = logging.getLogger(__name__)
 
@@ -465,6 +468,77 @@ def create_director_graph() -> StateGraph:
 
 
 _director_graph = None
+
+
+# ==================== Phase A 통합 진입점 (ISS-153) ====================
+
+
+class DirectorAgent:
+    """Director Agent Phase A 통합 클래스.
+
+    LangGraph 기반 스토리보드 생성 파이프라인(create_director_graph)과
+    overlay 자동 생성 진입점(generate_overlay_from_stt)을 통합한다.
+
+    기존 자막 수동 편집 대비 70% 공수 절감을 목표로 한다.
+    """
+
+    async def generate_overlay_from_stt(
+        self,
+        word_timestamps: "list",
+        style: "Any" = None,
+        brand_tokens: "Optional[dict]" = None,
+        narration_duration_sec: float = 0.0,
+    ) -> "OverlayOutput":
+        """Phase A 진입점 — STT 결과로부터 Remotion 오버레이 자동 생성.
+
+        ISS-147 video-use 통합. 기존 자막 수동 편집 대비 70% 절감 목표.
+
+        Args:
+            word_timestamps:       WordTimestamp 배열 (scribe_stt_adapter 또는
+                                   _normalize_to_word_timestamps 결과)
+            style:                 OverlayStyle enum. None이면 OverlayStyle.subtitle.
+            brand_tokens:          brand-dna.json design_tokens. None이면 빈 dict.
+            narration_duration_sec: 나레이션 오디오 전체 길이(초). 0.0이면 자동 계산.
+
+        Returns:
+            OverlayOutput: remotion_jsx, composition_id, duration_frames
+
+        Raises:
+            ValueError: word_timestamps가 비어 있을 때.
+        """
+        from app.services.overlay_generator_service import (
+            OverlayGeneratorService,
+            OverlayInput,
+            OverlayStyle,
+            WordTimestamp,  # noqa: F401 — 타입 검증용
+        )
+
+        if not word_timestamps:
+            raise ValueError(
+                "word_timestamps가 비어 있습니다. "
+                "ScribeSTTAdapter.transcribe() 또는 "
+                "_normalize_to_word_timestamps()를 먼저 호출하세요."
+            )
+
+        # 기본값 처리
+        if style is None:
+            style = OverlayStyle.subtitle
+        resolved_tokens = brand_tokens if brand_tokens is not None else {}
+
+        service = OverlayGeneratorService()
+        input_data = OverlayInput(
+            word_timestamps=word_timestamps,
+            style=style,
+            brand_tokens=resolved_tokens,
+            narration_duration_sec=narration_duration_sec,
+        )
+        output = service.generate(input_data)
+        logger.info(
+            "[overlay] composition_id=%s duration_frames=%d",
+            output.composition_id,
+            output.duration_frames,
+        )
+        return output
 
 
 def get_director_graph() -> StateGraph:

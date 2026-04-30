@@ -426,3 +426,66 @@ def get_audio_correction_loop() -> AudioCorrectionLoop:
     if _audio_loop_instance is None:
         _audio_loop_instance = AudioCorrectionLoop()
     return _audio_loop_instance
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Phase A 헬퍼 — STT 결과 정규화 (ISS-153)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _normalize_to_word_timestamps(
+    stt_result: object,
+    source: str,
+) -> list:
+    """STT 결과를 WordTimestamp 배열로 정규화.
+
+    audio_correction_loop.py와 overlay_generator_service.py 사이의 변환 어댑터.
+    Whisper / Scribe 두 어댑터 결과를 동일한 WordTimestamp 형식으로 반환한다.
+
+    Args:
+        stt_result: STT 어댑터 반환값.
+                    - source=="scribe": TranscriptionResult (words: list[WordTimestamp])
+                    - source=="whisper": 미구현 (NotImplementedError)
+        source:     "scribe" | "whisper"
+
+    Returns:
+        list[WordTimestamp] — overlay_generator_service.WordTimestamp 배열
+
+    Raises:
+        ValueError: source가 지원되지 않는 값일 때.
+        NotImplementedError: source=="whisper" — 후속 ISS에서 구현 예정.
+    """
+    from app.services.overlay_generator_service import WordTimestamp  # 지연 import — 순환 방지
+
+    _logger = logging.getLogger(__name__)
+
+    if source == "scribe":
+        # ScribeSTTAdapter.transcribe() 반환값 (TranscriptionResult)
+        # TranscriptionResult.words 는 이미 list[WordTimestamp]이다.
+        words = getattr(stt_result, "words", None)
+        if words is None:
+            raise ValueError(
+                "_normalize_to_word_timestamps: stt_result.words가 없습니다. "
+                "ScribeSTTAdapter.transcribe() 반환값인지 확인하세요."
+            )
+        _logger.debug(
+            "_normalize_to_word_timestamps(scribe): %d words, "
+            "first=%s last=%s",
+            len(words),
+            words[0].word if words else "N/A",
+            words[-1].word if words else "N/A",
+        )
+        return list(words)
+
+    elif source == "whisper":
+        # ISS-153: Whisper word-timestamp 매핑은 후속 ISS에서 구현
+        raise NotImplementedError(
+            "_normalize_to_word_timestamps(whisper): "
+            "Whisper word-level timestamp 매핑은 후속 ISS에서 구현 예정입니다. "
+            "현재는 source='scribe'만 지원합니다."
+        )
+
+    else:
+        raise ValueError(
+            f"_normalize_to_word_timestamps: 지원하지 않는 source='{source}'. "
+            "허용값: 'scribe' | 'whisper'"
+        )
