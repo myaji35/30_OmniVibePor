@@ -1,6 +1,6 @@
 {
   "version": "3.0.0",
-  "updated_at": "2026-04-30T08:33:22.281135+00:00",
+  "updated_at": "2026-04-30T08:41:36.935559+00:00",
   "architecture": "supervisor",
   "scale_mode": "full",
   "current_phase": "Phase 6 — Presentation Pipeline + Brand Templates",
@@ -6363,7 +6363,7 @@
     },
     {
       "id": "ISS-165",
-      "status": "READY",
+      "status": "AWAITING_USER",
       "type": "USER_STORY",
       "priority": "P1",
       "title": "[PMF P1] ISS-033 후속 — 실인터뷰 10명 진행 (G1, Phase B Gate)",
@@ -6383,7 +6383,35 @@
         "unblocks": "ISS-154",
         "note": "비기술 작업. 대표님이 직접 인터뷰 진행 후 결과 registry에 등록."
       },
-      "result": {}
+      "result": {
+        "verdict": "INFRA_PREPARED",
+        "infra_ready": true,
+        "files_created": [
+          "docs/05-research/pmf-interviews/_TEMPLATE.md",
+          "docs/05-research/pmf-interviews/summary.md",
+          "scripts/register_pmf_interview.py"
+        ],
+        "user_action_required": [
+          "1. medical-dermatology vertical 5명 인터뷰 진행 (피부과 마케팅 담당 또는 1인 마케팅 에이전시)",
+          "2. 다른 vertical(beauty/restaurant/academy 등) 5명 인터뷰",
+          "3. 각 인터뷰는 _TEMPLATE.md 복사 → docs/05-research/pmf-interviews/NN_role_YYMMDD.md 작성",
+          "4. python3 scripts/register_pmf_interview.py NN_role_YYMMDD.md --vertical X --q4 N --q5 N --q8 N --pmf yes/no",
+          "5. 10명 완료 후 summary.md 자동 갱신 → PMF YES 5명 이상이면 ISS-154 unblock 가능"
+        ],
+        "gate": "G1",
+        "unblocks": "ISS-154 (Edit Mode Phase B 풀스택)",
+        "estimated_user_time": "10명 × 30분 = 5시간 + 합산 분석 1시간",
+        "ceo_q4_threshold": "10명 중 5명 PMF YES + Edit 1편 실원가 ≤ 5,000원",
+        "next_action_after_g1_pass": [
+          "G2 Cost Model 측정",
+          "ISS-154 status: AWAITING_USER → READY",
+          "SP-B1.1~7 USER_STORY 발급"
+        ]
+      },
+      "dispatched_at": "2026-04-30T08:40:07.929647+00:00",
+      "assigned_agent": "claude (인프라 준비) + 대표님 (인터뷰 실행)",
+      "awaiting_at": "2026-04-30T08:41:36.935411+00:00",
+      "awaiting_reason": "PMF 인터뷰는 대표님 직접 진행 영역 — Claude 자율 실행 불가"
     },
     {
       "id": "ISS-166",
@@ -6454,7 +6482,7 @@
       "id": "ISS-169",
       "title": "[Plan:게이트] ISS-164 계산적 센서 검증 (lint/type-check)",
       "type": "LINT_CHECK",
-      "status": "READY",
+      "status": "DONE",
       "priority": "P0",
       "assign_to": "code-quality",
       "depth": 1,
@@ -6472,8 +6500,16 @@
         ],
         "bypass_env": "HARNESS_BYPASS_GATE"
       },
-      "result": null,
-      "spawn_rules": []
+      "result": {
+        "verdict": "PASS",
+        "errors_found": 0,
+        "gate_status": "PASSED"
+      },
+      "spawn_rules": [],
+      "dispatched_at": "2026-04-30T08:38:47.989191+00:00",
+      "assigned_agent": "code-quality",
+      "closed_at": "2026-04-30T08:39:33.605309+00:00",
+      "completed_at": "2026-04-30T17:39:33.817048"
     },
     {
       "id": "ISS-170",
@@ -6510,6 +6546,25 @@
       "payload": {
         "files": [],
         "source_issue": "ISS-164"
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-130",
+      "title": "[Meta] ISS-164 이슈 체인 근본 원인 분석",
+      "type": "PATTERN_ANALYSIS",
+      "status": "READY",
+      "priority": "P1",
+      "assign_to": "meta-agent",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": null,
+      "depends_on": [],
+      "created_at": "2026-04-30T17:38:31.566191",
+      "payload": {
+        "parent_id": "ISS-164",
+        "chain_length": 3
       },
       "result": null,
       "spawn_rules": []
@@ -6884,6 +6939,12 @@
         "issue_type": "GENERATE_CODE",
         "plan_created": 3,
         "timestamp": "2026-04-30T17:37:49.510691"
+      },
+      {
+        "issue_id": "ISS-169",
+        "issue_type": "LINT_CHECK",
+        "plan_created": 0,
+        "timestamp": "2026-04-30T17:39:33.817048"
       }
     ],
     "on_fail": [],
@@ -6919,6 +6980,12 @@
         "context": "ISS-078 full scenario coverage",
         "frequency": 1,
         "discovered_at": "2026-04-10T08:15:36.651415"
+      },
+      {
+        "pattern": "sensor_clean",
+        "context": "ISS-169 lint/type clean",
+        "frequency": 1,
+        "discovered_at": "2026-04-30T17:39:33.817048"
       }
     ],
     "failure_patterns": [
@@ -11149,17 +11216,59 @@
           "failed": 0,
           "escalated": 0
         }
+      },
+      {
+        "cycle": 239,
+        "timestamp": "2026-04-30T17:38:31.566411",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, agent-harness, plan-ceo-reviewer, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 16회 파생 (check-harness:meta, test-harness, plan-harness, plan-harness:product, agent-harness)",
+          "🟠 핑퐁 감지: ISS-164 → 3회 파생 (code-quality, test-harness, domain-analyst)"
+        ],
+        "issues_created": [
+          "ISS-130"
+        ],
+        "stats_snapshot": {
+          "total": 170,
+          "done": 116,
+          "in_progress": 4,
+          "ready": 7,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 240,
+        "timestamp": "2026-04-30T17:39:56.177584",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, design-critic, plan-ceo-reviewer, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 16회 파생 (test-harness, plan-harness:product, plan-harness, agent-harness, check-harness:meta)",
+          "🟠 핑퐁 감지: ISS-164 → 3회 파생 (domain-analyst, code-quality, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 170,
+          "done": 117,
+          "in_progress": 4,
+          "ready": 7,
+          "failed": 0,
+          "escalated": 0
+        }
       }
     ]
   },
   "stats": {
-    "total_issues": 129,
-    "completed": 71,
+    "total_issues": 130,
+    "completed": 72,
     "ready": 0,
     "created": 13,
     "failed": 0,
     "phase6_issues": "ISS-025~030 (Brand Templates)",
-    "evolved": 228,
+    "evolved": 230,
     "total": 144,
     "in_progress": 4,
     "done": 99,
