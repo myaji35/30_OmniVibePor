@@ -11,6 +11,7 @@ import { BobotSafetyPromo } from './promo/BobotSafetyPromo';
 import { LowVisionPromo, LOWVISION_TOTAL } from './promo/LowVisionPromo';
 import { EN, KO } from './promo/i18n';
 import type { VideoTemplateProps } from './types';
+import { SmokeTestComposition } from './SmokeTest';
 
 const calculateDuration = (
   props: VideoTemplateProps
@@ -136,6 +137,15 @@ export const RemotionRoot: React.FC = () => {
         id="chopd"
         component={ChopdPromo}
         durationInFrames={Math.ceil(70 * 30)}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+      {/* ISS-162 — Phase B Gate G3-a smoke 테스트 (5s, 150 frames) */}
+      <Composition
+        id="SmokeTest"
+        component={SmokeTestComposition}
+        durationInFrames={150}
         fps={30}
         width={1920}
         height={1080}

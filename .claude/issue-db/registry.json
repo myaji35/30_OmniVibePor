@@ -1,6 +1,6 @@
 {
   "version": "3.0.0",
-  "updated_at": "2026-04-30T09:00:00.000000+00:00",
+  "updated_at": "2026-04-30T08:28:08.990117+00:00",
   "architecture": "supervisor",
   "scale_mode": "full",
   "current_phase": "Phase 6 — Presentation Pipeline + Brand Templates",
@@ -6253,7 +6253,7 @@
     },
     {
       "id": "ISS-162",
-      "status": "READY",
+      "status": "DONE",
       "type": "RUN_TESTS",
       "priority": "P1",
       "title": "[Eng P0] Remotion 실제 렌더 smoke 테스트 (G3-a, Phase B Gate)",
@@ -6269,7 +6269,19 @@
         "phase_B_gate": "G3-a",
         "unblocks": "ISS-154"
       },
-      "result": {}
+      "result": {
+        "verdict": "PASS",
+        "render_success": true,
+        "output_size_bytes": 258767,
+        "frames_rendered": 150,
+        "fps": 30,
+        "duration_sec": 5,
+        "ffmpeg_profile_loaded": true,
+        "g3_a_status": "GATE_PASSED"
+      },
+      "dispatched_at": "2026-04-30T08:25:34.572348+00:00",
+      "assigned_agent": "test-harness",
+      "completed_at": "2026-04-30T17:28:12.811951"
     },
     {
       "id": "ISS-163",
@@ -6351,6 +6363,29 @@
       "payload": {
         "source_issue": "ISS-154",
         "acceptance_criteria": []
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-167",
+      "title": "[Plan:품질평가] ISS-162 품질 점수 산출",
+      "type": "SCORE",
+      "status": "READY",
+      "priority": "P1",
+      "assign_to": "eval-harness",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": "ISS-162",
+      "depends_on": [],
+      "created_at": "2026-04-30T17:28:12.811951",
+      "payload": {
+        "test_result": {
+          "passed": true,
+          "total": 0,
+          "coverage": null
+        },
+        "source_issue": "ISS-162"
       },
       "result": null,
       "spawn_rules": []
@@ -6707,6 +6742,12 @@
         "issue_type": "USER_STORY",
         "plan_created": 1,
         "timestamp": "2026-04-30T17:24:42.126692"
+      },
+      {
+        "issue_id": "ISS-162",
+        "issue_type": "RUN_TESTS",
+        "plan_created": 1,
+        "timestamp": "2026-04-30T17:28:12.811951"
       }
     ],
     "on_fail": [],
@@ -10896,17 +10937,55 @@
           "failed": 0,
           "escalated": 0
         }
+      },
+      {
+        "cycle": 235,
+        "timestamp": "2026-04-30T17:25:05.905565",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-ceo-reviewer, plan-eng-reviewer, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 16회 파생 (test-harness, agent-harness, plan-harness, check-harness:meta, plan-harness:product)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 164,
+          "done": 113,
+          "in_progress": 4,
+          "ready": 5,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 236,
+        "timestamp": "2026-04-30T17:25:27.922452",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-ceo-reviewer, design-critic, plan-eng-reviewer, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 16회 파생 (plan-harness, check-harness:meta, test-harness, plan-harness:product, agent-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 164,
+          "done": 113,
+          "in_progress": 4,
+          "ready": 5,
+          "failed": 0,
+          "escalated": 0
+        }
       }
     ]
   },
   "stats": {
-    "total_issues": 124,
-    "completed": 68,
+    "total_issues": 125,
+    "completed": 69,
     "ready": 0,
     "created": 13,
     "failed": 0,
     "phase6_issues": "ISS-025~030 (Brand Templates)",
-    "evolved": 224,
+    "evolved": 226,
     "total": 144,
     "in_progress": 4,
     "done": 99,
@@ -10982,6 +11061,15 @@
       "result": {
         "passed": true,
         "total": 17,
+        "coverage": null
+      }
+    },
+    {
+      "source_issue": "ISS-162",
+      "source_type": "RUN_TESTS",
+      "result": {
+        "passed": true,
+        "total": 0,
         "coverage": null
       }
     }
