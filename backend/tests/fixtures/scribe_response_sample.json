@@ -1,0 +1,63 @@
+{
+  "_source": "manually_curated_per_docs",
+  "_note": "ElevenLabs Scribe 공식 응답 형식 기반 수동 작성. 실제 API 호출로 갱신하려면 ELEVENLABS_API_KEY 설정 후 backend/scripts/capture_scribe_fixture.py 실행.",
+  "_iss": "ISS-164",
+  "_api_version": "scribe_v1",
+  "_endpoint": "POST https://api.elevenlabs.io/v1/speech-to-text",
+  "language_code": "ko",
+  "language_probability": 0.98,
+  "text": "안녕하세요 오늘은 테스트 영상입니다",
+  "words": [
+    {
+      "text": "안녕하세요",
+      "start": 0.20,
+      "end": 0.95,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "confidence": 0.97
+    },
+    {
+      "text": " ",
+      "start": 0.95,
+      "end": 1.05,
+      "type": "spacing"
+    },
+    {
+      "text": "오늘은",
+      "start": 1.05,
+      "end": 1.55,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "confidence": 0.95
+    },
+    {
+      "text": " ",
+      "start": 1.55,
+      "end": 1.65,
+      "type": "spacing"
+    },
+    {
+      "text": "테스트",
+      "start": 1.65,
+      "end": 2.10,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "confidence": 0.99
+    },
+    {
+      "text": " ",
+      "start": 2.10,
+      "end": 2.20,
+      "type": "spacing"
+    },
+    {
+      "text": "영상입니다",
+      "start": 2.20,
+      "end": 3.10,
+      "type": "word",
+      "speaker_id": "speaker_0",
+      "confidence": 0.96
+    }
+  ],
+  "audio_events": []
+}
