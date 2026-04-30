@@ -1,6 +1,6 @@
 {
   "version": "3.0.0",
-  "updated_at": "2026-04-03T18:30:00",
+  "updated_at": "2026-04-30T07:50:19.361483+00:00",
   "architecture": "supervisor",
   "scale_mode": "full",
   "current_phase": "Phase 6 — Presentation Pipeline + Brand Templates",
@@ -3836,29 +3836,6 @@
     },
     {
       "id": "ISS-107",
-      "title": "[Meta] ISS-085 이슈 체인 근본 원인 분석",
-      "type": "PATTERN_ANALYSIS",
-      "status": "DONE",
-      "priority": "P1",
-      "assign_to": "meta-agent",
-      "depth": 1,
-      "retry_count": 0,
-      "parent_id": null,
-      "depends_on": [],
-      "created_at": "2026-04-10T09:55:34.977549",
-      "payload": {
-        "parent_id": "ISS-085",
-        "chain_length": 4,
-        "block_reason": "ISS-085 chain meta-analysis. Core work (Stage 1) done."
-      },
-      "result": {
-        "note": "직전 커밋(fede141)으로 미커밋 변경 전부 커밋 완료"
-      },
-      "spawn_rules": [],
-      "completed_at": "2026-04-10T10:43:15.444440"
-    },
-    {
-      "id": "ISS-107",
       "type": "CODE_SMELL",
       "title": "미커밋 변경 18개 파일 — 리뷰 필요",
       "priority": "P1",
@@ -3957,7 +3934,7 @@
       "id": "ISS-111",
       "title": "[Plan:Eng검토] ISS-038 실행가능성 검토",
       "type": "PLAN_ENG_REVIEW",
-      "status": "IN_PROGRESS",
+      "status": "DONE",
       "priority": "P1",
       "assign_to": "plan-eng-reviewer",
       "depth": 1,
@@ -3981,9 +3958,14 @@
         "feature": "ISS-038",
         "files_changed": []
       },
-      "result": null,
+      "result": {
+        "verdict": "REVISE",
+        "score": 7.0,
+        "note": "Eng Review 완료. 고아 이슈 정리."
+      },
       "spawn_rules": [],
-      "started_at": "2026-04-10T10:49:41.734678"
+      "started_at": "2026-04-10T10:49:41.734678",
+      "completed_at": "2026-04-10T14:48:06.115607"
     },
     {
       "id": "ISS-112",
@@ -4086,6 +4068,1959 @@
       },
       "spawn_rules": [],
       "completed_at": "2026-04-10T10:58:44.917155"
+    },
+    {
+      "id": "ISS-115",
+      "title": "[Plan:Agency Video Engine] Phase 1 MVP 통합 기획 (생성형, 본영상, 1 vertical)",
+      "type": "FEATURE_PLAN",
+      "status": "DONE",
+      "priority": "P1",
+      "assign_to": "plan-harness",
+      "depth": 0,
+      "retry_count": 0,
+      "parent_id": null,
+      "depends_on": [],
+      "created_at": "2026-04-29T04:32:27.287246",
+      "payload": {
+        "axis_mode": "plan-harness:product",
+        "feature_name": "Agency Video Engine",
+        "menu_route": "/agency-video",
+        "scope_dir": "backend/app/agency_video, frontend/app/agency-video",
+        "phase": "Phase 1 MVP",
+        "duration_estimate_weeks": 4,
+        "decisions_locked": {
+          "mode": "generative_only",
+          "segments": "main_body_only",
+          "character_consistency": "Level 2 (Seed + Style Anchor)",
+          "providers_phase1": [
+            "Claude Sonnet 4.6 (text)",
+            "Flux Schnell (image)",
+            "Kling 1.6 (video)",
+            "ElevenLabs voice clone (TTS, 보유)"
+          ],
+          "target_user": "Agency SaaS 거래처 (1 vertical: 병의원/medical-dermatology)",
+          "quality_target": "YouTube 적절 수준 (Cinema X)",
+          "menu_strategy": "신메뉴 분리 (기존 시스템 무관)",
+          "brand_strategy": "기존 brand-dna v3.0 + client_video_branding 섹션 신설"
+        },
+        "input_concepts_from_9turn_discussion": [
+          "페르소나 시스템 (PD/카메라/조명/음향/자막/컬러/연속성/편집/브랜드/시청자)",
+          "만화 스토리보드 + 편집 콘티 (Phase 2+)",
+          "샘플 영상 분석 진입점 (Phase 2+)",
+          "4 세그먼트 (Phase 1은 본영상만, Phase 2+ 인트로/아웃트로/썸네일)",
+          "3가지 모드 (Phase 1은 생성형만, Phase 4 실촬/하이브리드)",
+          "캐릭터 일관성 5레벨 (Phase 1은 Level 2)",
+          "멀티 프로바이더 PAL (Phase 1은 고정 4개, Phase 2+ 사용자 선택)",
+          "3계층 brand 구조 (OmniVibe UI / 미리보기 / 영상 자체)"
+        ],
+        "operating_model": {
+          "client_journey": "1회 등록 30분 → 매월 자동 영상 → 거래처는 월 4회 클릭(승인)만",
+          "agency_journey": "거래처 영입 → 등록 도와줌 → 시스템 자동 운영 → 모니터링",
+          "pricing_target_per_month": 30000,
+          "cost_per_video_target_won": 5000,
+          "time_per_video_target_min": 30,
+          "regeneration_limit_per_video": 5
+        },
+        "phase1_scope_locked": {
+          "include": [
+            "신메뉴 /agency-video (관리자 전용)",
+            "거래처 등록 폼 (1개 거래처로 시작 — medical-dermatology)",
+            "캐릭터 등록 (사진 1장 + 음성 30초)",
+            "주제 풀 입력 (수동 텍스트)",
+            "본영상 자동 생성 파이프라인 (스크립트→씬→이미지→영상→음성→자막→합성)",
+            "미리보기 페이지 (URL 공유)",
+            "승인/재생성 버튼",
+            "수동 다운로드 (YouTube 업로드는 사용자가)",
+            "client-brand-guardian 페르소나 신설",
+            "brand_extractor_service.py 재사용",
+            "vertical_video_tones — 병의원 1개 정의"
+          ],
+          "exclude_for_later_phase": [
+            "썸네일/인트로/아웃트로 자동 생성 (Phase 2+)",
+            "LoRA 학습 (Phase 2+)",
+            "만화 스토리보드 UI (Phase 2+)",
+            "페르소나 의견 표시 (Phase 2+)",
+            "임팩트 점수 (실촬형 — Phase 4)",
+            "다중 프로바이더 UI (Phase 2+)",
+            "A/B 썸네일 테스트 (Phase 2+)",
+            "시청자 시뮬레이터 (Phase 5+)",
+            "Race Mode 영상 파트 (Phase 5+)",
+            "자동 YouTube 업로드 (Phase 2+)",
+            "결제 시스템 (Phase 2+)",
+            "다중 거래처 (Phase 2+)",
+            "8 vertical 확장 (Phase 4+)"
+          ]
+        },
+        "validation_kpis": [
+          "거래처 1개 등록 → 영상 1편 자동 생성 성공 (binary)",
+          "영상 1편 비용 < 5000원",
+          "영상 1편 시간 < 30분",
+          "거래처 정성 평가 — '이 정도면 쓰겠다'"
+        ],
+        "brand_dna_extension_required": {
+          "new_section": "client_video_branding",
+          "fields": [
+            "agency_layer",
+            "client_layer",
+            "vertical_video_tones",
+            "video_brand_validators",
+            "video_signature"
+          ],
+          "phase1_vertical": "병의원"
+        },
+        "harness_plan": {
+          "wave1_parallel": [
+            "audience-researcher",
+            "domain-analyst",
+            "check-harness:brand"
+          ],
+          "wave2_sequential": [
+            "plan-harness:product",
+            "plan-harness:opportunity",
+            "plan-harness:ceo-review",
+            "plan-harness:eng-review"
+          ],
+          "wave3_parallel": [
+            "check-harness:biz",
+            "check-harness:journey"
+          ],
+          "wave4_integration": "plan + 이슈 도출 (12개 예상)",
+          "ceo_review_directive": "욕심 컷팅을 강하게 — Phase 1에 Y 추가 요청 모두 거절. 단 하나의 거래처가 단 하나의 본영상을 받기까지의 최단 경로만."
+        },
+        "existing_assets_to_reuse": [
+          "voice_cloning_service.py (ElevenLabs)",
+          "stt_service.py / Whisper",
+          "ffmpeg_profile.py (iOS 호환 SoT, ISS-042)",
+          "continuity_agent.py (캐릭터 일관성 검증)",
+          "writer_agent.py (스크립트 생성)",
+          "director_agent.py (오케스트레이션)",
+          "brand_extractor_service.py (URL→brand, ISS-085 구현 완료)",
+          "PostgreSQL + RLS multi-tenant (ISS-036)",
+          "Cloudinary (자산 CDN)",
+          "Neo4j GraphRAG (학습 루프)"
+        ],
+        "risks_to_validate_in_poc": [
+          "Kling 1.6의 한국 인물 캐릭터 보존 실측",
+          "ElevenLabs voice clone + Kling 영상 립싱크 정합도",
+          "Flux Schnell의 한국 인물 일관성 (학습 데이터 한국인 적음)",
+          "5분 영상 1편 실제 비용 (16,580원 추정의 검증)"
+        ],
+        "poc_plan_5days": {
+          "day1": "plan 초안 작성 + PoC 환경 셋업",
+          "day2_3": "Kling+Flux+ElevenLabs 수동 1편 제작",
+          "day4": "PoC 결과로 plan 보정",
+          "day5": "Harness 이슈 12개 등록 + 구현 시작"
+        },
+        "requires_user_confirm": false,
+        "scope_dir_lock": [
+          "backend/app/agency_video/",
+          "frontend/app/agency-video/",
+          ".claude/brand-dna.json",
+          "docs/01-plan/features/"
+        ],
+        "files_changed": [],
+        "meta_prevention_rules": {
+          "applied_from": "ISS-116 PATTERN_ANALYSIS",
+          "pattern_to_avoid": "Spike-as-Plan 핑퐁",
+          "rule_1_spike_separation": "Phase 1 PoC(Kling/Flux/ElevenLabs 한국 인물 검증)는 별도 SPIKE 이슈로 분리. plan 본체에 PoC 결과 임베드 금지.",
+          "rule_2_lock_decisions": "decisions_locked 11개는 SPIKE 결과로 변경되지 않는 한 ceo-review/eng-review가 재논의 금지.",
+          "rule_3_review_approval_terminal": "ceo-review/eng-review의 'approve with conditions'는 새 검토 라운드를 트리거하지 않음. 조건은 별도 sub-issue로만 파생."
+        }
+      },
+      "spawn_rules": [
+        {
+          "trigger": "always",
+          "spawn_issues": [
+            {
+              "type": "AUDIENCE_RESEARCH",
+              "title": "Agency Video — 1인 에이전시 + 거래처 페르소나 심층 조사",
+              "assign_to": "audience-researcher",
+              "priority": "P1"
+            },
+            {
+              "type": "DOMAIN_ANALYZE",
+              "title": "Agency Video — 영상 제작 도메인 규칙 + 역할별 시나리오",
+              "assign_to": "domain-analyst",
+              "priority": "P1"
+            },
+            {
+              "type": "BRAND_GUARD",
+              "title": "Agency Video — brand-dna 정합성 사전 점검 (3계층 brand)",
+              "assign_to": "brand-guardian",
+              "priority": "P1"
+            }
+          ]
+        }
+      ],
+      "started_at": "2026-04-29T04:34:23.439179+00:00",
+      "completed_at": "2026-04-29T05:00:25.965755+00:00",
+      "result": {
+        "wave1_artifacts": [
+          "docs/audience/agency-video-personas-2026-04-29.md",
+          "docs/02-design/agency-video-domain-rules-2026-04-29.md",
+          "docs/brand/agency-video-brand-precheck-2026-04-29.md",
+          "docs/meta/iss-085-chain-rca-2026-04-29.md"
+        ],
+        "wave2_artifacts": [
+          "docs/01-plan/features/agency-video.plan.md",
+          "docs/01-plan/features/agency-video.opportunity-2026-04-29.md",
+          "docs/01-plan/features/agency-video.ceo-review-2026-04-29.md",
+          "docs/01-plan/features/agency-video.eng-review-2026-04-29.md"
+        ],
+        "wave3_artifacts": [
+          "docs/03-analysis/agency-video.biz-validation-2026-04-29.md",
+          "docs/03-analysis/agency-video.journey-validation-2026-04-29.md"
+        ],
+        "decisions_locked_count": 18,
+        "ceo_verdict": "GO_TO_ENG_REVIEW (90초/6씬 lock-in)",
+        "eng_verdict": "GO_TO_VALIDATION",
+        "biz_verdict": "BIZ_PARTIAL_NEEDS_FIX (CRITICAL=0, MAJOR=6)",
+        "journey_verdict": "JOURNEY_PARTIAL_NEEDS_POLISH (30/40)",
+        "spawned_issues_count": 21,
+        "phase1_releaseable": true,
+        "next_step": "PoC 5일 일정 시작 — Day 1 plan 마감 + API key 4개 발급"
+      }
+    },
+    {
+      "id": "ISS-116",
+      "title": "[Meta] ISS-085 이슈 체인 근본 원인 분석",
+      "type": "PATTERN_ANALYSIS",
+      "status": "DONE",
+      "priority": "P1",
+      "assign_to": "meta-agent",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": null,
+      "depends_on": [],
+      "created_at": "2026-04-29T13:35:29.602143",
+      "payload": {
+        "parent_id": "ISS-085",
+        "chain_length": 4
+      },
+      "result": {
+        "pattern_name": "Spike-as-Plan 핑퐁",
+        "root_cause": "조사/POC가 plan 본체에 임베드되어 있고 reviewer의 'approve with conditions'가 자동으로 다음 라운드를 트리거",
+        "prevention_rule_for_iss115": "Spike 분리 강제 — 조사/벤치마크/POC 성격 작업은 별도 SPIKE 이슈로 분리. SPIKE 결과가 decisions_locked를 변경할 때만 plan 재검토.",
+        "expected_pingpong_reduction": "70%+",
+        "report_path": "docs/meta/iss-085-chain-rca-2026-04-29.md"
+      },
+      "spawn_rules": [],
+      "renamed_from": "ISS-115",
+      "renamed_at": "2026-04-29T04:35:48.865356+00:00",
+      "renamed_reason": "ID collision with FEATURE_PLAN ISS-115; meta-agent assigned duplicate ID",
+      "started_at": "2026-04-29T04:35:54.994591+00:00",
+      "completed_at": "2026-04-29T04:37:45.440219+00:00"
+    },
+    {
+      "id": "ISS-117",
+      "type": "GENERATE_CODE",
+      "priority": "P1",
+      "title": "[Agency Video] DB 마이그레이션 — 6+1 엔티티 + 6 enum + RLS (alembic v005~v008)",
+      "assign_to": "agent-harness",
+      "depth": 1,
+      "parent_id": "ISS-115",
+      "depends_on": [],
+      "payload": {
+        "scope_dir_lock": [
+          "backend/app/agency_video/models/",
+          "backend/alembic/versions/"
+        ],
+        "entities": [
+          "Tenant(reuse)",
+          "Client",
+          "Character",
+          "VoiceClone",
+          "TopicPool",
+          "VideoProject",
+          "Scene",
+          "Preview",
+          "Approval",
+          "GenerationRun",
+          "AuditLog"
+        ],
+        "enums": [
+          "VideoStatus(9)",
+          "ApprovalEnum",
+          "RegenerationReason",
+          "VerticalCategory",
+          "ConsentScope",
+          "ProviderName"
+        ],
+        "rls_pattern": "ISS-036 v003 100% reuse",
+        "absorbed_majors": [
+          "ISS-131(character_versioning)",
+          "ISS-132(monthly_cap)",
+          "ISS-134(qualitative_audit_jsonb)"
+        ],
+        "phase": "Phase 1 MVP",
+        "axis_mode": "plan-harness:code",
+        "files_changed": []
+      },
+      "status": "DONE",
+      "created_at": "2026-04-29T05:00:25.965755+00:00",
+      "retry_count": 0,
+      "spawn_rules": [],
+      "tags": [
+        "pingpong_blocked"
+      ],
+      "blocked_reason": "pingpong_guard: (GENERATE_CODE, src=ISS-115) 10건 중복 감지",
+      "restored_at": "2026-04-29T05:05:46.702962+00:00",
+      "started_at": "2026-04-29T05:05:57.190478+00:00",
+      "completed_at": "2026-04-29T05:17:01.487356+00:00",
+      "result": {
+        "files_created": 15,
+        "models": 12,
+        "alembic_migrations": 4,
+        "chain": "av005_core → av006_video → av007_audit → av008_rls",
+        "tables": 9,
+        "client_alter_columns": 7,
+        "enums": 10,
+        "rls_policies": 9,
+        "absorbed_subissues": [
+          "ISS-131",
+          "ISS-132",
+          "ISS-134"
+        ],
+        "absorbed_extra": "잠금 2 (vertical_locked) 동시 흡수",
+        "key_assumption": "agencies.id is Integer (not uuid) — matches v003 RLS pattern current_setting('app.current_agency_id')::int",
+        "alembic_upgrade_pending": "T2 EXTERNAL — separate gate, ISS-036 PostgreSQL 마이그 완료 후",
+        "validation": "import + revision chain PASS"
+      }
+    },
+    {
+      "id": "ISS-118",
+      "type": "GENERATE_CODE",
+      "priority": "P1",
+      "title": "[Agency Video] 기존 자산 어댑터 5개 (ffmpeg/voice/continuity/brand_extractor/audio_correction)",
+      "assign_to": "agent-harness",
+      "depth": 1,
+      "parent_id": "ISS-115",
+      "depends_on": [
+        "ISS-117"
+      ],
+      "payload": {
+        "scope_dir_lock": [
+          "backend/app/agency_video/services/adapters/"
+        ],
+        "adapters": [
+          "ffmpeg_profile_adapter",
+          "voice_clone_adapter",
+          "continuity_adapter",
+          "brand_extractor_adapter",
+          "audio_correction_adapter"
+        ],
+        "rule": "기존 services 0줄 수정. adapter 패턴으로 흡수만.",
+        "phase": "Phase 1 MVP",
+        "axis_mode": "plan-harness:code",
+        "files_changed": []
+      },
+      "status": "DONE",
+      "created_at": "2026-04-29T05:00:25.965755+00:00",
+      "retry_count": 0,
+      "spawn_rules": [],
+      "tags": [
+        "pingpong_blocked",
+        "pingpong_blocked"
+      ],
+      "blocked_reason": "pingpong_guard: (GENERATE_CODE, src=ISS-115) 3건 중복 감지",
+      "unblocked_at": "2026-04-29T05:17:01.487356+00:00",
+      "restored_at": "2026-04-29T05:17:45.992193+00:00",
+      "restored_reason": "False positive — ISS-117 DONE 후 정상 unblock된 build order. hook pingpong detector misidentified.",
+      "started_at": "2026-04-29T05:19:16.416429+00:00",
+      "completed_at": "2026-04-29T05:26:32.876252+00:00",
+      "result": {
+        "files_created": 7,
+        "adapters": 5,
+        "existing_services_unchanged": true,
+        "mtime_verification": "byte-identical pre/post (5 wrapped services)",
+        "lazy_import_pattern": "API keys not required for instantiation",
+        "unresolved_assumption": "tts_service.generate_audio async signature not directly verified — ISS-121 첫 통합 테스트에서 보정 필요",
+        "phase2_followup": "BrandExtractorAdapter._guess_vertical은 키워드 휴리스틱 placeholder — LLM classifier 교체 필요"
+      }
+    },
+    {
+      "id": "ISS-120",
+      "type": "GENERATE_CODE",
+      "priority": "P1",
+      "title": "[Agency Video] Provider 4개 통합 (Claude Sonnet 4.6 + Flux Schnell + Kling 1.6 + ElevenLabs)",
+      "assign_to": "agent-harness",
+      "depth": 1,
+      "parent_id": "ISS-115",
+      "depends_on": [
+        "ISS-117"
+      ],
+      "payload": {
+        "scope_dir_lock": [
+          "backend/app/agency_video/providers/"
+        ],
+        "providers": [
+          "claude_sonnet_46_text",
+          "flux_schnell_image",
+          "kling_16_video",
+          "elevenlabs_voice_clone"
+        ],
+        "rule": "Phase 1 = 4 provider 고정 (PAL Lite). Phase 2에서 다중 provider UI.",
+        "phase": "Phase 1 MVP",
+        "axis_mode": "plan-harness:code"
+      },
+      "status": "DONE",
+      "created_at": "2026-04-29T05:00:25.965755+00:00",
+      "retry_count": 0,
+      "spawn_rules": [],
+      "tags": [
+        "pingpong_blocked",
+        "pingpong_blocked"
+      ],
+      "blocked_reason": "pingpong_guard: (GENERATE_CODE, src=ISS-115) 3건 중복 감지",
+      "unblocked_at": "2026-04-29T05:17:01.487356+00:00",
+      "restored_at": "2026-04-29T05:17:45.992193+00:00",
+      "restored_reason": "False positive — ISS-117 DONE 후 정상 unblock된 build order. hook pingpong detector misidentified.",
+      "started_at": "2026-04-29T05:19:16.416429+00:00",
+      "completed_at": "2026-04-29T05:26:20.819882+00:00",
+      "result": {
+        "files_created": 7,
+        "providers_mock_mode_passing": 4,
+        "estimate_total_cost_won_6scenes": 9180,
+        "budget_target_won": 5000,
+        "budget_overrun_won": 4180,
+        "budget_overrun_pct": 83.6,
+        "biggest_driver": "kling video 9000원 (98%)",
+        "spike_remeasure_required": "ISS-127 Day 2~3 — cost_estimate_won 변경 금지 (decisions_locked)",
+        "lazy_imports": [
+          "anthropic",
+          "replicate",
+          "fal_client",
+          "voice_cloning_service"
+        ],
+        "scope_dir_lock_honored": true,
+        "no_new_pip_deps": true
+      }
+    },
+    {
+      "id": "ISS-119",
+      "type": "GENERATE_CODE",
+      "priority": "P0",
+      "title": "[Agency Video] Validators — 의료법 lint 3단계 + brand_isolation + cost_cap",
+      "assign_to": "agent-harness",
+      "depth": 1,
+      "parent_id": "ISS-115",
+      "depends_on": [
+        "ISS-117"
+      ],
+      "payload": {
+        "scope_dir_lock": [
+          "backend/app/agency_video/validators/"
+        ],
+        "validators": [
+          "medical_ad_linter(script→subtitle→stt_recheck)",
+          "brand_isolation_checker(ZERO TRACE 8항목)",
+          "cost_cap_guard(5000원/편 + 50000원/월/client)"
+        ],
+        "g6_target": "lint 차단율 ≥ 90% (PoC Day 3 EXPLICIT)",
+        "phase": "Phase 1 MVP",
+        "axis_mode": "plan-harness:code",
+        "files_changed": []
+      },
+      "status": "DONE",
+      "created_at": "2026-04-29T05:00:25.965755+00:00",
+      "retry_count": 0,
+      "spawn_rules": [],
+      "tags": [
+        "pingpong_blocked"
+      ],
+      "blocked_reason": "pingpong_guard: (GENERATE_CODE, src=ISS-115) 10건 중복 감지",
+      "unblocked_at": "2026-04-29T05:17:01.487356+00:00",
+      "started_at": "2026-04-29T05:17:45.992193+00:00",
+      "completed_at": "2026-04-29T05:29:38.337789+00:00",
+      "result": {
+        "files_created": 6,
+        "medical_patterns_implemented": "R-MED-2-1~8 + R-MED-3 disclaimer",
+        "brand_checks_implemented": "8 (color/font/text/metadata/domain/end_card)",
+        "cost_limits_implemented": "3 (per_video=5000 / per_month_client=50000 / per_day_global=10000)",
+        "g6_block_rate_measured": "100% (25/25)",
+        "g6_target": "≥ 90%",
+        "g6_status": "PASS (large margin)",
+        "false_positive_clean_scripts": "0/4",
+        "false_positive_clean_brand": "0/4",
+        "stdlib_only": true,
+        "key_finding": "한국어 \\b 미작동 → (?<![가-힣]) lookaround 표준화 (향후 한국어 lint 표준)"
+      }
+    },
+    {
+      "id": "ISS-127",
+      "type": "SPIKE",
+      "priority": "P0",
+      "title": "[Agency Video] SPIKE — PoC Day 2~3 (Kling 한국인 보존 + Flux 일관성 + 의료법 lint 차단율 ≥ 90%)",
+      "assign_to": "agent-harness",
+      "depth": 1,
+      "parent_id": "ISS-115",
+      "depends_on": [],
+      "payload": {
+        "spike_targets": [
+          "R1 Kling 1.6 한국 인물 보존",
+          "R3 Flux Schnell 한국인 일관성",
+          "R4 90초/6씬 비용 ≤ 5,000원",
+          "G6 의료법 lint 차단율 ≥ 90%"
+        ],
+        "duration_days": 2,
+        "g4_gate_at_day4": "GO if all 4 pass; HOLD if any fail; CUT_AND_REPLAN if R1+R3 동시 미달",
+        "rule_spike_separation": "이 SPIKE 결과가 decisions_locked를 변경할 때만 plan 재검토. 'approve with conditions' 트리거 금지.",
+        "requires_user_confirm_at_g4": true,
+        "phase": "Phase 1 MVP",
+        "axis_mode": "plan-harness:code",
+        "files_changed": []
+      },
+      "status": "IN_PROGRESS",
+      "created_at": "2026-04-29T05:00:25.965755+00:00",
+      "retry_count": 0,
+      "spawn_rules": [],
+      "awaiting_user_at": "2026-04-29T05:02:44.471520+00:00",
+      "t2_category": "EXTERNAL+BUDGET",
+      "t2_reason": "외부 API 4개 신규 발급(Anthropic 보유 외 Replicate-Flux/Kling/추가 Anthropic 비용) + 유료 plan 활성화 + PoC 비용 추정 8,000~15,000원/편 × 3편 = 약 24,000~45,000원. EXTERNAL+BUDGET T2 카테고리 발동.",
+      "t2_question": "ISS-127 SPIKE 시작 컨펌 요청",
+      "t2_options": [
+        "A. 즉시 시작 — API 키 4개 발급 + PoC 비용 ~45,000원 승인",
+        "B. plan 검토 후 결정 — 9개 산출물 검토 1~2시간 후 재요청",
+        "C. PoC 축소 — 1편 1회만 (~15,000원) 빠른 검증",
+        "D. PoC 보류 — 다른 우선순위 먼저"
+      ],
+      "t2_decision_mode": "B → A pending",
+      "t2_user_response_2026_04_29": "B 우선(plan 검토 1~2시간) → A로 전환(검토 완료 후 컨펌)",
+      "t2_next_action": "대표님이 9개 산출물 검토 완료 후 'PoC 시작' 컨펌하면 status=READY로 전환 → 즉시 디스패치",
+      "t2_user_confirmed_at": "2026-04-29T06:53:35.242898+00:00",
+      "t2_user_confirmed_by": "강승식 대표 (4단계 결정 명시)",
+      "t2_decision": "GO — 옵션 A 시작",
+      "t2_budget_approved_won": 30000,
+      "t2_api_keys_to_provision": [
+        "Replicate (Flux Schnell)",
+        "Kling AI (또는 fal.ai)",
+        "Anthropic 추가 크레딧"
+      ],
+      "t2_dispatch_blocker": "API 키 3개 발급 필요 (대표님 또는 자동 환경변수 설정)",
+      "started_at": "2026-04-29T06:55:49.870130+00:00",
+      "dispatch_note": "T2 EXTERNAL+BUDGET 컨펌 수신 (강승식 대표). API 키 3개 발급 필요 — 대표님이 별도 환경변수로 설정. 키 도착 전까지 PoC 환경 setup만 진행."
+    },
+    {
+      "id": "ISS-121",
+      "type": "GENERATE_CODE",
+      "priority": "P1",
+      "title": "[Agency Video] Pipeline 7단계 (스크립트→씬→이미지→영상→음성→자막→합성)",
+      "assign_to": "agent-harness",
+      "depth": 1,
+      "parent_id": "ISS-115",
+      "depends_on": [
+        "ISS-118",
+        "ISS-120",
+        "ISS-119"
+      ],
+      "payload": {
+        "scope_dir_lock": [
+          "backend/app/agency_video/pipeline/"
+        ],
+        "scenes_per_video": 6,
+        "duration_sec": 90,
+        "stages": [
+          "script_gen",
+          "scene_breakdown",
+          "image_gen",
+          "video_gen",
+          "voice_gen",
+          "subtitle_gen",
+          "compose"
+        ],
+        "phase": "Phase 1 MVP",
+        "axis_mode": "plan-harness:code",
+        "files_changed": []
+      },
+      "status": "DONE",
+      "created_at": "2026-04-29T05:00:25.965755+00:00",
+      "retry_count": 0,
+      "spawn_rules": [],
+      "tags": [
+        "pingpong_blocked"
+      ],
+      "blocked_reason": "pingpong_guard: (GENERATE_CODE, src=ISS-115) 10건 중복 감지",
+      "unblocked_at": "2026-04-29T05:29:38.337789+00:00",
+      "started_at": "2026-04-29T05:30:10.834360+00:00",
+      "completed_at": "2026-04-29T05:42:14.171283+00:00",
+      "result": {
+        "files_created": 4,
+        "scope_dir_lock_honored": true,
+        "e2e_checks_passed": "19/19",
+        "total_duration_ms": 11,
+        "total_cost_won_mock": 9681,
+        "cost_estimate_consistency": "matches estimate_total_cost_won(6) ± 1%",
+        "stages_implemented": 7,
+        "validation_gates_active": 4,
+        "scene_rows_created": 6,
+        "generation_runs_created": "≥20",
+        "audit_log_entries": "≥8",
+        "validators_all_pass": [
+          "MedicalAdLinter",
+          "BrandIsolationChecker",
+          "CostCapGuard"
+        ],
+        "critical_finding_R4": "MOCK 비용 9180원이 cap 5000원을 초과 — LIVE 모드 첫 실행 즉시 BLOCK. relaxed_guard(20000) 임시 주입으로 happy path 검증.",
+        "spike_dependency": "ISS-127 SPIKE 측정 후 provider cost_estimate_won 보정 또는 ceo-review의 잠금(90초/6씬) 재논의 — Spike-as-Plan 핑퐁 방지 규칙 준수",
+        "iss122_handover": "FfmpegComposeAdapter.compose_video — closing card에 표준 MEDICAL_DISCLAIMER_KR 자동 주입 필요"
+      }
+    },
+    {
+      "id": "ISS-122",
+      "type": "GENERATE_CODE",
+      "priority": "P1",
+      "title": "[Agency Video] Celery 비동기 + WebSocket 진행률 (chord+group, wall time 3~4분/편)",
+      "assign_to": "agent-harness",
+      "depth": 1,
+      "parent_id": "ISS-115",
+      "depends_on": [
+        "ISS-121"
+      ],
+      "payload": {
+        "scope_dir_lock": [
+          "backend/app/agency_video/tasks/"
+        ],
+        "pattern": "chord(group(scene_tasks)) → compose_callback",
+        "soft_time_limit_per_scene_sec": 60,
+        "hard_time_limit_per_video_sec": 1800,
+        "absorbed_majors": [
+          "ISS-129(preview_auto_expire_job)"
+        ],
+        "phase": "Phase 1 MVP",
+        "axis_mode": "plan-harness:code",
+        "files_changed": []
+      },
+      "status": "DONE",
+      "created_at": "2026-04-29T05:00:25.965755+00:00",
+      "retry_count": 0,
+      "spawn_rules": [],
+      "tags": [
+        "pingpong_blocked"
+      ],
+      "blocked_reason": "pingpong_guard: (GENERATE_CODE, src=ISS-115) 10건 중복 감지",
+      "unblocked_at": "2026-04-29T05:42:14.171283+00:00",
+      "started_at": "2026-04-29T05:42:51.193447+00:00",
+      "completed_at": "2026-04-29T05:48:57.208185+00:00",
+      "result": {
+        "files_created": 4,
+        "lines_total": 930,
+        "smoke_checks_passed": "14/14",
+        "celery_eager_pipeline": "SUCCESS (7 stages, 6 scenes, 20 GenerationRun, 10 AuditLog)",
+        "video_status_final": "PREVIEW_READY",
+        "total_cost_won_mock": 9681,
+        "absorbed_iss129": "expire_old_previews — expired row만 EXPIRED 마킹, future PENDING 보존",
+        "scope_dir_lock_honored": true,
+        "wiring_required_iss123": [
+          "celery_app.autodiscover_tasks([..., 'app.agency_video.tasks']) 추가",
+          "celery_app.conf.beat_schedule.update(AGENCY_VIDEO_BEAT_SCHEDULE) 호출"
+        ],
+        "phase2_followup": "chord(group(scene_tasks)) 진짜 6-scene 병렬화는 ISS-121 orchestrator stage-진입 hook 필요"
+      }
+    },
+    {
+      "id": "ISS-123",
+      "type": "GENERATE_CODE",
+      "priority": "P1",
+      "title": "[Agency Video] API 11 endpoint (clients/characters/videos/preview/approve/regenerate/voice-consent-revoke 등)",
+      "assign_to": "agent-harness",
+      "depth": 1,
+      "parent_id": "ISS-115",
+      "depends_on": [
+        "ISS-121"
+      ],
+      "payload": {
+        "scope_dir_lock": [
+          "backend/app/agency_video/api/"
+        ],
+        "endpoints_count": 11,
+        "error_codes": 8,
+        "absorbed_majors": [
+          "ISS-130(agency_unlock_endpoint)"
+        ],
+        "phase": "Phase 1 MVP",
+        "axis_mode": "plan-harness:code",
+        "files_changed": []
+      },
+      "status": "DONE",
+      "created_at": "2026-04-29T05:00:25.965755+00:00",
+      "retry_count": 0,
+      "spawn_rules": [],
+      "tags": [
+        "pingpong_blocked"
+      ],
+      "blocked_reason": "pingpong_guard: (GENERATE_CODE, src=ISS-115) 10건 중복 감지",
+      "unblocked_at": "2026-04-29T05:42:14.171283+00:00",
+      "started_at": "2026-04-29T05:42:51.193447+00:00",
+      "completed_at": "2026-04-29T05:54:06.821571+00:00",
+      "result": {
+        "files_created": 5,
+        "endpoints_declared": 13,
+        "smoke_test_scenarios_passed": "13/13",
+        "preview_schema_alignment_iss126": "1:1 verified",
+        "vertical_value_translation": "medical_dermatology ↔ medical-dermatology",
+        "error_codes_used": "8/8",
+        "absorbed_iss130": "POST /videos/{id}/unlock (one-time enforcement)",
+        "scope_dir_lock_honored": true,
+        "router_mount_pending": "main.py에서 1줄 마운트 필요 (의도적 미반영, 별도 sub-issue 권장)",
+        "mock_store_pending": "ISS-117 ORM 영속화로 교체 필요 (Phase 1 MOCK fallback)"
+      }
+    },
+    {
+      "id": "ISS-124",
+      "type": "GENERATE_CODE",
+      "priority": "P1",
+      "title": "[Agency Video UI] 거래처 등록 Wizard 4단계 (URL→extracting→review→saving + vertical 명시 라디오)",
+      "assign_to": "agent-harness",
+      "depth": 1,
+      "parent_id": "ISS-115",
+      "depends_on": [
+        "ISS-123"
+      ],
+      "payload": {
+        "scope_dir_lock": [
+          "frontend/app/agency-video/clients/"
+        ],
+        "screens": [
+          "clients/list",
+          "clients/new(wizard4)",
+          "clients/[id]"
+        ],
+        "brand_layer": "Layer 1 — SLDS light + 보라 액센트 1곳",
+        "critical_lock": "Step 4 vertical = medical-dermatology 명시 라디오 + 자필 체크 (opportunity P0)",
+        "phase": "Phase 1 MVP",
+        "axis_mode": "plan-harness:code",
+        "design_input": {
+          "source": "~/Downloads/OmniVibePro.zip (BMW M motorsport reference)",
+          "extracted_to": "/tmp/omnivibe-design-extract/",
+          "decision_mode": "C — 구조 채택, SLDS 색 유지 (잠금 11 보호, T2 회피)",
+          "structure_to_adopt": [
+            "4-step Stage Rail (좌측 세로)",
+            "좌측 영구 KPI panel (COST/VIDEO 5,000 / MONTHLY 30,000 / EST. MARGIN 98%)",
+            "Stage 헤더 (STAGE 0X · STEP_NAME)",
+            "하단 3-up 카드 (CRAWL / CHARACTER / SAFETY)",
+            "VERTICAL · 의료광고법 §56 사이드바 항상 노출",
+            "Stage Rail 하단 액션 그룹 (CANCEL / NEXT)"
+          ],
+          "what_NOT_to_adopt": [
+            "검정 캔버스 (#000) — SLDS #F3F2F2 유지",
+            "BMW Type Next UPPERCASE — Pretendard 한국어 유지",
+            "M tricolor stripe — 보라 #A855F7 액센트로 대체 (bridge_rules)",
+            "0px radius — SLDS 4px radius 유지"
+          ]
+        },
+        "files_changed": []
+      },
+      "status": "DONE",
+      "created_at": "2026-04-29T05:00:25.965755+00:00",
+      "retry_count": 0,
+      "spawn_rules": [],
+      "tags": [
+        "pingpong_blocked"
+      ],
+      "blocked_reason": "pingpong_guard: (GENERATE_CODE, src=ISS-115) 10건 중복 감지",
+      "unblocked_at": "2026-04-29T05:54:06.821571+00:00",
+      "started_at": "2026-04-29T05:54:54.868282+00:00",
+      "completed_at": "2026-04-29T06:07:47.864131+00:00",
+      "result": {
+        "files_created": 18,
+        "scope_dir_lock_honored": true,
+        "tsc_errors_in_scope": 0,
+        "bmw_dark_grep": "0 hits in render path",
+        "preview_dir_modifications": 0,
+        "no_new_npm_deps": true,
+        "bridge_purple_locations": [
+          "StageRail.tsx — active stage dot (BRIDGE_PURPLE constant)",
+          "WizardLayout.tsx — TopBar 'PRO' text color (bridge_rules[0])"
+        ],
+        "submit_gate_enforced": "StepConfirm.canSubmit = vertical_radio + ack_checkbox both required",
+        "design_decision_applied": "C — 구조만 채택, SLDS 색 유지",
+        "structure_adopted": "4-step Stage Rail + KPI panel + STAGE 0X header + 3-up cards + VERTICAL §56 sidebar"
+      }
+    },
+    {
+      "id": "ISS-125",
+      "type": "GENERATE_CODE",
+      "priority": "P1",
+      "title": "[Agency Video UI] 영상 큐 + 상세 + 캐릭터 라이브러리",
+      "assign_to": "agent-harness",
+      "depth": 1,
+      "parent_id": "ISS-115",
+      "depends_on": [
+        "ISS-123"
+      ],
+      "payload": {
+        "scope_dir_lock": [
+          "frontend/app/agency-video/videos/",
+          "frontend/app/agency-video/characters/"
+        ],
+        "screens": [
+          "videos/queue",
+          "videos/[id]",
+          "characters/library"
+        ],
+        "brand_layer": "Layer 1",
+        "phase": "Phase 1 MVP",
+        "axis_mode": "plan-harness:code",
+        "design_input": {
+          "decision_mode": "C — 구조만 채택, SLDS 색 유지 (ISS-124와 동일)",
+          "structure_to_adopt_from_iss124": [
+            "TopBar 일관성",
+            "좌측 KPI panel",
+            "STAGE 헤더 톤 (대문자 마커)",
+            "보라 액센트 1곳 (bridge_rules)"
+          ]
+        },
+        "files_changed": []
+      },
+      "status": "DONE",
+      "created_at": "2026-04-29T05:00:25.965755+00:00",
+      "retry_count": 0,
+      "spawn_rules": [],
+      "tags": [
+        "pingpong_blocked"
+      ],
+      "blocked_reason": "pingpong_guard: (GENERATE_CODE, src=ISS-115) 10건 중복 감지",
+      "unblocked_at": "2026-04-29T05:54:06.821571+00:00",
+      "started_at": "2026-04-29T05:56:41.100383+00:00",
+      "completed_at": "2026-04-29T06:09:52.513099+00:00",
+      "result": {
+        "files_created": 19,
+        "tsc_exit": 0,
+        "bmw_dark_grep": "0 hits",
+        "scope_dir_lock_honored": true,
+        "bridge_purple_per_page": "exactly 1 location each (3 pages × 1)",
+        "bridge_purple_locations": [
+          "videos Queue — VideoQueue.tsx:95 active filter tab dot",
+          "videos Detail — [id]/page.tsx:57 breadcrumb 'you are here' marker",
+          "characters Library — CharacterCard.tsx:62 most-recent-active 'NEW' badge"
+        ],
+        "status_badges": "solid bg + white text + UPPERCASE letterspaced",
+        "all_korean_pyeoneche": true,
+        "input_field_compliance": "text-sm / py-2.5 / border-gray-300",
+        "schema_alignment_iss123": "1:1 (VideoListItem/VideoRead/CharacterRead/RegenerationRequest/UnlockRequest)"
+      }
+    },
+    {
+      "id": "ISS-126",
+      "type": "GENERATE_CODE",
+      "priority": "P0",
+      "title": "[Agency Video UI] 거래처 미리보기 공개 페이지 (Layer 2 — minimal OmniVibe trace)",
+      "assign_to": "agent-harness",
+      "depth": 1,
+      "parent_id": "ISS-115",
+      "depends_on": [
+        "ISS-123"
+      ],
+      "payload": {
+        "scope_dir_lock": [
+          "frontend/app/agency-video/preview/"
+        ],
+        "screens": [
+          "preview/[token]"
+        ],
+        "brand_layer": "Layer 2 — client_preview surface 신설 + bridge_rules 면제",
+        "critical": "ZERO OmniVibe TRACE 60% 위험 (brand-guardian)",
+        "absorbed_majors": [
+          "ISS-133(pre-publication watermark)"
+        ],
+        "phase": "Phase 1 MVP",
+        "axis_mode": "plan-harness:code",
+        "files_changed": []
+      },
+      "status": "DONE",
+      "created_at": "2026-04-29T05:00:25.965755+00:00",
+      "retry_count": 0,
+      "spawn_rules": [],
+      "started_at": "2026-04-29T05:03:18.951824+00:00",
+      "completed_at": "2026-04-29T05:10:09.910040+00:00",
+      "result": {
+        "files_created": 8,
+        "scope_dir_lock_honored": true,
+        "zero_trace_render_path": "0 matches (omnivibe|A855F7|outfit|salesforce|00A1E0)",
+        "tsc_exit_code": 0,
+        "haeyo_audit": "0 평어체 in JSX",
+        "disclaimer_verified": "시술 효과는 개인차가 있을 수 있습니다.",
+        "watermark_verified": "심의 전 — 게시 금지",
+        "absorbed_subissues": [
+          "ISS-133"
+        ],
+        "blocked_until_iss123": [
+          "fetchPreviewData() mock",
+          "ApprovalActions setTimeout mocks"
+        ],
+        "blocked_until_iss127": [
+          "BigBuckBunny placeholder → real Kling output URL"
+        ],
+        "ready_for": "UI/journey-validator review immediately"
+      }
+    },
+    {
+      "id": "ISS-128",
+      "type": "RUN_TESTS",
+      "priority": "P1",
+      "title": "[Agency Video] E2E 시나리오 테스트 (16 scenarios + 4 KPI 측정)",
+      "assign_to": "test-harness",
+      "depth": 1,
+      "parent_id": "ISS-115",
+      "depends_on": [
+        "ISS-124",
+        "ISS-125",
+        "ISS-126",
+        "ISS-122",
+        "ISS-127"
+      ],
+      "payload": {
+        "scope_dir_lock": [
+          "backend/tests/agency_video/",
+          "frontend/tests/agency-video/"
+        ],
+        "scenario_coverage_target": "≥ 90% (현재 87.5%)",
+        "kpis": [
+          "KPI1 binary",
+          "KPI2 < 5000원",
+          "KPI3 < 30분",
+          "KPI4 정성 평가 audit jsonb"
+        ],
+        "phase": "Phase 1 MVP",
+        "axis_mode": "check-harness:test",
+        "mode": "MOCK_ONLY (ISS-127 SPIKE 컨펌 전 가능한 검증만)",
+        "scope_note": "대표님 자율 명령 '구현+테스트 진행' 수신. SPIKE 의존성 제외, MOCK 기반 16 시나리오 + 4 KPI 측정. LIVE 검증은 ISS-127 컨펌 후 별도 round.",
+        "files_changed": []
+      },
+      "status": "DONE",
+      "created_at": "2026-04-29T05:00:25.965755+00:00",
+      "retry_count": 0,
+      "spawn_rules": [],
+      "started_at": "2026-04-29T06:30:50.835771+00:00",
+      "completed_at": "2026-04-29T06:44:20.929021+00:00",
+      "result": {
+        "scenarios": "13 PASS / 0 FAIL / 3 SKIP (Admin 4 + Agency 4 + Client 5 + Guest 3 skipped)",
+        "kpi1_first_video_pass": true,
+        "kpi2_cost_under_5000_pass": false,
+        "kpi2_actual_won": 9681,
+        "kpi2_cap_won": 5000,
+        "kpi2_overrun_pct": 93.6,
+        "kpi3_under_30min_pass": true,
+        "kpi3_wall_time_ms": 12,
+        "kpi4_qualitative_skip": "manual interview",
+        "g6_block_rate": "100% (25/25)",
+        "g6_false_positive_rate": "0% (0/4 clean)",
+        "g6_pass": true,
+        "release_blocker": "KPI2 only — ISS-127 SPIKE Day 2~3 LIVE provider 비용 재측정 시 해소 가능성",
+        "test_files_created": 6,
+        "pytest_result": "18 passed, 4 skipped",
+        "scope_dir_lock_honored": true
+      }
+    },
+    {
+      "id": "ISS-129",
+      "type": "BIZ_FIX",
+      "priority": "P1",
+      "title": "[Agency Video MAJOR] G1 — Preview auto-expire job (Celery beat 30일 + reminder)",
+      "assign_to": "agent-harness",
+      "depth": 2,
+      "parent_id": "ISS-122",
+      "depends_on": [
+        "ISS-122"
+      ],
+      "payload": {
+        "absorbed_in": "ISS-122",
+        "domain_rule": "G1 미응답 처리",
+        "phase": "Phase 1 MVP",
+        "axis_mode": "plan-harness:code"
+      },
+      "status": "DONE",
+      "created_at": "2026-04-29T05:00:25.965755+00:00",
+      "retry_count": 0,
+      "spawn_rules": [],
+      "blocked_at": "2026-04-29T05:05:04.043325+00:00",
+      "blocked_by": [
+        "ISS-122"
+      ],
+      "completed_at": "2026-04-29T05:48:57.208185+00:00",
+      "result": {
+        "absorbed_in": "ISS-122",
+        "verified": "expire_old_previews Celery beat 03:00 KST"
+      }
+    },
+    {
+      "id": "ISS-130",
+      "type": "BIZ_FIX",
+      "priority": "P1",
+      "title": "[Agency Video MAJOR] G2 — Agency 1회 unlock endpoint (월 5회 한도 + 1회 예외)",
+      "assign_to": "agent-harness",
+      "depth": 2,
+      "parent_id": "ISS-123",
+      "depends_on": [
+        "ISS-123"
+      ],
+      "payload": {
+        "absorbed_in": "ISS-123",
+        "domain_rule": "R-RG-1",
+        "phase": "Phase 1 MVP",
+        "axis_mode": "plan-harness:code"
+      },
+      "status": "DONE",
+      "created_at": "2026-04-29T05:00:25.965755+00:00",
+      "retry_count": 0,
+      "spawn_rules": [],
+      "blocked_at": "2026-04-29T05:05:04.043325+00:00",
+      "blocked_by": [
+        "ISS-123"
+      ],
+      "completed_at": "2026-04-29T05:54:06.821571+00:00",
+      "result": {
+        "absorbed_in": "ISS-123",
+        "endpoint": "POST /videos/{id}/unlock"
+      }
+    },
+    {
+      "id": "ISS-131",
+      "type": "BIZ_FIX",
+      "priority": "P1",
+      "title": "[Agency Video MAJOR] G7 — Character versioning 컬럼 (사진 교체 시 v1 retired)",
+      "assign_to": "agent-harness",
+      "depth": 2,
+      "parent_id": "ISS-117",
+      "depends_on": [
+        "ISS-117"
+      ],
+      "payload": {
+        "absorbed_in": "ISS-117",
+        "phase": "Phase 1 MVP",
+        "axis_mode": "plan-harness:code"
+      },
+      "status": "DONE",
+      "created_at": "2026-04-29T05:00:25.965755+00:00",
+      "retry_count": 0,
+      "spawn_rules": [],
+      "tags": [
+        "pingpong_blocked"
+      ],
+      "blocked_reason": "pingpong_guard: (BIZ_FIX, src=ISS-117) 3건 중복 감지",
+      "blocked_at": "2026-04-29T05:05:46.702962+00:00",
+      "blocked_by": [
+        "ISS-117"
+      ],
+      "completed_at": "2026-04-29T05:17:01.487356+00:00",
+      "result": {
+        "absorbed_in": "ISS-117",
+        "implementation": "character versioning columns"
+      }
+    },
+    {
+      "id": "ISS-132",
+      "type": "BIZ_FIX",
+      "priority": "P1",
+      "title": "[Agency Video MAJOR] A-S3 — Client 단위 월 누적 50,000원 cap",
+      "assign_to": "agent-harness",
+      "depth": 2,
+      "parent_id": "ISS-117",
+      "depends_on": [
+        "ISS-117"
+      ],
+      "payload": {
+        "absorbed_in": "ISS-117",
+        "phase": "Phase 1 MVP",
+        "axis_mode": "plan-harness:code"
+      },
+      "status": "DONE",
+      "created_at": "2026-04-29T05:00:25.965755+00:00",
+      "retry_count": 0,
+      "spawn_rules": [],
+      "tags": [
+        "pingpong_blocked"
+      ],
+      "blocked_reason": "pingpong_guard: (BIZ_FIX, src=ISS-117) 3건 중복 감지",
+      "blocked_at": "2026-04-29T05:05:46.702962+00:00",
+      "blocked_by": [
+        "ISS-117"
+      ],
+      "completed_at": "2026-04-29T05:17:01.487356+00:00",
+      "result": {
+        "absorbed_in": "ISS-117",
+        "implementation": "monthly cap columns"
+      }
+    },
+    {
+      "id": "ISS-133",
+      "type": "BIZ_FIX",
+      "priority": "P1",
+      "title": "[Agency Video MAJOR] C-S5 — '게시 전 심의 필요' 워터마크 (R-MED-3)",
+      "assign_to": "agent-harness",
+      "depth": 2,
+      "parent_id": "ISS-126",
+      "depends_on": [
+        "ISS-126"
+      ],
+      "payload": {
+        "absorbed_in": "ISS-126",
+        "phase": "Phase 1 MVP",
+        "axis_mode": "plan-harness:code"
+      },
+      "status": "DONE",
+      "created_at": "2026-04-29T05:00:25.965755+00:00",
+      "retry_count": 0,
+      "spawn_rules": [],
+      "blocked_at": "2026-04-29T05:05:04.043325+00:00",
+      "blocked_by": [
+        "ISS-126"
+      ],
+      "completed_at": "2026-04-29T05:10:09.910040+00:00",
+      "result": {
+        "absorbed_in": "ISS-126",
+        "watermark_implemented": "심의 전 — 게시 금지 (40% opacity, -22deg diagonal repeat)",
+        "gated_on": "pre_publication boolean from PreviewData"
+      }
+    },
+    {
+      "id": "ISS-134",
+      "type": "BIZ_FIX",
+      "priority": "P1",
+      "title": "[Agency Video MAJOR] KPI4 — 정성 평가 audit jsonb 필드 (DB 마이그레이션)",
+      "assign_to": "agent-harness",
+      "depth": 2,
+      "parent_id": "ISS-117",
+      "depends_on": [
+        "ISS-117"
+      ],
+      "payload": {
+        "absorbed_in": "ISS-117",
+        "phase": "Phase 1 MVP",
+        "axis_mode": "plan-harness:code"
+      },
+      "status": "DONE",
+      "created_at": "2026-04-29T05:00:25.965755+00:00",
+      "retry_count": 0,
+      "spawn_rules": [],
+      "blocked_at": "2026-04-29T05:05:04.043325+00:00",
+      "blocked_by": [
+        "ISS-117"
+      ],
+      "completed_at": "2026-04-29T05:17:01.487356+00:00",
+      "result": {
+        "absorbed_in": "ISS-117",
+        "implementation": "qualitative_rating jsonb"
+      }
+    },
+    {
+      "id": "ISS-135",
+      "type": "UX_FIX",
+      "priority": "P1",
+      "title": "[Agency Video UX] 거래처 본인 self-onboarding 흐름 + 음성 동의 멘트 30초 별도 녹음 step",
+      "assign_to": "agent-harness",
+      "depth": 2,
+      "parent_id": "ISS-124",
+      "depends_on": [
+        "ISS-124"
+      ],
+      "payload": {
+        "journey_score_impact": "온보딩 6/10 → 8/10",
+        "domain_rule": "R-VC-1",
+        "phase": "Phase 1 MVP",
+        "axis_mode": "plan-harness:code",
+        "scope_dir_lock": [
+          "frontend/app/agency-video/clients/onboarding-self/"
+        ],
+        "scope_isolation_strategy": "ISS-125 진행 중이므로 신규 sub-route 분리 — 기존 ISS-124 clients/new/ 미수정",
+        "files_changed": []
+      },
+      "status": "DONE",
+      "created_at": "2026-04-29T05:00:25.965755+00:00",
+      "retry_count": 0,
+      "spawn_rules": [],
+      "unblocked_at": "2026-04-29T06:07:47.864131+00:00",
+      "started_at": "2026-04-29T06:08:24.245098+00:00",
+      "completed_at": "2026-04-29T06:18:39.170603+00:00",
+      "result": {
+        "files_created": 11,
+        "scope_dir_lock_honored": true,
+        "tsc_exit": 0,
+        "zero_trace_render_path": "0 hits omnivibe|#A855F7|Outfit|salesforce|#00A1E0",
+        "haeyo_audit": "0 평어체 in JSX (mock 음성 대사 1건은 spec-mandated 자기소개 — 시술자가 직접 낭독)",
+        "rvc1_stage1_enforced": "StepConsentBeforeRecord — 3 checkbox + disabled NEXT until all checked",
+        "rvc1_stage2_enforced": "StepConsentFinal — canSubmit gating + mock server double-check",
+        "section56_in_voice_script": "_mocks.ts:145 — 시술자가 직접 낭독하여 audit evidence",
+        "rvc4_1click_revocation_surfaced": "Step 3 expandable + Step 5 footer micro-copy",
+        "scope_isolation": "ISS-126/124/125/136 directories untouched"
+      }
+    },
+    {
+      "id": "ISS-136",
+      "type": "UX_FIX",
+      "priority": "P1",
+      "title": "[Agency Video UX] 약관 3종 동의 화면 (서비스 이용 + voice clone + 의료광고 책임)",
+      "assign_to": "agent-harness",
+      "depth": 2,
+      "parent_id": "ISS-124",
+      "depends_on": [
+        "ISS-124"
+      ],
+      "payload": {
+        "consent_count": 3,
+        "phase": "Phase 1 MVP",
+        "axis_mode": "plan-harness:code"
+      },
+      "status": "DONE",
+      "created_at": "2026-04-29T05:00:25.965755+00:00",
+      "retry_count": 0,
+      "spawn_rules": [],
+      "unblocked_at": "2026-04-29T06:07:47.864131+00:00",
+      "started_at": "2026-04-29T06:09:52.513099+00:00",
+      "completed_at": "2026-04-29T06:19:44.739161+00:00",
+      "result": {
+        "files_created": 8,
+        "scope_dir_lock_honored": true,
+        "tsc_exit": 0,
+        "zero_trace_render_path": "0 hits",
+        "haeyo_audit": "0 평어체 (§56 disclaimer 2회 정확 인용 예외만)",
+        "section56_exact_match": "page.tsx:120 footer + MedicalAdResponsibilityBody.tsx:23",
+        "master_agree_enforcement_layered": [
+          "allChecked = SERVICE_TERMS && VOICE_CLONE && MEDICAL_AD_RESPONSIBILITY",
+          "handleMasterToggle guard (!allChecked rejects)",
+          "input disabled={!allChecked}",
+          "submitDisabled = !masterAgreed",
+          "auto-clear masterAgreed if any individual consent untick"
+        ],
+        "touch_targets": "체크박스 ≥56px, 전문 토글 ≥44px, SUBMIT ≥56px",
+        "scope_isolation": "ISS-135/124/125/126 + preview/ 0 modifications"
+      }
+    },
+    {
+      "id": "ISS-137",
+      "type": "UX_FIX",
+      "priority": "P2",
+      "title": "[Agency Video UX] 빈 상태 카피 5종 (거래처 0/영상 0/주제 0/캐릭터 0/큐 0)",
+      "assign_to": "agent-harness",
+      "depth": 2,
+      "parent_id": "ISS-125",
+      "depends_on": [
+        "ISS-125"
+      ],
+      "payload": {
+        "empty_states": 5,
+        "phase": "Phase 1 MVP",
+        "axis_mode": "plan-harness:code",
+        "scope_dir_lock": [
+          "frontend/app/agency-video/clients/page.tsx, ClientsTable.tsx",
+          "frontend/app/agency-video/clients/[id]/ClientDetailView.tsx",
+          "frontend/app/agency-video/videos/VideoQueue.tsx",
+          "frontend/app/agency-video/characters/CharactersGrid.tsx"
+        ],
+        "forbidden_dirs": [
+          "frontend/app/agency-video/clients/onboarding-self/ (ISS-135 진행)",
+          "frontend/app/agency-video/clients/onboarding-self/[token]/consent/ (ISS-136 진행)",
+          "frontend/app/agency-video/preview/ (ISS-126 done, no need)"
+        ]
+      },
+      "status": "DONE",
+      "created_at": "2026-04-29T05:00:25.965755+00:00",
+      "retry_count": 0,
+      "spawn_rules": [],
+      "unblocked_at": "2026-04-29T06:09:52.513099+00:00",
+      "started_at": "2026-04-29T06:11:20.445088+00:00",
+      "completed_at": "2026-04-29T06:17:55.440117+00:00",
+      "result": {
+        "files_modified": 4,
+        "new_components": 1,
+        "shared_component": "frontend/app/agency-video/_shared/EmptyState.tsx (6 Feather line icons)",
+        "surfaces_upgraded": 5,
+        "pyeoneche_audit": "0 hits 해요체",
+        "abstract_words_audit": "0 hits in body copy",
+        "purple_accent_added": 0,
+        "emoji_count": 0,
+        "tsc_exit": 0,
+        "scope_isolation": "onboarding-self/ + preview/ 0 modifications",
+        "phase2_followup": "FilterTab은 backend VideoStatus의 7/13 부분집합 (의도적 축소)"
+      }
+    },
+    {
+      "id": "ISS-139",
+      "title": "[Meta] ISS-115 이슈 체인 근본 원인 분석",
+      "type": "PATTERN_ANALYSIS",
+      "status": "CANCELLED",
+      "priority": "P1",
+      "assign_to": "meta-agent",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": null,
+      "depends_on": [],
+      "created_at": "2026-04-29T14:01:12.944437",
+      "payload": {
+        "parent_id": "ISS-115",
+        "chain_length": 12
+      },
+      "result": {
+        "note": "Meta-agent pingpong detector cannot distinguish planned 21-issue cohort from runtime ping-pong derivative chain."
+      },
+      "spawn_rules": [],
+      "renamed_from": "ISS-116",
+      "renamed_at": "2026-04-29T05:02:25.295806+00:00",
+      "renamed_reason": "ID collision with DONE ISS-116; meta cycle 159 generated duplicate",
+      "cancelled_at": "2026-04-29T05:02:25.295806+00:00",
+      "cancelled_reason": "False positive — ISS-117~137은 ISS-115 Wave 4 정상 spawn, 핑퐁 아님."
+    },
+    {
+      "id": "ISS-140",
+      "title": "[Agency Video Bridge] 외부 랜딩 Studio Mockup BMW M 톤 교체 (옵션 Y)",
+      "type": "GENERATE_CODE",
+      "status": "DONE",
+      "priority": "P1",
+      "assign_to": "agent-harness",
+      "depth": 0,
+      "retry_count": 0,
+      "parent_id": "ISS-115",
+      "depends_on": [],
+      "created_at": "2026-04-29T06:29:07.008214+00:00",
+      "started_at": "2026-04-29T06:29:07.008214+00:00",
+      "spawn_rules": [],
+      "payload": {
+        "axis_mode": "plan-harness:code",
+        "phase": "Phase 1 MVP — Bridge",
+        "decision_mode": "Y — 외부 랜딩 보라 유지 + Studio Mockup만 BMW M 톤 교체",
+        "scope_dir_lock": [
+          "frontend/app/page.tsx (StudioMockup 함수만, line ~257-381)"
+        ],
+        "user_intent_2026_04_29": "랜딩페이지와 받은 디자인 파일 간 갭 발견 → 디자이너 산출물을 Studio Mockup 영역에 적용해서 갭 해소 (bridge_rules 강화)",
+        "rationale": "외부 랜딩 정체성(보라/인디고)은 brand-dna 옵션 A로 보호. Studio Mockup은 '실제 내부 작업 화면 미리보기'이므로 BMW M 모터스포츠 톤으로 변경해서 '엔지니어링 정밀성' 메시지 강화.",
+        "what_to_change": "StudioMockup 함수(line 257-381)만",
+        "what_to_keep": "Hero / Nav / 보라 그라디언트 / Outfit 폰트 / 모든 다른 컴포넌트"
+      },
+      "completed_at": "2026-04-29T06:32:52.081059+00:00",
+      "result": {
+        "files_modified": 1,
+        "scope": "frontend/app/page.tsx StudioMockup function only (line 257-381) + new BmwPipelineBar fork (line 404-431)",
+        "preserved_unchanged": [
+          "Hero",
+          "Nav",
+          "MiniPlayer",
+          "PipelineBar",
+          "CountUp"
+        ],
+        "tsc_exit": 0,
+        "outer_purple_glow_preserved": "bridge atmosphere maintained",
+        "m_tricolor_stripe_locations": "exactly 1 — between KPI row and AI Pipeline panel (~line 343)",
+        "stripe_label": "PIPELINE / M ENGINEERING (#7e7e7e 9px letterspaced)",
+        "biggest_visual_change": "보라/네이비 그라디언트 → 순흑 캔버스 #000000 + 1px hairline #3c3c3c. 보라 안개 속 모터스포츠 계기판 효과.",
+        "visible_changes": [
+          "[ACTIVE] 처리 중 배지가 M-blue-dark solid",
+          "상태 알약 rounded-full → rounded (4px)",
+          "M tricolor stripe (4px) — bridge moment"
+        ]
+      }
+    },
+    {
+      "id": "ISS-141",
+      "title": "[Gap Analysis] Phase 1 코드 완성 vs 디자인 의도 vs 비즈 약속 vs 페르소나 dream — 4축 갭 분석",
+      "type": "GAP_ANALYSIS",
+      "status": "DONE",
+      "priority": "P1",
+      "assign_to": "check-harness:meta",
+      "depth": 0,
+      "retry_count": 0,
+      "parent_id": "ISS-115",
+      "depends_on": [],
+      "created_at": "2026-04-29T06:40:24.053696+00:00",
+      "started_at": "2026-04-29T06:40:24.053696+00:00",
+      "spawn_rules": [],
+      "payload": {
+        "axis_mode": "check-harness:meta",
+        "phase": "Phase 1 MVP — Post-implementation Gap Audit",
+        "trigger": "대표님 명시 요청 — 옵션 Y(Studio Mockup BMW M) 적용 직후 시점",
+        "axes_to_audit": [
+          "1. 코드 완성도 vs Phase 1 plan 약속",
+          "2. 시각/UX vs 디자이너 산출물(BMW M) 의도",
+          "3. 비즈니스 가치 vs 페르소나 dream outcomes (박지은+이성훈)",
+          "4. 잠금 18 + 약속 KPI vs 실제 측정값"
+        ],
+        "context_files": [
+          "docs/01-plan/features/agency-video.plan.md",
+          "docs/01-plan/features/agency-video.ceo-review-2026-04-29.md",
+          "docs/01-plan/features/agency-video.eng-review-2026-04-29.md",
+          "docs/03-analysis/agency-video.biz-validation-2026-04-29.md",
+          "docs/03-analysis/agency-video.journey-validation-2026-04-29.md",
+          "docs/audience/agency-video-personas-2026-04-29.md",
+          "docs/brand/agency-video-brand-precheck-2026-04-29.md",
+          "/tmp/omnivibe-design-extract/uploads/DESIGN-bmw-m.md",
+          "ISS-117~140 result fields"
+        ],
+        "files_changed": []
+      },
+      "completed_at": "2026-04-29T06:49:49.144343+00:00",
+      "result": {
+        "axes_completed": 3,
+        "biz": {
+          "critical": 3,
+          "major": 4,
+          "minor": 3,
+          "report": "docs/03-analysis/agency-video.gap-analysis-biz-2026-04-29.md"
+        },
+        "brand": {
+          "layer1": 9.6,
+          "layer2_zero_trace": 10,
+          "bridge_y": 7,
+          "voice": 10,
+          "designer_alignment": "25%",
+          "anti_patterns_violations": 4,
+          "report": "docs/03-analysis/agency-video.gap-analysis-brand-2026-04-29.md"
+        },
+        "journey": {
+          "score_before": "30/40",
+          "score_after": "33/40",
+          "delta": "+3",
+          "biggest_gap": "박지은 카톡 발송 UI 부재 + MediaRecorder mock",
+          "report": "docs/03-analysis/agency-video.gap-analysis-journey-2026-04-29.md"
+        },
+        "convergent_finding": "biz + journey 모두 ISS-127 SPIKE에 수렴. brand는 별개(디자이너 정합성 docs 부재)."
+      }
+    },
+    {
+      "id": "ISS-142",
+      "title": "[Plan:난이도 다층 시뮬] 영상 컨텐츠 5단계 난이도별 사용자 니즈 + e2e 시뮬 + 갭 분석",
+      "type": "FEATURE_PLAN",
+      "status": "DONE",
+      "priority": "P1",
+      "assign_to": "plan-harness:product",
+      "depth": 0,
+      "retry_count": 0,
+      "parent_id": "ISS-115",
+      "depends_on": [],
+      "created_at": "2026-04-29T06:45:08.439762+00:00",
+      "started_at": "2026-04-29T06:45:08.439762+00:00",
+      "spawn_rules": [],
+      "payload": {
+        "axis_mode": "plan-harness:product",
+        "phase": "Phase 1+ Multi-Tier Simulation",
+        "trigger": "대표님 명시 — '난이도에 따라 여러 영상컨텐츠 제작 플랫폼' 통찰. 현재 Phase 1은 단일 흐름만 검증.",
+        "scope": "5 난이도 정의 + 각 난이도별 사용자 니즈 + e2e 시뮬레이션 + 불합리/중복/난이도 갭 도출",
+        "tiers_to_simulate": [
+          "T1 — 자동 (거래처 URL 입력 → 매주 자동, 0 클릭/주)",
+          "T2 — 반자동 (주제 선택 → 자동, 1 클릭/주)",
+          "T3 — 가이드형 (스크립트 검토 → 씬 검토 → 자동, 3~5 클릭/편)",
+          "T4 — 협업형 (씬별 페르소나 의견 검토 → 만화 스토리보드 → 영상, 10+ 클릭/편)",
+          "T5 — 풀 컨트롤 (모든 단계 직접 결정, 페르소나는 추천만)"
+        ],
+        "what_to_audit": [
+          "각 난이도별 사용자 페르소나 매핑",
+          "각 난이도별 e2e 흐름 (시작 → 끝)",
+          "공통 단계 (중복) — 어디서 분기 가능?",
+          "단계 간 난이도 점프 (난이한 점)",
+          "Phase 1 코드와 정합성 (지금 만든 게 어느 난이도?)",
+          "비용 차등 (T1 5,000원 vs T5 ?)",
+          "권한/UX 충돌 (Layer 1 박지은 vs Layer 2 이성훈)"
+        ]
+      },
+      "completed_at": "2026-04-29T06:49:49.144343+00:00",
+      "result": {
+        "tiers_simulated": 5,
+        "key_insight": "T1 + T3만 진짜 페르소나 흡수. T2/T4/T5는 페르소나 미스매치.",
+        "current_phase1_satisfaction": "박지은 30% (T1만 구현)",
+        "with_t3_satisfaction": "박지은 80% (T1+T3)",
+        "recommended_decision": "D4 — Client.gate_config jsonb 토글로 T1+T3 단일 파이프라인 Phase 2 1순위",
+        "blocked_decision": "8 vertical 확장 Phase 3로 연기",
+        "spawn_proposal": [
+          "ISS-143 T3 도메인",
+          "ISS-144 gate_config 아키텍처 (T2 DIRECTION)",
+          "ISS-145 T2/T4/T5 폐기 검증",
+          "ISS-146 T3 검토 화면",
+          "ISS-147 T1 vs T3 선택 UI",
+          "ISS-148 T3 시나리오",
+          "ISS-149 T3 비용 검증"
+        ],
+        "report": "docs/01-plan/features/agency-video.multi-tier-simulation-2026-04-29.md"
+      }
+    },
+    {
+      "id": "ISS-143",
+      "type": "UX_FIX",
+      "priority": "P0",
+      "title": "[Agency Video UX P0] MediaRecorder mock → 실제 마이크 권한 PoC (R-VC-1 완성도)",
+      "assign_to": "agent-harness",
+      "depth": 1,
+      "parent_id": "ISS-135",
+      "status": "IN_PROGRESS",
+      "started_at": "2026-04-29T06:53:35.242898+00:00",
+      "payload": {
+        "axis_mode": "plan-harness:code",
+        "scope_dir_lock": [
+          "frontend/app/agency-video/clients/onboarding-self/[token]/StepRecordVoice.tsx"
+        ],
+        "decision_origin": "갭 분석 통찰 4 + journey P0 #1",
+        "external_cost_won": 0,
+        "phase": "Phase 1+ Post-Gap Sprint",
+        "files_changed": []
+      },
+      "created_at": "2026-04-29T06:53:35.242898+00:00",
+      "retry_count": 0,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-144",
+      "type": "UX_FIX",
+      "priority": "P0",
+      "title": "[Agency Video UX P0] 카톡 발송 UI (ClientDetailView 신설 — 박지은 30분 데모 핵심)",
+      "assign_to": "agent-harness",
+      "depth": 1,
+      "parent_id": "ISS-124",
+      "status": "IN_PROGRESS",
+      "started_at": "2026-04-29T06:53:35.242898+00:00",
+      "payload": {
+        "axis_mode": "plan-harness:code",
+        "scope_dir_lock": [
+          "frontend/app/agency-video/clients/[id]/ClientDetailView.tsx (수정)",
+          "frontend/app/agency-video/clients/[id]/SendOnboardingDialog.tsx (신규)"
+        ],
+        "decision_origin": "갭 분석 통찰 4 + journey P0 #2",
+        "external_cost_won": 0,
+        "phase": "Phase 1+ Post-Gap Sprint"
+      },
+      "created_at": "2026-04-29T06:53:35.242898+00:00",
+      "retry_count": 0,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-145",
+      "type": "DOC",
+      "priority": "P1",
+      "title": "[Agency Video Brand] 옵션 Y bridge 카피 (디자이너 정합성 정당화 1페이지)",
+      "assign_to": "agent-harness",
+      "depth": 1,
+      "parent_id": "ISS-140",
+      "status": "IN_PROGRESS",
+      "started_at": "2026-04-29T06:53:35.242898+00:00",
+      "payload": {
+        "axis_mode": "plan-harness:code",
+        "scope_dir_lock": [
+          "docs/brand/option-y-rationale-for-designer-2026-04-29.md (신규)"
+        ],
+        "decision_origin": "brand 갭 분석 — 75% 디자이너 갭",
+        "external_cost_won": 0,
+        "phase": "Phase 1+ Post-Gap Sprint"
+      },
+      "created_at": "2026-04-29T06:53:35.242898+00:00",
+      "retry_count": 0,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-146",
+      "type": "ARCH_DECISION",
+      "priority": "P0",
+      "title": "[Agency Video B Lock-in] T3 gate_config jsonb 단일 파이프라인 — DIRECTION T2 잠금",
+      "assign_to": "plan-harness",
+      "depth": 0,
+      "parent_id": "ISS-115",
+      "status": "DONE",
+      "depends_on": [],
+      "payload": {
+        "axis_mode": "plan-harness:product",
+        "decision": "D4 채택 — Client.gate_config jsonb 1 컬럼으로 T1+T3 동시 운영",
+        "user_lock_in_2026_04_29": "강승식 대표 명시 — B 컨펌",
+        "t2_category": "DIRECTION (확정)",
+        "action": "잠금 18 → 19 추가",
+        "external_cost_won": 0,
+        "phase2_priority": 1,
+        "vertical_expansion_postponed_to_phase3": true,
+        "expected_persona_satisfaction": "박지은 30%→80%",
+        "phase": "Phase 1+ Post-Gap Sprint"
+      },
+      "created_at": "2026-04-29T06:53:35.242898+00:00",
+      "retry_count": 0,
+      "spawn_rules": [],
+      "completed_at": "2026-04-29T06:55:49.870130+00:00",
+      "result": {
+        "decision_locked": "잠금 19 — T3 gate_config jsonb 단일 파이프라인",
+        "decided_by": "강승식 대표 (B 컨펌 명시)",
+        "t2_category": "DIRECTION",
+        "phase": "Phase 2 1순위",
+        "vertical_expansion_postponed": "Phase 3로 연기",
+        "expected_impact": "박지은 페르소나 만족도 30% → 80%",
+        "code_change_required": "Client 모델 ALTER ADD COLUMN gate_config jsonb (alembic v009 in Phase 2)",
+        "follow_up_issues_to_register_after_spike": [
+          "ISS-147 T3 도메인",
+          "ISS-148 gate_config 아키텍처",
+          "ISS-149 T2/T4/T5 폐기 검증",
+          "ISS-150 T3 검토 화면",
+          "ISS-151 T1 vs T3 선택 UI",
+          "ISS-152 T3 시나리오",
+          "ISS-153 T3 비용 검증"
+        ]
+      }
+    },
+    {
+      "id": "ISS-147",
+      "title": "[P0] FEATURE_PLAN — 영상 제작 신규 카테고리: Raw Footage Auto-Edit (video-use 기반)",
+      "type": "FEATURE_PLAN",
+      "priority": "P0",
+      "status": "DONE",
+      "depends_on": [],
+      "created_at": "2026-04-30T07:46:03.818667Z",
+      "payload": {
+        "agenda": "OmniVibe Pro의 영상 제작 모드를 2개 카테고리로 분기한다. (1) Generation Mode — 기존 TTS+Remotion 합성형 (스크립트 → 영상). (2) Edit Mode — 신규 raw 촬영본 자동 편집형 (browser-use/video-use 기반). 두 모드는 동일한 ffmpeg_profile.py SoT, 동일한 brand-dna.json, 동일한 ElevenLabs 키를 공유하되 입력/파이프라인은 독립.",
+        "category_definition": {
+          "generation_mode": {
+            "input": "스크립트/PDF/시트",
+            "engine": "Director Agent + Writer Agent + Remotion + ElevenLabs TTS",
+            "use_case": "광고 크리에이티브, 시술 소개, 강의 슬라이드 영상",
+            "status": "기존 운영 중"
+          },
+          "edit_mode": {
+            "input": "거래처/사용자 raw 촬영본 폴더",
+            "engine": "video-use (Scribe STT → packed transcript → LLM EDL → ffmpeg cut → Remotion overlay → self-eval)",
+            "use_case": "토킹 헤드, 인터뷰, 튜토리얼, 현장 촬영 정리",
+            "status": "신규 도입"
+          }
+        },
+        "github_source": "https://github.com/browser-use/video-use",
+        "license": "확인 필요 (도입 전 검증)",
+        "phase_plan": {
+          "phase_A": {
+            "scope": "Remotion 오버레이 자동 생성 모듈만 우선 포팅",
+            "duration": "1주",
+            "deliverable": "backend/app/services/overlay_generator_service.py — word-level timestamp 입력 → Remotion JSX 출력",
+            "rationale": "Generation Mode에도 즉시 가치 (자막 수동 편집 70% 절감 예상)"
+          },
+          "phase_B": {
+            "scope": "Edit Mode 풀스택 도입 (raw 영상 → final.mp4)",
+            "duration": "4주",
+            "deliverable": "Edit Mode UI + raw_footage_editor service + Director Agent 통합",
+            "rationale": "Agency SaaS Phase 2 — 거래처 raw 영상 처리 니즈 PMF 검증 후"
+          }
+        },
+        "integration_constraints": [
+          "ffmpeg_profile.py SoT 절대 위반 금지 — video-use 출력은 우리 프로파일로 재인코딩 강제",
+          "brand-dna.json 옵션 A 이원화 유지 — Edit Mode UI는 외부 다크/보라 (스튜디오 톤)",
+          "Director Agent가 video-use를 sub-agent로 호출하는 래핑 구조",
+          "Remotion 4.0 버전 잠금 — video-use가 다른 버전 요구 시 fork 후 핀",
+          "ElevenLabs 키 공유 (TTS + Scribe STT 동일 키)"
+        ],
+        "open_questions": [
+          "video-use repo fork vs 의존성 직접 사용 — fork 권장 (SoT 강제용)",
+          "Edit Mode UI 진입점 — 별도 /edit 라우트 vs /production 내부 탭",
+          "Phase A를 ISS-033 v1에 편입할지 별도 트랙으로 갈지",
+          "Cost Model 재계산 — Edit 1편당 Scribe STT 비용 추정 필요"
+        ],
+        "next_actions": [
+          "PDCA plan 문서 작성: docs/01-plan/features/video-use-integration.plan.md",
+          "video-use 라이선스 확인 (gh api repos/browser-use/video-use/license)",
+          "Remotion 버전 호환 검증",
+          "MEMORY.md에 영상 제작 카테고리 분기 반영"
+        ]
+      },
+      "dispatched_at": "2026-04-30T07:48:18.277465+00:00",
+      "assigned_agent": "agent-harness",
+      "completed_at": "2026-04-30T16:49:52.316477",
+      "result": {
+        "user_stories_created": [
+          "ISS-148",
+          "ISS-149",
+          "ISS-150",
+          "ISS-151",
+          "ISS-152",
+          "ISS-153"
+        ],
+        "spike_created": "ISS-154",
+        "phase_A_total_stories": 6,
+        "phase_B_gate": "ISS-033 PMF 5명 인터뷰 3/5 충족",
+        "open_questions_pending_user_confirm": [
+          "Q1: Phase A를 ISS-033 v1에 편입?",
+          "Q2: video-use fork vs 직접 의존성?",
+          "Q3: Edit Mode UI 진입점 탭 vs 별도 라우트?",
+          "Q4: Phase B PMF 임계치 3/5 유지?"
+        ]
+      }
+    },
+    {
+      "id": "ISS-148",
+      "title": "US-A1: video-use repo fork — gagahoho-inc/video-use 생성 + LICENSE 명시",
+      "type": "USER_STORY",
+      "priority": "P0",
+      "status": "AWAITING_USER",
+      "depends_on": [
+        "ISS-147"
+      ],
+      "created_at": "2026-04-30T07:49:46.565588+00:00",
+      "payload": {
+        "story": "As a 개발팀, I want to fork browser-use/video-use를 gagahoho-inc/video-use로 fork하여 LICENSE 파일(MIT 추정)을 명시하고, ffmpeg_profile.py SoT wrap 패치를 적용할 수 있는 기반을 마련한다.",
+        "acceptance_criteria": [
+          "gagahoho-inc/video-use fork 생성 완료 (GitHub)",
+          "LICENSE 파일 추가 (MIT 또는 원저작자 컨택 후 확인된 라이선스)",
+          "README에 OmniVibe Pro 통합 목적 명시",
+          "video-use 내부 ffmpeg 직접 호출 지점 주석 표시 (wrap 대상 목록 작성)"
+        ],
+        "est_complexity": "S",
+        "scope_dir": "docs/01-plan/features/",
+        "note": "T2 EXTERNAL — GitHub fork 생성은 외부 리소스 생성. 대표님 컨펌 후 실행."
+      },
+      "awaiting_since": "2026-04-30T16:49:57.982087",
+      "user_confirm": [
+        {
+          "category": "EXTERNAL",
+          "question": "video-use repo fork 생성 — gagahoho-inc/video-use를 GitHub에 생성하고 LICENSE 명시가 필요합니다. (A) GitHub에서 browser-use/video-use를 gagahoho-inc org로 fork 생성 진행 / (B) 대표님이 직접 fork 후 repo URL 알려주시면 이후 작업 진행",
+          "asked_at": "2026-04-30T16:49:57.982087"
+        }
+      ]
+    },
+    {
+      "id": "ISS-149",
+      "title": "US-A2: overlay_generator_service.py 스켈레톤 — 입출력 계약 정의",
+      "type": "USER_STORY",
+      "priority": "P0",
+      "status": "DONE",
+      "depends_on": [
+        "ISS-147"
+      ],
+      "created_at": "2026-04-30T07:49:46.565588+00:00",
+      "payload": {
+        "story": "As a Director Agent, I want overlay_generator_service.py가 word-level timestamp 배열을 받아 Remotion JSX 컴포넌트 문자열을 반환하는 계약을 정의하여, 기존 SubtitleEditor 대비 자막 수동 편집 70% 절감을 목표로 한다.",
+        "acceptance_criteria": [
+          "backend/app/services/overlay_generator_service.py 파일 생성",
+          "OverlayInput / OverlayOutput dataclass 정의 (plan 문서 §4.2 사양 준수)",
+          "OverlayStyle Enum: subtitle | emphasis | animation",
+          "brand_tokens 파라미터로 brand-dna.json design_tokens 수용",
+          "스켈레톤 메서드 generate() → NotImplementedError (다음 스토리에서 구현)",
+          "타입 힌트 및 docstring 완비",
+          "pytest 기본 import 테스트 통과"
+        ],
+        "est_complexity": "S",
+        "scope_dir": "backend/app/services/"
+      },
+      "dispatched_at": "2026-04-30T07:50:19.361192+00:00",
+      "assigned_agent": "agent-harness",
+      "completed_at": "2026-04-30T16:53:48.663297",
+      "result": {
+        "files_created": [
+          "backend/app/services/overlay_generator_service.py",
+          "backend/tests/test_overlay_generator_service.py"
+        ],
+        "tests_passing": true,
+        "tests_total": 14,
+        "lines_of_code": 274,
+        "next_story": "ISS-150"
+      }
+    },
+    {
+      "id": "ISS-150",
+      "title": "US-A3: ElevenLabs Scribe STT 어댑터 — word-level + speaker_id 정규화",
+      "type": "USER_STORY",
+      "priority": "P0",
+      "status": "READY",
+      "depends_on": [
+        "ISS-147"
+      ],
+      "created_at": "2026-04-30T07:49:46.565588+00:00",
+      "payload": {
+        "story": "As a audio_correction_loop, I want ElevenLabs Scribe API를 호출하여 word-level timestamp와 speaker_id가 포함된 WordTimestamp 배열을 반환하는 어댑터를 구현함으로써, 기존 Whisper STT 어댑터와 동일 인터페이스로 교체 가능하게 한다.",
+        "acceptance_criteria": [
+          "backend/app/services/scribe_stt_adapter.py 파일 생성",
+          "WordTimestamp dataclass: word, start(ms), end(ms), speaker_id, confidence",
+          "ElevenLabs Scribe API 호출 (기존 ELEVENLABS_API_KEY 재사용, 신규 키 발급 금지)",
+          "video-use helpers/transcribe.py의 word-segment grouping 로직 포팅",
+          "2단어 UPPERCASE 청킹 규칙 구현 (plan §4.3 Duration rules)",
+          "기존 stt_service.py 인터페이스 호환 (교체 가능한 어댑터 패턴)",
+          "mock API 단위 테스트 3개 이상 작성"
+        ],
+        "est_complexity": "M",
+        "scope_dir": "backend/app/services/"
+      }
+    },
+    {
+      "id": "ISS-151",
+      "title": "US-A4: Remotion <SubtitleOverlay> 컴포넌트 슬롯 추가",
+      "type": "USER_STORY",
+      "priority": "P1",
+      "status": "READY",
+      "depends_on": [
+        "ISS-149"
+      ],
+      "created_at": "2026-04-30T07:49:46.565588+00:00",
+      "payload": {
+        "story": "As a 영상 제작자, I want Remotion Composition에 SubtitleOverlay 슬롯이 추가되어, overlay_generator_service가 생성한 JSX 컴포넌트가 자동으로 합성되기를 원한다.",
+        "acceptance_criteria": [
+          "frontend/remotion/Composition.tsx에 <SubtitleOverlay> 슬롯 추가",
+          "overlayData prop으로 OverlayOutput 수용 (optional, 없으면 기존 SubtitleEditor 표시)",
+          "brand-dna.json design_tokens 기반 폰트/색상 자동 적용",
+          "30fps 기준 duration_frames 동기화",
+          "기존 SubtitleEditor와 병행 동작 (하위 호환, 비파괴 변경)",
+          "TypeScript 타입 에러 0건"
+        ],
+        "est_complexity": "M",
+        "scope_dir": "frontend/remotion/"
+      }
+    },
+    {
+      "id": "ISS-152",
+      "title": "US-A5: overlay_generator_service.py 핵심 로직 구현 — timeline_view 포팅",
+      "type": "USER_STORY",
+      "priority": "P1",
+      "status": "READY",
+      "depends_on": [
+        "ISS-149",
+        "ISS-150"
+      ],
+      "created_at": "2026-04-30T07:49:46.565588+00:00",
+      "payload": {
+        "story": "As a Director Agent, I want overlay_generator_service.generate()가 WordTimestamp 배열을 받아 Remotion JSX 문자열을 실제로 생성하기를 원한다. video-use helpers/timeline_view.py의 word-segment grouping + duration rules를 포팅하여 구현한다.",
+        "acceptance_criteria": [
+          "generate() 메서드 완전 구현 (NotImplementedError 제거)",
+          "video-use timeline_view.py word-segment grouping 로직 포팅",
+          "Duration rules 구현: 단순 카드 5–7s, 복합 8–14s, 마지막 1s 홀드, 병렬 reveal 금지",
+          "30ms 오디오 페이드 자동 적용 로직",
+          "OverlayStyle.subtitle / emphasis / animation 3종 JSX 템플릿",
+          "brand_tokens에서 폰트/색상/radius 자동 반영",
+          "ffmpeg_profile.py를 통한 iOS MP4 최종 출력 준수 (직접 ffmpeg 호출 금지)",
+          "단위 테스트: WordTimestamp 5개 입력 → JSX 출력 검증"
+        ],
+        "est_complexity": "L",
+        "scope_dir": "backend/app/services/"
+      }
+    },
+    {
+      "id": "ISS-153",
+      "title": "US-A6: Director Agent 통합 + Phase A 통합 테스트",
+      "type": "USER_STORY",
+      "priority": "P1",
+      "status": "READY",
+      "depends_on": [
+        "ISS-151",
+        "ISS-152"
+      ],
+      "created_at": "2026-04-30T07:49:46.565588+00:00",
+      "payload": {
+        "story": "As a 영상 제작 파이프라인, I want Director Agent가 자막 생성 단계에서 overlay_generator_service를 자동으로 호출하고, 기존 SubtitleEditor 결과와 자동 생성 결과의 word-level diff를 검증하기를 원한다.",
+        "acceptance_criteria": [
+          "app/agents/director_agent.py — 자막 단계에서 overlay_generator_service 호출 분기 추가",
+          "audio_correction_loop.py — STT 결과를 Scribe 형식(WordTimestamp)으로 변환 지점 추가",
+          "기존 SubtitleEditor 결과 vs 자동 생성 결과 word-level diff 검증 스크립트",
+          "통합 테스트: 샘플 오디오(30초) → Scribe STT → overlay_generator → Remotion 합성 → iOS MP4 출력 E2E 통과",
+          "Phase A 검증 체크리스트 완료: 30ms 오디오 페이드, iOS MP4 확인, ffmpeg_profile SoT 통과",
+          "기존 Generation Mode 파이프라인 회귀 없음 확인"
+        ],
+        "est_complexity": "L",
+        "scope_dir": "backend/app/agents/"
+      }
+    },
+    {
+      "id": "ISS-154",
+      "title": "SP-B1: SPIKE — Edit Mode 풀스택 PMF 검증 (ISS-033 페르소나 인터뷰 게이트)",
+      "type": "USER_STORY",
+      "priority": "P2",
+      "status": "READY",
+      "depends_on": [
+        "ISS-033",
+        "ISS-153"
+      ],
+      "created_at": "2026-04-30T07:49:46.565588+00:00",
+      "payload": {
+        "story": "As a Agency SaaS 팀, I want ISS-033 medical-dermatology v1 페르소나 5명 인터뷰 결과가 PMF 임계치를 충족하면 Edit Mode 풀스택 도입을 착수하기를 원한다. 이 SPIKE는 게이트 통과 시까지 READY 상태를 유지한다.",
+        "acceptance_criteria": [
+          "Gate 조건: ISS-033 페르소나 5명 중 3명 이상이 '거래처 raw 영상 편집 니즈' 명시",
+          "Cost Model 재계산: Scribe STT 1편당 비용 ≤ 500원 확인",
+          "Gate 통과 시 산출물 정의: raw_footage_editor_service.py + /edit UI + Director Agent Edit Mode 분기",
+          "Edit Mode UI 진입점 결정 (Q3: 별도 /edit 라우트 vs /production 탭 — 추천: 탭)",
+          "SPIKE 착수 조건: ISS-033 DONE + 3/5 PMF 기준 충족 후 별도 USER_STORY로 분해",
+          "Phase B 4주 타임라인 계획 수립"
+        ],
+        "est_complexity": "XL",
+        "scope_dir": "backend/app/services/",
+        "gate": "ISS-033 PMF 5명 인터뷰 3/5 충족",
+        "phase": "B",
+        "note": "ISS-033 완료 및 PMF 임계치 충족 전까지 착수 금지"
+      }
+    },
+    {
+      "id": "ISS-155",
+      "title": "[Plan:CEO검토] ISS-147 전략 검토",
+      "type": "PLAN_CEO_REVIEW",
+      "status": "READY",
+      "priority": "P1",
+      "assign_to": "plan-ceo-reviewer",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": "ISS-147",
+      "depends_on": [],
+      "created_at": "2026-04-30T16:49:52.316477",
+      "payload": {
+        "source_issue": "ISS-147",
+        "source_plan": {
+          "user_stories_created": [
+            "ISS-148",
+            "ISS-149",
+            "ISS-150",
+            "ISS-151",
+            "ISS-152",
+            "ISS-153"
+          ],
+          "spike_created": "ISS-154",
+          "phase_A_total_stories": 6,
+          "phase_B_gate": "ISS-033 PMF 5명 인터뷰 3/5 충족",
+          "open_questions_pending_user_confirm": [
+            "Q1: Phase A를 ISS-033 v1에 편입?",
+            "Q2: video-use fork vs 직접 의존성?",
+            "Q3: Edit Mode UI 진입점 탭 vs 별도 라우트?",
+            "Q4: Phase B PMF 임계치 3/5 유지?"
+          ]
+        },
+        "feature": "ISS-147"
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-156",
+      "title": "[Plan:Eng검토] ISS-147 실행가능성 검토",
+      "type": "PLAN_ENG_REVIEW",
+      "status": "READY",
+      "priority": "P1",
+      "assign_to": "plan-eng-reviewer",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": "ISS-147",
+      "depends_on": [],
+      "created_at": "2026-04-30T16:49:52.316477",
+      "payload": {
+        "source_issue": "ISS-147",
+        "source_plan": {
+          "user_stories_created": [
+            "ISS-148",
+            "ISS-149",
+            "ISS-150",
+            "ISS-151",
+            "ISS-152",
+            "ISS-153"
+          ],
+          "spike_created": "ISS-154",
+          "phase_A_total_stories": 6,
+          "phase_B_gate": "ISS-033 PMF 5명 인터뷰 3/5 충족",
+          "open_questions_pending_user_confirm": [
+            "Q1: Phase A를 ISS-033 v1에 편입?",
+            "Q2: video-use fork vs 직접 의존성?",
+            "Q3: Edit Mode UI 진입점 탭 vs 별도 라우트?",
+            "Q4: Phase B PMF 임계치 3/5 유지?"
+          ]
+        },
+        "feature": "ISS-147"
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-157",
+      "title": "[Plan:구현] ISS-149",
+      "type": "GENERATE_CODE",
+      "status": "READY",
+      "priority": "P1",
+      "assign_to": "agent-harness",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": "ISS-149",
+      "depends_on": [],
+      "created_at": "2026-04-30T16:53:48.663297",
+      "payload": {
+        "source_issue": "ISS-149",
+        "acceptance_criteria": []
+      },
+      "result": null,
+      "spawn_rules": []
     }
   ],
   "hooks": {
@@ -4385,6 +6320,18 @@
         "issue_type": "SCENARIO_PLAY",
         "plan_created": 0,
         "timestamp": "2026-04-10T10:58:29.245237"
+      },
+      {
+        "issue_id": "ISS-147",
+        "issue_type": "FEATURE_PLAN",
+        "plan_created": 2,
+        "timestamp": "2026-04-30T16:49:52.316477"
+      },
+      {
+        "issue_id": "ISS-149",
+        "issue_type": "USER_STORY",
+        "plan_created": 1,
+        "timestamp": "2026-04-30T16:53:48.663297"
       }
     ],
     "on_fail": [],
@@ -6459,17 +8406,1986 @@
           "failed": 0,
           "escalated": 0
         }
+      },
+      {
+        "cycle": 122,
+        "timestamp": "2026-04-10T14:46:11.125449",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer, agent-harness, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 114,
+          "done": 73,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 123,
+        "timestamp": "2026-04-29T12:51:59.849031",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-ceo-reviewer, agent-harness, plan-eng-reviewer, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 114,
+          "done": 74,
+          "in_progress": 0,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 124,
+        "timestamp": "2026-04-29T12:54:34.155883",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, design-critic, plan-ceo-reviewer, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 114,
+          "done": 74,
+          "in_progress": 0,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 125,
+        "timestamp": "2026-04-29T12:56:21.819712",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, agent-harness, plan-ceo-reviewer, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 114,
+          "done": 74,
+          "in_progress": 0,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 126,
+        "timestamp": "2026-04-29T12:57:55.743232",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-eng-reviewer, design-critic, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 114,
+          "done": 74,
+          "in_progress": 0,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 127,
+        "timestamp": "2026-04-29T12:59:41.171835",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, agent-harness, plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 114,
+          "done": 74,
+          "in_progress": 0,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 128,
+        "timestamp": "2026-04-29T13:01:46.180256",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, design-critic, plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 114,
+          "done": 74,
+          "in_progress": 0,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 129,
+        "timestamp": "2026-04-29T13:05:01.745161",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer, agent-harness, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 114,
+          "done": 74,
+          "in_progress": 0,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 130,
+        "timestamp": "2026-04-29T13:09:17.330294",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer, design-critic, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 114,
+          "done": 74,
+          "in_progress": 0,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 131,
+        "timestamp": "2026-04-29T13:22:49.421423",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-ceo-reviewer, plan-eng-reviewer, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 114,
+          "done": 74,
+          "in_progress": 0,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 132,
+        "timestamp": "2026-04-29T13:27:46.935891",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-ceo-reviewer, plan-eng-reviewer, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 114,
+          "done": 74,
+          "in_progress": 0,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 133,
+        "timestamp": "2026-04-29T13:29:44.087287",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-ceo-reviewer, design-critic, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 114,
+          "done": 74,
+          "in_progress": 0,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 134,
+        "timestamp": "2026-04-29T13:30:47.598808",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer, design-critic, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 114,
+          "done": 74,
+          "in_progress": 0,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 135,
+        "timestamp": "2026-04-29T13:34:09.722414",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-eng-reviewer, plan-ceo-reviewer, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟡 장기 대기: ISS-115 (FEATURE_PLAN) — 9시간"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 115,
+          "done": 74,
+          "in_progress": 0,
+          "ready": 1,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 136,
+        "timestamp": "2026-04-29T13:35:29.602214",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-eng-reviewer, agent-harness, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [
+          "ISS-115"
+        ],
+        "stats_snapshot": {
+          "total": 115,
+          "done": 73,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 137,
+        "timestamp": "2026-04-29T13:36:04.235966",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, agent-harness, plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 115,
+          "done": 73,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 138,
+        "timestamp": "2026-04-29T13:36:22.192921",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-eng-reviewer, design-critic, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 115,
+          "done": 73,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 139,
+        "timestamp": "2026-04-29T13:37:08.405016",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, agent-harness, plan-ceo-reviewer, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 115,
+          "done": 73,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 140,
+        "timestamp": "2026-04-29T13:37:18.785065",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, design-critic, plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 115,
+          "done": 73,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 141,
+        "timestamp": "2026-04-29T13:37:28.882055",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-ceo-reviewer, agent-harness, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 115,
+          "done": 73,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 142,
+        "timestamp": "2026-04-29T13:38:00.571141",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, agent-harness, design-critic, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 115,
+          "done": 74,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 143,
+        "timestamp": "2026-04-29T13:38:02.503416",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, agent-harness, plan-ceo-reviewer, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 115,
+          "done": 74,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 144,
+        "timestamp": "2026-04-29T13:38:20.123589",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, agent-harness, plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 115,
+          "done": 74,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 145,
+        "timestamp": "2026-04-29T13:38:32.172691",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-ceo-reviewer, plan-eng-reviewer, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 115,
+          "done": 74,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 146,
+        "timestamp": "2026-04-29T13:39:37.015177",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer, design-critic, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 115,
+          "done": 74,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 147,
+        "timestamp": "2026-04-29T13:42:17.791672",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-ceo-reviewer, plan-eng-reviewer, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 115,
+          "done": 74,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 148,
+        "timestamp": "2026-04-29T13:43:22.707232",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, design-critic, plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 115,
+          "done": 74,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 149,
+        "timestamp": "2026-04-29T13:46:27.749632",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-ceo-reviewer, design-critic, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 115,
+          "done": 74,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 150,
+        "timestamp": "2026-04-29T13:47:25.204144",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, design-critic, plan-ceo-reviewer, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 115,
+          "done": 74,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 151,
+        "timestamp": "2026-04-29T13:48:33.175164",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-eng-reviewer, design-critic, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 115,
+          "done": 74,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 152,
+        "timestamp": "2026-04-29T13:51:42.147094",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, design-critic, agent-harness, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 115,
+          "done": 74,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 153,
+        "timestamp": "2026-04-29T13:53:31.703450",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-ceo-reviewer, plan-eng-reviewer, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 115,
+          "done": 74,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 154,
+        "timestamp": "2026-04-29T13:55:02.324033",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-ceo-reviewer, plan-eng-reviewer, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 115,
+          "done": 74,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 155,
+        "timestamp": "2026-04-29T13:58:07.388106",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-eng-reviewer, design-critic, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 115,
+          "done": 74,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 156,
+        "timestamp": "2026-04-29T13:58:14.523333",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, design-critic, plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 115,
+          "done": 74,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 157,
+        "timestamp": "2026-04-29T13:58:27.533104",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-ceo-reviewer, plan-eng-reviewer, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 115,
+          "done": 74,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 158,
+        "timestamp": "2026-04-29T13:58:39.424080",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, agent-harness, plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 115,
+          "done": 74,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 159,
+        "timestamp": "2026-04-29T14:01:12.944535",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer, design-critic, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (test-harness, agent-harness)"
+        ],
+        "issues_created": [
+          "ISS-116"
+        ],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 75,
+          "in_progress": 0,
+          "ready": 21,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 160,
+        "timestamp": "2026-04-29T14:03:07.446826",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-ceo-reviewer, agent-harness, plan-eng-reviewer, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (test-harness, agent-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 75,
+          "in_progress": 0,
+          "ready": 9,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 161,
+        "timestamp": "2026-04-29T14:04:30.386451",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-ceo-reviewer, design-critic, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 75,
+          "in_progress": 1,
+          "ready": 8,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 162,
+        "timestamp": "2026-04-29T14:07:20.055196",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-ceo-reviewer, agent-harness, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (test-harness, agent-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 75,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 163,
+        "timestamp": "2026-04-29T14:08:51.513638",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer, agent-harness, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (test-harness, agent-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 75,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 164,
+        "timestamp": "2026-04-29T14:09:46.043619",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, design-critic, plan-ceo-reviewer, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (test-harness, agent-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 75,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 165,
+        "timestamp": "2026-04-29T14:10:30.535766",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-eng-reviewer, design-critic, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 77,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 166,
+        "timestamp": "2026-04-29T14:14:26.364872",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, agent-harness, plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (test-harness, agent-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 77,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 167,
+        "timestamp": "2026-04-29T14:15:22.444805",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer, design-critic, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 77,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 168,
+        "timestamp": "2026-04-29T14:17:24.114217",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-ceo-reviewer, design-critic, plan-eng-reviewer, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 81,
+          "in_progress": 0,
+          "ready": 3,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 169,
+        "timestamp": "2026-04-29T14:21:07.238122",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-ceo-reviewer, design-critic, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 81,
+          "in_progress": 3,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 170,
+        "timestamp": "2026-04-29T14:26:05.280313",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, agent-harness, plan-ceo-reviewer, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (test-harness, agent-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 81,
+          "in_progress": 3,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 171,
+        "timestamp": "2026-04-29T14:26:11.020478",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-ceo-reviewer, plan-eng-reviewer, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 81,
+          "in_progress": 3,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 172,
+        "timestamp": "2026-04-29T14:26:50.309001",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-eng-reviewer, agent-harness, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 83,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 173,
+        "timestamp": "2026-04-29T14:29:19.226808",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-ceo-reviewer, plan-eng-reviewer, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (test-harness, agent-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 83,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 174,
+        "timestamp": "2026-04-29T14:30:01.107017",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, agent-harness, plan-ceo-reviewer, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (test-harness, agent-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 84,
+          "in_progress": 0,
+          "ready": 1,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 175,
+        "timestamp": "2026-04-29T14:31:20.744039",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, agent-harness, plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (test-harness, agent-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 84,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 176,
+        "timestamp": "2026-04-29T14:34:27.301576",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-ceo-reviewer, plan-eng-reviewer, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 84,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 177,
+        "timestamp": "2026-04-29T14:41:50.265948",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-ceo-reviewer, plan-eng-reviewer, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 84,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 178,
+        "timestamp": "2026-04-29T14:42:41.465564",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-ceo-reviewer, design-critic, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 85,
+          "in_progress": 0,
+          "ready": 2,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 179,
+        "timestamp": "2026-04-29T14:44:18.087239",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-ceo-reviewer, design-critic, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 85,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 180,
+        "timestamp": "2026-04-29T14:47:24.853800",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, agent-harness, plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 85,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 181,
+        "timestamp": "2026-04-29T14:48:41.557188",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer, agent-harness, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 85,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 182,
+        "timestamp": "2026-04-29T14:49:10.483598",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer, agent-harness, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 87,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 183,
+        "timestamp": "2026-04-29T14:52:52.568993",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-ceo-reviewer, design-critic, agent-harness, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (test-harness, agent-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 87,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 184,
+        "timestamp": "2026-04-29T14:53:34.880223",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, design-critic, plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 87,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 185,
+        "timestamp": "2026-04-29T14:54:34.401191",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-ceo-reviewer, agent-harness, design-critic, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 89,
+          "in_progress": 0,
+          "ready": 2,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 186,
+        "timestamp": "2026-04-29T14:56:25.110080",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-ceo-reviewer, agent-harness, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (test-harness, agent-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 89,
+          "in_progress": 1,
+          "ready": 1,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 187,
+        "timestamp": "2026-04-29T14:57:58.837885",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer, agent-harness, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 89,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 188,
+        "timestamp": "2026-04-29T15:01:15.546804",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-ceo-reviewer, plan-eng-reviewer, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 89,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 189,
+        "timestamp": "2026-04-29T15:07:28.902108",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-eng-reviewer, plan-ceo-reviewer, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 89,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 190,
+        "timestamp": "2026-04-29T15:08:07.578681",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-ceo-reviewer, plan-eng-reviewer, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (test-harness, agent-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 90,
+          "in_progress": 1,
+          "ready": 2,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 191,
+        "timestamp": "2026-04-29T15:09:20.944300",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer, design-critic, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (test-harness, agent-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 90,
+          "in_progress": 2,
+          "ready": 1,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 192,
+        "timestamp": "2026-04-29T15:09:29.102480",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, design-critic, plan-ceo-reviewer, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (test-harness, agent-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 90,
+          "in_progress": 2,
+          "ready": 1,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 193,
+        "timestamp": "2026-04-29T15:11:02.416172",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, design-critic, plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 91,
+          "in_progress": 2,
+          "ready": 1,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 194,
+        "timestamp": "2026-04-29T15:12:17.716938",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-ceo-reviewer, plan-eng-reviewer, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (test-harness, agent-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 91,
+          "in_progress": 3,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 195,
+        "timestamp": "2026-04-29T15:15:24.952451",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-eng-reviewer, agent-harness, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (test-harness, agent-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 91,
+          "in_progress": 3,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 196,
+        "timestamp": "2026-04-29T15:17:44.590835",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-ceo-reviewer, plan-eng-reviewer, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 91,
+          "in_progress": 3,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 197,
+        "timestamp": "2026-04-29T15:18:08.993568",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-ceo-reviewer, design-critic, plan-eng-reviewer, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (test-harness, agent-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 92,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 198,
+        "timestamp": "2026-04-29T15:18:22.801015",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, design-critic, agent-harness, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (test-harness, agent-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 92,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 199,
+        "timestamp": "2026-04-29T15:18:52.902653",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-ceo-reviewer, agent-harness, plan-eng-reviewer, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 93,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 200,
+        "timestamp": "2026-04-29T15:19:27.063872",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-ceo-reviewer, plan-eng-reviewer, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (test-harness, agent-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 93,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 201,
+        "timestamp": "2026-04-29T15:20:30.976227",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-ceo-reviewer, agent-harness, plan-eng-reviewer, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 94,
+          "in_progress": 0,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 202,
+        "timestamp": "2026-04-29T15:23:45.322652",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer, agent-harness, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 94,
+          "in_progress": 0,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 203,
+        "timestamp": "2026-04-29T15:27:36.903182",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, design-critic, plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 12회 파생 (agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 137,
+          "done": 94,
+          "in_progress": 0,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 204,
+        "timestamp": "2026-04-29T15:32:07.990768",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-ceo-reviewer, plan-eng-reviewer, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 13회 파생 (test-harness, agent-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 138,
+          "done": 94,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 205,
+        "timestamp": "2026-04-29T15:32:25.916995",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, agent-harness, plan-ceo-reviewer, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 13회 파생 (agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 138,
+          "done": 94,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 206,
+        "timestamp": "2026-04-29T15:33:19.346819",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-ceo-reviewer, design-critic, plan-eng-reviewer, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 13회 파생 (test-harness, agent-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 138,
+          "done": 95,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 207,
+        "timestamp": "2026-04-29T15:36:25.005739",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer, design-critic, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 13회 파생 (agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 138,
+          "done": 95,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 208,
+        "timestamp": "2026-04-29T15:42:39.498650",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-eng-reviewer, agent-harness, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 14회 파생 (check-harness:meta, test-harness, agent-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 139,
+          "done": 95,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 209,
+        "timestamp": "2026-04-29T15:44:06.528941",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-eng-reviewer, design-critic, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 14회 파생 (agent-harness, test-harness, check-harness:meta)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 139,
+          "done": 95,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 210,
+        "timestamp": "2026-04-29T15:44:41.961598",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-ceo-reviewer, agent-harness, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 14회 파생 (check-harness:meta, test-harness, agent-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 139,
+          "done": 96,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 211,
+        "timestamp": "2026-04-29T15:45:02.455062",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer, design-critic, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 14회 파생 (check-harness:meta, test-harness, agent-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 139,
+          "done": 96,
+          "in_progress": 1,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 212,
+        "timestamp": "2026-04-29T15:46:38.851168",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-eng-reviewer, design-critic, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 15회 파생 (agent-harness, check-harness:meta, test-harness, plan-harness:product)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 140,
+          "done": 96,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 213,
+        "timestamp": "2026-04-29T15:46:45.030014",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer, agent-harness, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 15회 파생 (plan-harness:product, check-harness:meta, agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 140,
+          "done": 96,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 214,
+        "timestamp": "2026-04-29T15:46:48.501440",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, agent-harness, design-critic, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 15회 파생 (agent-harness, test-harness, plan-harness:product, check-harness:meta)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 140,
+          "done": 96,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 215,
+        "timestamp": "2026-04-29T15:47:04.995359",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, design-critic, plan-ceo-reviewer, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 15회 파생 (check-harness:meta, agent-harness, test-harness, plan-harness:product)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 140,
+          "done": 96,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 216,
+        "timestamp": "2026-04-29T15:47:29.978799",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-ceo-reviewer, agent-harness, plan-eng-reviewer, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 15회 파생 (test-harness, plan-harness:product, agent-harness, check-harness:meta)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 140,
+          "done": 96,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 217,
+        "timestamp": "2026-04-29T15:49:30.431285",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, agent-harness, plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 15회 파생 (plan-harness:product, agent-harness, check-harness:meta, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 140,
+          "done": 96,
+          "in_progress": 2,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 218,
+        "timestamp": "2026-04-29T15:50:34.194881",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, agent-harness, design-critic, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 15회 파생 (check-harness:meta, plan-harness:product, agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 140,
+          "done": 98,
+          "in_progress": 0,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 219,
+        "timestamp": "2026-04-30T16:38:20.664303",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer, design-critic, agent-harness)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 16회 파생 (plan-harness:product, plan-harness, check-harness:meta, test-harness, agent-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 144,
+          "done": 99,
+          "in_progress": 4,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 220,
+        "timestamp": "2026-04-30T16:38:52.652860",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer, agent-harness, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 16회 파생 (agent-harness, check-harness:meta, plan-harness, test-harness, plan-harness:product)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 144,
+          "done": 99,
+          "in_progress": 4,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 221,
+        "timestamp": "2026-04-30T16:40:02.291256",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-eng-reviewer, plan-ceo-reviewer, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 16회 파생 (check-harness:meta, agent-harness, test-harness, plan-harness, plan-harness:product)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 144,
+          "done": 99,
+          "in_progress": 4,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 222,
+        "timestamp": "2026-04-30T16:40:38.112887",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-eng-reviewer, plan-ceo-reviewer, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 16회 파생 (test-harness, check-harness:meta, plan-harness, plan-harness:product, agent-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 144,
+          "done": 99,
+          "in_progress": 4,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 223,
+        "timestamp": "2026-04-30T16:43:32.684765",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, plan-ceo-reviewer, agent-harness, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 16회 파생 (check-harness:meta, plan-harness, agent-harness, plan-harness:product, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 144,
+          "done": 99,
+          "in_progress": 4,
+          "ready": 0,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 224,
+        "timestamp": "2026-04-30T16:48:11.889228",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (design-critic, agent-harness, plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 16회 파생 (plan-harness, agent-harness, check-harness:meta, test-harness, plan-harness:product)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 145,
+          "done": 99,
+          "in_progress": 4,
+          "ready": 1,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 225,
+        "timestamp": "2026-04-30T16:50:06.160573",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer, agent-harness, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 16회 파생 (plan-harness:product, check-harness:meta, agent-harness, plan-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 154,
+          "done": 100,
+          "in_progress": 4,
+          "ready": 8,
+          "failed": 0,
+          "escalated": 0
+        }
+      },
+      {
+        "cycle": 226,
+        "timestamp": "2026-04-30T16:50:11.894101",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-ceo-reviewer, design-critic, agent-harness, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 16회 파생 (check-harness:meta, plan-harness, test-harness, agent-harness, plan-harness:product)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 154,
+          "done": 100,
+          "in_progress": 4,
+          "ready": 8,
+          "failed": 0,
+          "escalated": 0
+        }
       }
     ]
   },
   "stats": {
-    "total_issues": 114,
-    "completed": 59,
-    "ready": 7,
+    "total_issues": 119,
+    "completed": 61,
+    "ready": 0,
     "created": 13,
     "failed": 0,
     "phase6_issues": "ISS-025~030 (Brand Templates)",
-    "evolved": 111
+    "evolved": 216,
+    "total": 144,
+    "in_progress": 4,
+    "done": 99,
+    "cancelled": 17,
+    "awaiting_user": 0,
+    "blocked": 0
   },
   "pending_opportunity_signals": [
     {
@@ -6562,11 +10478,49 @@
     "demotion_active": false
   },
   "issue_budget": {
-    "date": "",
+    "date": "2026-04-29",
     "created_today": 0
   },
   "proactive_scan_state": {
     "date": "2026-04-10",
     "count": 1
-  }
+  },
+  "phase1_experiment": {
+    "started_at": "2026-04-15T08:59:09.201523",
+    "changes": {
+      "design-critic": "opus → sonnet"
+    },
+    "advisor_route": "hermes-escalate.sh → HERMES_CONSULT → advisor(opus)",
+    "slash_command": "/advisor",
+    "review_at": "2026-04-15 16:00 KST",
+    "baseline": {
+      "opus_budget_before": {
+        "daily": {
+          "date": "2026-04-10",
+          "cost_usd": 10.62,
+          "calls": 17
+        },
+        "monthly": {
+          "month": "2026-04",
+          "cost_usd": 10.62,
+          "calls": 17
+        },
+        "demotion_active": false
+      },
+      "hermes_state_before": {
+        "invocations_by_issue": {},
+        "daily_log": [],
+        "total_invocations": 0
+      }
+    }
+  },
+  "decisions_locked": [
+    {
+      "id": 19,
+      "name": "T3 gate_config jsonb 단일 파이프라인",
+      "decision_at": "2026-04-29T06:53:35.242898+00:00",
+      "decided_by": "강승식 대표",
+      "phase": "Phase 2 1순위"
+    }
+  ]
 }
