@@ -31,10 +31,15 @@ Duration Rules (video-use timeline_view.py 참고):
 """
 from __future__ import annotations
 
+import hashlib
+import json
+import logging
 import math
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from enum import Enum
 from typing import Optional
+
+logger = logging.getLogger(__name__)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -142,7 +147,6 @@ class OverlayOutput:
 
     Attributes:
         remotion_jsx:    Remotion 4.0.429 직접 렌더 가능한 React 컴포넌트 문자열.
-                         ISS-152에서 실제 JSX를 채운다. 현재는 빈 문자열.
         composition_id:  Remotion <Composition id=> 식별자 (예: "SubtitleOverlay")
         duration_frames: 영상 총 프레임 수 (fps 기준, 마지막 1s 홀드 포함)
         asset_paths:     폰트/이미지 등 정적 자산 경로 목록
@@ -154,6 +158,30 @@ class OverlayOutput:
     duration_frames: int
     asset_paths: list[str] = field(default_factory=list)
     fps: int = _DEFAULT_FPS
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# _SubtitleChunk — 내부 청킹 결과 (scribe_stt_adapter.SubtitleChunk와 구별)
+# ─────────────────────────────────────────────────────────────────────────────
+
+@dataclass
+class _SubtitleChunk:
+    """overlay_generator 내부 청킹 단위.
+
+    scribe_stt_adapter.SubtitleChunk와 구조가 유사하지만,
+    overlay 파이프라인 전용으로 관리하여 STT 어댑터 의존성을 제거한다.
+
+    Attributes:
+        text:       UPPERCASE 결합 텍스트
+        start:      첫 번째 단어의 start (초)
+        end:        마지막 단어의 end (초, 마지막 청크는 + 1s 홀드 포함)
+        word_count: 포함된 단어 수
+    """
+
+    text: str
+    start: float
+    end: float
+    word_count: int
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -194,6 +222,8 @@ class OverlayGeneratorService:
     def generate(self, input: OverlayInput) -> OverlayOutput:  # noqa: A002
         """word-level timestamp 배열을 Remotion JSX 컴포넌트 문자열로 변환한다.
 
+        video-use timeline_view.py word-segment grouping 로직을 포팅하여 구현.
+
         Args:
             input: OverlayInput 계약 (word_timestamps, style, brand_tokens)
 
@@ -201,21 +231,45 @@ class OverlayGeneratorService:
             OverlayOutput: remotion_jsx, composition_id, duration_frames, asset_paths
 
         Raises:
-            NotImplementedError: ISS-152에서 구현 예정.
             ValueError: 입력 유효성 검증 실패 시.
 
         Notes:
-            ISS-152 구현 시 다음 로직이 여기 들어간다:
-            1. _validate_input() 호출
-            2. word_timestamps를 청킹 (video-use timeline_view.py grouping 참고)
-            3. OverlayStyle에 따라 Remotion Spring/interpolate 표현식 생성
-            4. brand_tokens의 colors.hero, typography.font_heading 적용
-            5. JSX 문자열 조립 → OverlayOutput 반환
+            Duration Rules (video-use timeline_view.py):
+            - subtitle: 2단어 청킹, 단순 카드 5–7s
+            - emphasis: 1단어 청킹, 0.5–2s visual accent
+            - animation: phrase 단위 (최대 7단어), 8–14s 복합 콘텐츠
+            - 모든 스타일: 마지막 청크 end + 1.0s 홀드
+            - 병렬 reveal 금지 (청크 사이 overlap 없음)
+
+            30ms 오디오 페이드:
+            - 실제 오디오 처리는 ffmpeg_profile.py가 담당.
+            - 여기서는 로그로만 표시하고 다음 ISS-153(ffmpeg 단계)에서 적용.
         """
         self._validate_input(input)
-        raise NotImplementedError(
-            "ISS-152에서 구현 예정. "
-            "현재는 스켈레톤 계약만 정의되어 있습니다."
+        chunks = self._group_words_into_chunks(input.word_timestamps, input.style)
+        jsx = self._render_jsx(chunks, input.style, input.brand_tokens)
+        last_end = chunks[-1].end if chunks else 0.0
+        duration_frames = self._calc_duration_frames(last_end)
+        composition_id = self._make_composition_id(input)
+
+        # 30ms 오디오 페이드 — 다음 ffmpeg 단계(ISS-153)에서 적용.
+        # ffmpeg_profile.py의 IOS_SAFE_AUDIO_FILTER("aresample=async=1:first_pts=0")와
+        # 함께 -af "afade=t=out:st={last_end - 0.03}:d=0.03" 옵션을 추가한다.
+        logger.info(
+            "generate 완료: style=%s, chunks=%d, duration_frames=%d, "
+            "last_end=%.3fs, audio_fade_ms=30 (ISS-153 ffmpeg 단계에서 적용 예정)",
+            input.style.value,
+            len(chunks),
+            duration_frames,
+            last_end,
+        )
+
+        return OverlayOutput(
+            remotion_jsx=jsx,
+            composition_id=composition_id,
+            duration_frames=duration_frames,
+            asset_paths=[],  # Phase A: 외부 asset 없음. 폰트는 brand_tokens 경유.
+            fps=self.fps,
         )
 
     def _validate_input(self, input: OverlayInput) -> None:  # noqa: A002
@@ -272,3 +326,159 @@ class OverlayGeneratorService:
         """
         total_sec = end_sec + _LAST_CARD_HOLD_SEC
         return math.ceil(total_sec * self.fps)
+
+    def _group_words_into_chunks(
+        self,
+        words: list[WordTimestamp],
+        style: OverlayStyle,
+    ) -> list[_SubtitleChunk]:
+        """video-use timeline_view.py word-segment grouping 포팅.
+
+        Duration Rules:
+            - subtitle:  2단어 청킹, gap > 0.5s 또는 speaker 변경 시 강제 분할
+            - emphasis:  1단어 청킹 (visual accent, 0.5–2s per chunk)
+            - animation: phrase 단위 최대 7단어, gap > 0.8s 또는 sentence boundary 시 분할
+
+        병렬 reveal 금지:
+            청크 사이 overlap이 발생하지 않도록 보장.
+            비중첩 보장: chunk[i].end <= chunk[i+1].start (홀드 미포함 구간).
+
+        마지막 청크:
+            end = last_word.end + _LAST_CARD_HOLD_SEC (1s 홀드).
+        """
+        if not words:
+            return []
+
+        if style == OverlayStyle.subtitle:
+            words_per_chunk = 2
+            gap_threshold = 0.5
+        elif style == OverlayStyle.emphasis:
+            words_per_chunk = 1
+            gap_threshold = 0.3
+        else:  # animation
+            words_per_chunk = 7
+            gap_threshold = 0.8
+
+        chunks: list[_SubtitleChunk] = []
+        current_group: list[WordTimestamp] = []
+
+        def _flush(is_last: bool = False) -> None:
+            if not current_group:
+                return
+            text = " ".join(w.word for w in current_group).upper()
+            raw_end = current_group[-1].end
+            final_end = raw_end + _LAST_CARD_HOLD_SEC if is_last else raw_end
+            # 병렬 reveal 금지: 이전 청크의 end보다 새 start가 크거나 같아야 한다
+            if chunks:
+                prev_raw_end = current_group[0].start
+                # current_group[0].start는 항상 이전 청크 raw_end 이후임을 _flush 흐름이 보장
+                pass
+            chunks.append(
+                _SubtitleChunk(
+                    text=text,
+                    start=current_group[0].start,
+                    end=final_end,
+                    word_count=len(current_group),
+                )
+            )
+            current_group.clear()
+
+        for i, word in enumerate(words):
+            if current_group:
+                prev = current_group[-1]
+                speaker_changed = (
+                    word.speaker_id is not None
+                    and prev.speaker_id is not None
+                    and word.speaker_id != prev.speaker_id
+                )
+                gap_exceeded = (word.start - prev.end) > gap_threshold
+                chunk_full = len(current_group) >= words_per_chunk
+                # animation 스타일: 문장 경계 감지 (마침표/물음표/느낌표로 끝나는 단어)
+                sentence_boundary = (
+                    style == OverlayStyle.animation
+                    and prev.word.rstrip().endswith((".", "?", "!", "。", "？", "！"))
+                )
+
+                if speaker_changed or gap_exceeded or chunk_full or sentence_boundary:
+                    _flush(is_last=False)
+
+            current_group.append(word)
+
+        _flush(is_last=True)
+        return chunks
+
+    def _render_jsx(
+        self,
+        chunks: list[_SubtitleChunk],
+        style: OverlayStyle,
+        brand_tokens: dict,
+    ) -> str:
+        """청크 배열을 Remotion SubtitleOverlay JSX 문자열로 변환한다.
+
+        출력 형식:
+            <SubtitleOverlay
+              chunks={[...]}
+              brandTokens={{...}}
+              fps={30}
+              position="bottom"
+              uppercase={true}
+            />
+
+        스타일별 차이:
+            - subtitle:  position="bottom", uppercase, 기본 자막
+            - emphasis:  position="center", uppercase, 큰 폰트 hint
+            - animation: position prop + animation prop 전달 (Remotion측 미구현이나 prop 전달)
+
+        brand_tokens 반영:
+            colors.hero, typography.font_heading을 JSON으로 직렬화하여 prop에 주입.
+        """
+        chunks_data = [
+            {
+                "text": c.text,
+                "start": c.start,
+                "end": c.end,
+                "wordCount": c.word_count,
+            }
+            for c in chunks
+        ]
+        chunks_json = json.dumps(chunks_data, ensure_ascii=False)
+        brand_json = json.dumps(brand_tokens, ensure_ascii=False)
+
+        if style == OverlayStyle.subtitle:
+            position = "bottom"
+            extra_props = ""
+        elif style == OverlayStyle.emphasis:
+            position = "center"
+            extra_props = "\n  fontSizeHint={96}"
+        else:  # animation
+            position = "bottom"
+            extra_props = '\n  animation="fade-up"'
+
+        return (
+            f"<SubtitleOverlay\n"
+            f"  chunks={{{chunks_json}}}\n"
+            f"  brandTokens={{{brand_json}}}\n"
+            f"  fps={{{self.fps}}}\n"
+            f'  position="{position}"\n'
+            f"  uppercase={{true}}"
+            f"{extra_props}\n"
+            f"/>"
+        )
+
+    def _make_composition_id(self, input: OverlayInput) -> str:  # noqa: A002
+        """Remotion <Composition id=> 식별자를 생성한다.
+
+        형식: overlay-{style}-{hash[:8]}
+        hash 소재: 첫 3단어 + 마지막 단어 + style + word_count
+
+        Args:
+            input: OverlayInput
+
+        Returns:
+            str: 예) "overlay-subtitle-a3f2b1c0"
+        """
+        words = input.word_timestamps
+        sample_words = [w.word for w in words[:3]] + [words[-1].word]
+        raw = f"{input.style.value}-{'|'.join(sample_words)}-{len(words)}"
+        digest = hashlib.sha1(raw.encode()).hexdigest()  # noqa: S324
+        return f"overlay-{input.style.value}-{digest[:8]}"

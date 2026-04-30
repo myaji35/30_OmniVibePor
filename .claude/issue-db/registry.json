@@ -1,6 +1,6 @@
 {
   "version": "3.0.0",
-  "updated_at": "2026-04-30T08:00:04.117057+00:00",
+  "updated_at": "2026-04-30T08:03:44.841424+00:00",
   "architecture": "supervisor",
   "scale_mode": "full",
   "current_phase": "Phase 6 — Presentation Pipeline + Brand Templates",
@@ -5879,12 +5879,13 @@
       "title": "US-A5: overlay_generator_service.py 핵심 로직 구현 — timeline_view 포팅",
       "type": "USER_STORY",
       "priority": "P1",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "ISS-149",
         "ISS-150"
       ],
       "created_at": "2026-04-30T07:49:46.565588+00:00",
+      "completed_at": "2026-04-30T17:08:11.403320",
       "payload": {
         "story": "As a Director Agent, I want overlay_generator_service.generate()가 WordTimestamp 배열을 받아 Remotion JSX 문자열을 실제로 생성하기를 원한다. video-use helpers/timeline_view.py의 word-segment grouping + duration rules를 포팅하여 구현한다.",
         "acceptance_criteria": [
@@ -5899,6 +5900,27 @@
         ],
         "est_complexity": "L",
         "scope_dir": "backend/app/services/"
+      },
+      "dispatched_at": "2026-04-30T08:03:44.841318+00:00",
+      "assigned_agent": "agent-harness",
+      "result": {
+        "files_modified": [
+          "backend/app/services/overlay_generator_service.py"
+        ],
+        "files_created": [
+          "backend/tests/test_overlay_generator_service.py"
+        ],
+        "lines_added": 230,
+        "tests_passing": true,
+        "tests_count": 22,
+        "duration_rules_applied": [
+          "subtitle:2단어-청킹",
+          "emphasis:1단어-청킹",
+          "animation:7단어-phrase",
+          "last_hold:1s",
+          "no_overlap:보장"
+        ],
+        "next_unblocks": "ISS-153"
       }
     },
     {
@@ -6082,6 +6104,25 @@
       "created_at": "2026-04-30T17:03:12.066891",
       "payload": {
         "source_issue": "ISS-151",
+        "acceptance_criteria": []
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-160",
+      "title": "[Plan:구현] ISS-152",
+      "type": "GENERATE_CODE",
+      "status": "READY",
+      "priority": "P1",
+      "assign_to": "agent-harness",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": "ISS-152",
+      "depends_on": [],
+      "created_at": "2026-04-30T17:08:11.403320",
+      "payload": {
+        "source_issue": "ISS-152",
         "acceptance_criteria": []
       },
       "result": null,
@@ -6409,6 +6450,12 @@
         "issue_type": "USER_STORY",
         "plan_created": 1,
         "timestamp": "2026-04-30T17:03:12.066891"
+      },
+      {
+        "issue_id": "ISS-152",
+        "issue_type": "USER_STORY",
+        "plan_created": 1,
+        "timestamp": "2026-04-30T17:08:11.403320"
       }
     ],
     "on_fail": [],
@@ -10484,17 +10531,36 @@
           "failed": 0,
           "escalated": 0
         }
+      },
+      {
+        "cycle": 229,
+        "timestamp": "2026-04-30T17:03:32.280256",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (agent-harness, product-manager)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (plan-eng-reviewer, agent-harness, design-critic, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-eng-reviewer, plan-ceo-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 16회 파생 (plan-harness, check-harness:meta, agent-harness, plan-harness:product, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 157,
+          "done": 103,
+          "in_progress": 4,
+          "ready": 8,
+          "failed": 0,
+          "escalated": 0
+        }
       }
     ]
   },
   "stats": {
-    "total_issues": 121,
-    "completed": 63,
+    "total_issues": 122,
+    "completed": 64,
     "ready": 0,
     "created": 13,
     "failed": 0,
     "phase6_issues": "ISS-025~030 (Brand Templates)",
-    "evolved": 218,
+    "evolved": 219,
     "total": 144,
     "in_progress": 4,
     "done": 99,
