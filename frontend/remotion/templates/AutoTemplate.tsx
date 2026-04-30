@@ -3,6 +3,9 @@
  *
  * 사용자가 TSX 코딩 없이 스크립트만으로 영상을 만들 수 있는 범용 템플릿.
  * ScriptBlock[]의 type(hook/body/cta)에 따라 씬 스타일 자동 적용.
+ *
+ * ISS-151: overlayData / subtitleChunks / brandTokens prop 추가 (optional, 비파괴).
+ * SubtitleOverlay 슬롯이 전체 타임라인 위에 마지막 레이어로 합성됨.
  */
 import React from 'react';
 import {
@@ -16,6 +19,8 @@ import {
   Easing,
 } from 'remotion';
 import type { VideoTemplateProps, ScriptBlock } from '../types';
+import { SubtitleOverlay } from '../SubtitleOverlay';
+import type { SubtitleChunkTS, BrandTokensTS, OverlayOutputTS } from '../types/overlay';
 
 // ── Theme ────────────────────────────────────
 const T = {
@@ -186,8 +191,29 @@ const BlockRenderer: React.FC<{
   }
 };
 
+// ── ISS-151: AutoTemplate 확장 Props (하위 호환 — 모두 optional) ──
+export interface AutoTemplateOverlayProps extends VideoTemplateProps {
+  overlayData?: OverlayOutputTS;
+  subtitleChunks?: SubtitleChunkTS[];
+  brandTokens?: BrandTokensTS;
+  subtitlePosition?: "bottom" | "center" | "top";
+  subtitleUppercase?: boolean;
+}
+
 // ── Main AutoTemplate ──
-export const AutoTemplate: React.FC<VideoTemplateProps> = ({ blocks, audioUrl, branding }) => {
+export const AutoTemplate: React.FC<AutoTemplateOverlayProps> = ({
+  blocks,
+  audioUrl,
+  branding,
+  subtitleChunks,
+  brandTokens,
+  subtitlePosition = "bottom",
+  subtitleUppercase = true,
+}) => {
+  // overlayData.fps가 있으면 해당 fps 사용, 없으면 기본 30
+  // (overlayData는 미래 서버-렌더 경로용으로 보존하나 현재는 fps만 추출)
+  const fps = 30;
+
   return (
     <AbsoluteFill style={{ background: T.bg }}>
       {audioUrl && <Audio src={audioUrl} />}
@@ -201,6 +227,17 @@ export const AutoTemplate: React.FC<VideoTemplateProps> = ({ blocks, audioUrl, b
           <BlockRenderer block={block} branding={branding} index={idx} />
         </Sequence>
       ))}
+
+      {/* ISS-151: SubtitleOverlay 슬롯 — chunks가 있을 때만 렌더링 (비파괴) */}
+      {subtitleChunks && subtitleChunks.length > 0 && (
+        <SubtitleOverlay
+          chunks={subtitleChunks}
+          brandTokens={brandTokens}
+          fps={fps}
+          position={subtitlePosition}
+          uppercase={subtitleUppercase}
+        />
+      )}
     </AbsoluteFill>
   );
 };

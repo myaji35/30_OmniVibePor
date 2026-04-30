@@ -1,6 +1,6 @@
 {
   "version": "3.0.0",
-  "updated_at": "2026-04-30T07:54:21.734696+00:00",
+  "updated_at": "2026-04-30T08:00:04.117057+00:00",
   "architecture": "supervisor",
   "scale_mode": "full",
   "current_phase": "Phase 6 — Presentation Pipeline + Brand Templates",
@@ -5841,7 +5841,7 @@
       "title": "US-A4: Remotion <SubtitleOverlay> 컴포넌트 슬롯 추가",
       "type": "USER_STORY",
       "priority": "P1",
-      "status": "READY",
+      "status": "DONE",
       "depends_on": [
         "ISS-149"
       ],
@@ -5858,6 +5858,20 @@
         ],
         "est_complexity": "M",
         "scope_dir": "frontend/remotion/"
+      },
+      "dispatched_at": "2026-04-30T08:00:04.116947+00:00",
+      "assigned_agent": "agent-harness",
+      "completed_at": "2026-04-30T17:03:12.066891",
+      "result": {
+        "files_created": [
+          "frontend/remotion/types/overlay.ts",
+          "frontend/remotion/SubtitleOverlay.tsx"
+        ],
+        "files_modified": [
+          "frontend/remotion/templates/AutoTemplate.tsx"
+        ],
+        "type_check_passed": true,
+        "lines_added": 179
       }
     },
     {
@@ -6049,6 +6063,25 @@
       "created_at": "2026-04-30T16:59:37.661050",
       "payload": {
         "source_issue": "ISS-150",
+        "acceptance_criteria": []
+      },
+      "result": null,
+      "spawn_rules": []
+    },
+    {
+      "id": "ISS-159",
+      "title": "[Plan:구현] ISS-151",
+      "type": "GENERATE_CODE",
+      "status": "READY",
+      "priority": "P1",
+      "assign_to": "agent-harness",
+      "depth": 1,
+      "retry_count": 0,
+      "parent_id": "ISS-151",
+      "depends_on": [],
+      "created_at": "2026-04-30T17:03:12.066891",
+      "payload": {
+        "source_issue": "ISS-151",
         "acceptance_criteria": []
       },
       "result": null,
@@ -6370,6 +6403,12 @@
         "issue_type": "USER_STORY",
         "plan_created": 1,
         "timestamp": "2026-04-30T16:59:37.661050"
+      },
+      {
+        "issue_id": "ISS-151",
+        "issue_type": "USER_STORY",
+        "plan_created": 1,
+        "timestamp": "2026-04-30T17:03:12.066891"
       }
     ],
     "on_fail": [],
@@ -10426,17 +10465,36 @@
           "failed": 0,
           "escalated": 0
         }
+      },
+      {
+        "cycle": 228,
+        "timestamp": "2026-04-30T16:59:52.043428",
+        "findings": [
+          "🟠 핑퐁 감지: ISS-033 → 5회 파생 (product-manager, agent-harness)",
+          "🟠 핑퐁 감지: ISS-064 → 4회 파생 (agent-harness, plan-ceo-reviewer, plan-eng-reviewer, design-critic)",
+          "🟠 핑퐁 감지: ISS-085 → 4회 파생 (plan-ceo-reviewer, plan-eng-reviewer)",
+          "🟠 핑퐁 감지: ISS-115 → 16회 파생 (plan-harness, check-harness:meta, plan-harness:product, agent-harness, test-harness)"
+        ],
+        "issues_created": [],
+        "stats_snapshot": {
+          "total": 156,
+          "done": 102,
+          "in_progress": 4,
+          "ready": 8,
+          "failed": 0,
+          "escalated": 0
+        }
       }
     ]
   },
   "stats": {
-    "total_issues": 120,
-    "completed": 62,
+    "total_issues": 121,
+    "completed": 63,
     "ready": 0,
     "created": 13,
     "failed": 0,
     "phase6_issues": "ISS-025~030 (Brand Templates)",
-    "evolved": 217,
+    "evolved": 218,
     "total": 144,
     "in_progress": 4,
     "done": 99,
